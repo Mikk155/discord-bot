@@ -1,0 +1,17 @@
+{
+    "prefix": "!",
+    "Activity":
+    {
+        "Listening to":
+        [
+            "!"
+        ],
+        "State":
+        [
+            "Wiggles your balls",
+            "I like black cats, they're so tasty",
+            "I live in your walls"
+        ],
+        "IntervalUpdate": 5
+    }
+}
