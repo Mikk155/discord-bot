@@ -1,15 +1,14 @@
 import os
 import sys
 import discord
-import asyncio
-import random
 from discord.ext import commands, tasks
 
 abs = os.path.abspath( "" );
 
-modulos : dict = {};
-
 from walter.config import config
+from walter.get_time import get_time
+
+modulos : dict = {};
 
 class gpGlobals:
 

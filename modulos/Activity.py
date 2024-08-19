@@ -1,4 +1,4 @@
-from __main__ import bot, config, random
+from __main__ import bot, config
 import discord
 
 Activity_Time = 0
