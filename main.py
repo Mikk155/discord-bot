@@ -27,6 +27,11 @@ class gpGlobals:
     Set to *True* for getting loggers
     '''
 
+commands_help = {}
+'''
+Append your command and a class CComandHelp to add commands
+'''
+
 def Logger( string: str, arguments : list[str] = [], cut_not_matched : bool = False, not_matched_trim : bool = False ):
 
     for __arg__ in arguments:
@@ -61,12 +66,37 @@ async def on_member_remove( member : discord.Member ):
 
 @bot.event
 async def on_message( message: discord.Message ):
-    for name, modulo in modulos.items():
-        try:
-            await modulo.on_message( message );
-        except Exception as e:
-            if str(e).find( 'has no attribute' ) == -1:
-                Logger( "Exception in {} at {}: {}", [ name, 'on_message', e ] );
+
+    if message.content.startswith( config[ "prefix" ] ):
+        message.content = message.content[ len( config[ "prefix" ] ) : ]
+
+        if message.content == 'help':
+
+            db =  'Available commands are:'
+
+            global commands_help
+
+            for name, ch in commands_help.items():
+                if message.guild.id in ch[ "servers" ]:
+                    db += '\n- {}'.format( ch[ "description" ] )
+            await message.reply( db )
+        else:
+            arg = message.content.split( ' ' )
+            if len(arg) >= 1 and arg[0] in commands_help:
+                if len( commands_help[ arg[0] ][ "servers" ] ) == 0 or message.guild.id in commands_help[ arg[0] ][ "servers" ]:
+                    for name, modulo in modulos.items():
+                        try:
+                            await modulo.on_command( message );
+                        except Exception as e:
+                            if str(e).find( 'has no attribute' ) == -1:
+                                Logger( "Exception in {} at {}: {}", [ name, 'on_command', e ] );
+    else:
+        for name, modulo in modulos.items():
+            try:
+                await modulo.on_message( message );
+            except Exception as e:
+                if str(e).find( 'has no attribute' ) == -1:
+                    Logger( "Exception in {} at {}: {}", [ name, 'on_message', e ] );
 
 @bot.event
 async def on_message_delete( message: discord.Message ):

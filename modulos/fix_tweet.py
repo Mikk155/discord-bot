@@ -1,3 +1,5 @@
+import discord
+
 async def on_message( message: discord.Message ):
 
     if 'https://x.com/' in message.content:
