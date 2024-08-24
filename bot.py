@@ -84,11 +84,41 @@ async def on_message( message: discord.Message ):
 
         if message.content == 'help':
 
-            st: str #TODO
+            st = '# List of available commands:\n'
+
+            for cmd, data in commandos.items():
+
+                if data.servers and not message.guild.id in data.servers:
+                    continue;
+
+                st += f'- {data.command}\n\t\t- {data.information}\n\n'
+
+            await message.reply( st );
 
         else:
 
-            await HookManager.CallHook( 'on_command', message );
+            full_string = message.content.split();
+            cmd = full_string[0];
+
+            if cmd in commandos:
+
+                command : Commands = commandos[ cmd ];
+
+                if command.servers and not message.guild.id in command.servers:
+                    return;
+
+                if command.allowed:
+                    for role in message.author.roles:
+                        if role.id in command.allowed:
+                            return;
+
+                module = importlib.import_module( f'plugins.{command.plugin}' );
+                hook = getattr( module, command.function );
+
+                try:
+                    await hook( message )
+                except Exception as e:
+                    print( 'Exception on plugin {} at function {} error: {}'.format( command.plugin, command.function, e ) );
 
     else:
 
@@ -146,7 +176,9 @@ async def on_reaction_remove( reaction: discord.Reaction, user : discord.User ):
 
 
 
-TOKEN = open( '{}\\token.txt'.format( abs ), 'r' ).readline();
+token_dev = 'test_' if gpGlobals.developer else '';
+
+TOKEN = open( '{}\\{}token.txt'.format( abs, token_dev ), 'r' ).readline();
 
 if not TOKEN:
 

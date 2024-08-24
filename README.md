@@ -29,7 +29,6 @@ async def on_think():
 async def on_member_join( member : discord.Member ):
 async def on_member_remove( member : discord.Member ):
 async def on_message( message : discord.Message ):
-async def on_command( message : discord.Message ):
 async def on_message_delete( message : discord.Message ):
 async def on_message_edit( Args : HookValue.message_delete ):
 async def on_reaction_add( Args : HookValue.reaction ):

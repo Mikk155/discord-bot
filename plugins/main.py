@@ -1,10 +1,17 @@
 import os
+import re
 import sys
+import time
 import json
+import random
+import asyncio
 import discord
+import requests
+import subprocess
 import importlib
 import importlib.util
 from discord.ext import commands, tasks
+from bs4 import BeautifulSoup
 
 global gpGlobals
 class gpGlobals:
@@ -57,6 +64,9 @@ bot: commands.Bot = commands.Bot( command_prefix = config[ "prefix" ], intents =
 global modulos;
 plugins : dict = {};
 
+global commandos
+commandos: dict = {};
+
 def Logger( string: str, arguments : list[str] = [], cut_not_matched : bool = False, not_matched_trim : bool = False ):
 
     for __arg__ in arguments:
@@ -93,6 +103,24 @@ class Hooks:
 def RegisterHooks( plugin_name : str, hook_list : list[ Hooks ] ):
     plugins[ plugin_name ] =  hook_list;
     print( f'{plugin_name} Registered hooks: {hook_list}' );
+
+class Commands:
+    plugin : str = None
+    '''Name of the plugin'''
+    function : str = None
+    information : str = None
+    '''Information display for this command (help)'''
+    command : str = None
+    '''Command show and arguments (help)'''
+    servers : list[int] = None
+    '''Servers-only command, leave empty for global'''
+    allowed : list[int] = None
+    '''List of roles that are allowed to use this command, if None = everyone'''
+
+def RegisterCommand( plugin_name : str, command_name : str, command_class : Commands ):
+    command_class.plugin = plugin_name
+    commandos[ command_name ] = command_class;
+    print( f'{plugin_name} Registered command: {command_name}' );
 
 class HookValue:
     class edited:

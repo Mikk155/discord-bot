@@ -1,10 +1,10 @@
 {
-    "prefix": "!",
+    "prefix": "w!",
     "Activity":
     {
         "Listening to":
         [
-            "!"
+            "w!"
         ],
         "State":
         [
@@ -24,6 +24,10 @@
         "LOG": 1223015620506026064,
         "USERS": 842174687445778483,
         "COUNT_TO_GOD": 877493398070767636
+    },
+    "testserver":
+    {
+        "ID": 1145236064596918304
     },
     "mention_reaction":
     {
