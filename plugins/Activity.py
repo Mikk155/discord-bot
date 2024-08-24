@@ -1,5 +1,10 @@
-from __main__ import bot, config
-import discord
+from plugins.main import *
+
+hooks = [
+    Hooks.on_think
+];
+
+RegisterHooks( plugin_name='Activity', hook_list=hooks );
 
 Activity_Time = 0
 Activity_Interval = config[ "Activity" ][ "IntervalUpdate" ]
@@ -8,7 +13,7 @@ State = config[ "Activity" ][ "State" ]
 LastState = 1
 LastListening = 1
 
-async def on_think( time: int ):
+async def on_think():
 
     global Activity_Time
     global Activity_Interval
@@ -17,7 +22,7 @@ async def on_think( time: int ):
     global State
     global LastState
 
-    if Activity_Time < time:
+    if Activity_Time < gpGlobals.time:
 
         if LastState > len( State ):
             LastState = 1
@@ -36,4 +41,4 @@ async def on_think( time: int ):
         LastState += 1
         LastListening = +1
 
-        Activity_Time = time + Activity_Interval
+        Activity_Time = gpGlobals.time + Activity_Interval

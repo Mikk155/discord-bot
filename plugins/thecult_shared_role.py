@@ -1,8 +1,11 @@
-# Add "the cult member" role to users in general server if they exists in the cult
+from plugins.main import *
 
-from __main__ import bot, config
+hooks = [
+    Hooks.on_member_join,
+    Hooks.on_ready
+];
 
-import discord
+RegisterHooks( plugin_name='thecult_shared_role', hook_list=hooks );
 
 async def set_role( member: discord.Member ):
 

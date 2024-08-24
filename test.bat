@@ -1,5 +1,7 @@
-ECHO This command will run the bot in debugger mode
+ECHO Running bot in developer mode
 
 @echo off
-python main.py True
+
+python bot.py True
+
 pause
