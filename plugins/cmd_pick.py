@@ -11,7 +11,6 @@ command.function = 'on_command'
 RegisterCommand( plugin_name='cmd_pick', command_name='pick', command_class=command );
 
 async def on_command( message: discord.Message, arguments: dict ):
-    await message.reply( f"got arguments:\n```python\n{json.dumps( arguments, indent=4 )}\n``` length {len(arguments)}" )
 
     if len(arguments) >= 1:
         choice = random.randint( 0, len( arguments ) - 1 );
