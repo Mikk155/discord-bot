@@ -2,27 +2,24 @@ from plugins.main import *
 
 command = Commands()
 command.servers = [ config[ "thecult" ][ "ID" ], config[ "testserver" ][ "ID" ] ]
-command.information = 'Re-post a random image from https://rule34.us, in case of repost react with X within 10 seconds'
-command.command = '**r34** ``[optional page number]`` ``[optional tag]`` ``[optional tag]``....'
+command.information = '''
+Re-post a random image from https://rule34.us
+
+- r34 page=``page number``, tags=``tags names``
+
+In case of repeated post react with ❌ within 30 seconds to remove it.
+'''
 command.function = 'on_command'
 
 RegisterCommand( plugin_name='cmd_r34', command_name='r34', command_class=command );
 
-def get_r34_post( tags : list ):
+def get_r34_post( tags : list, page ):
 
-    page = None
-
-    for t in tags:
-        if t.isnumeric():
-            page = t;
-
-    if page is not None:
-        tags.remove( page )
+    for i, t in enumerate( tags ):
+        tags[i] = t.strip( ' ' );
 
     tag_string = '+'.join(tags)
-
-    if page is not None:
-        tag_string = f'{tag_string}&page={page}'
+    tag_string = f'{tag_string}&page={page}'
 
     url = f'https://rule34.us/index.php?r=posts/index&q={tag_string}'
 
@@ -62,13 +59,11 @@ def get_r34_post( tags : list ):
 
     return image_url
 
-async def on_command( message: discord.Message ):
+async def on_command( message: discord.Message, arguments: dict ):
 
-    tags = message.content.split( ' ' );
+    tags = arguments[ "tags" ].split( ' ' ) if 'tags' in arguments else [];
 
-    tags.pop( 0 );
-
-    url = get_r34_post( tags );
+    url = get_r34_post( tags, 0 if not 'page' in arguments else arguments[ 'page' ] );
 
     if url:
 
@@ -76,7 +71,7 @@ async def on_command( message: discord.Message ):
 
         await media.add_reaction('❌');
 
-        await asyncio.sleep( 10 );
+        await asyncio.sleep( 30 );
 
         media = await media.channel.fetch_message( media.id );
 

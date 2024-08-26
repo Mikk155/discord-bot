@@ -90,10 +90,18 @@ async def on_ready():
 
         return
 
-    async for old_message in channel.history( limit=10 ):
+    numero_anterior = None;
 
-        if old_message.author == bot.user and not old_message.content[0].isdigit():
+    async for old_message in channel.history( limit=5 ):
 
+        if old_message.author == bot.user:
+            numero_anterior = None;
+            break;
+
+        if numero_anterior:
+            continue
+
+        if not old_message.content[0].isdigit():
             continue
 
         numero_anterior = re.search( r'\b(\d+)\b', old_message.content )
@@ -101,8 +109,6 @@ async def on_ready():
         if numero_anterior:
 
             numero_anterior = int(numero_anterior.group(1)) + 1
-
-            break
 
     if numero_anterior:
 

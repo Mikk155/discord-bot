@@ -8,7 +8,6 @@ def PluginsInit():
     for file in os.listdir( modulos_path ):
 
         if file.endswith( ".py" ) and not file.endswith( 'main.py' ):
-            print(file)
 
             try:
 
@@ -25,6 +24,7 @@ def PluginsInit():
                 print( f"Error importing plugin {file}: {e}" );
 
 PluginsInit();
+
 
 
 
@@ -83,21 +83,72 @@ async def on_message( message: discord.Message ):
 
         if message.content == 'help':
 
-            st = '# List of available commands:\n'
+            pages: list[discord.Embed] = []
 
             for cmd, data in commandos.items():
+
+                data: Commands
 
                 if data.servers and not message.guild.id in data.servers:
                     continue;
 
-                st += f'- {data.command}\n\t\t- {data.information}\n\n'
+                if data.allowed:
+                    if not any( role_id in [ role.id for role in message.author.roles ] for role_id in data.allowed ):
+                        continue;
 
-            await message.reply( st );
+                embeed = discord.Embed( title='``{}{}``'.format( config[ "prefix" ], cmd ), description=data.information, color=discord.Color.blurple() );
 
+                pages.append( embeed )
+
+            help_msg: discord.Message = await message.reply( embed=pages[0] )
+
+            await help_msg.add_reaction("◀️")
+            await help_msg.add_reaction("▶️")
+
+            def check( reaction, user ):
+                return user == message.author and str(reaction.emoji) in ["◀️", "▶️"] and reaction.message.id == help_msg.id
+
+            current_page = 0
+
+            while True:
+
+                try:
+
+                    reaction, user = await bot.wait_for("reaction_add", timeout=70.0, check=check );
+
+                    if str(reaction.emoji) == "▶️":
+                        current_page += 1
+                    elif str(reaction.emoji) == "◀️":
+                        current_page -= 1
+
+                    if current_page < 0:
+                         current_page = len( pages ) - 1;
+                    elif current_page > len( pages ) - 1:
+                        current_page = 0;
+
+                    await help_msg.edit( embed=pages[ current_page ] );
+                    await help_msg.remove_reaction( reaction.emoji, user );
+
+                except asyncio.TimeoutError:
+                    await help_msg.delete();
+                    break
         else:
 
-            full_string = message.content.split();
-            cmd = full_string[0];
+            cmd = message.content.split()[0];
+
+            args_str = message.content[ len( cmd ) : ];
+
+            args_list = args_str.split( "," )
+            args_dict = {}
+
+            for i, arg in enumerate( args_list ):
+                arg = arg.strip( ' ' );
+                if len(arg) > 0:
+                    if '=' in arg and arg[0] != '=' and arg[len(arg)-1] != '=':
+                        dks = arg.split( '=', 1 );
+                        args_dict[ dks[0] ] = dks[1];
+                    else:
+                        args_dict[ str( i ) ] = arg;
 
             if cmd in commandos:
 
@@ -115,7 +166,7 @@ async def on_message( message: discord.Message ):
                 hook = getattr( module, command.function );
 
                 try:
-                    await hook( message )
+                    await hook( message, args_dict )
                 except Exception as e:
                     print( 'Exception on plugin {} at function {} error: {}'.format( command.plugin, command.function, e ) );
 

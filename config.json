@@ -1,10 +1,10 @@
 {
-    "prefix": "w!",
+    "prefix": "w ",
     "Activity":
     {
         "Listening to":
         [
-            "w!"
+            "w help"
         ],
         "State":
         [
@@ -28,7 +28,8 @@
     },
     "testserver":
     {
-        "ID": 1145236064596918304
+        "ID": 1145236064596918304,
+        "MODERATOR_ROLE": 1150093637942788106
     },
     "mention_reaction":
     {

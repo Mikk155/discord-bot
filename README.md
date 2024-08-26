@@ -1,5 +1,9 @@
 # Walter
 
+```
+pip install -r requirements.txt
+```
+
 Walter has a hooking system, Create your modules in ``plugins\`` to do your stuff
 
 # hooking system
