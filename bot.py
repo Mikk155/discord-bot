@@ -3,7 +3,7 @@ from plugins.main import *
 # Initialise plugins
 def PluginsInit():
 
-    modulos_path = os.path.join( abs, "plugins" );
+    modulos_path = os.path.join( abspath, "plugins" );
 
     for file in os.listdir( modulos_path ):
 
@@ -76,6 +76,8 @@ async def on_member_remove( member : discord.Member ):
 @bot.event
 
 async def on_message( message: discord.Message ):
+
+    await HookManager.CallHook( 'on_message', message );
 
     if message.content.startswith( config[ "prefix" ] ):
 
@@ -170,9 +172,6 @@ async def on_message( message: discord.Message ):
                 except Exception as e:
                     print( 'Exception on plugin {} at function {} error: {}'.format( command.plugin, command.function, e ) );
 
-    else:
-
-        await HookManager.CallHook( 'on_message', message );
 
 
 
@@ -228,7 +227,7 @@ async def on_reaction_remove( reaction: discord.Reaction, user : discord.User ):
 
 token_dev = 'test_' if gpGlobals.developer else '';
 
-TOKEN = open( '{}\\{}token.txt'.format( abs, token_dev ), 'r' ).readline();
+TOKEN = open( '{}\\{}token.txt'.format( abspath, token_dev ), 'r' ).readline();
 
 if not TOKEN:
 

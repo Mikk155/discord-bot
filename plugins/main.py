@@ -9,6 +9,7 @@ import discord
 import requests
 import subprocess
 import importlib
+from git import Repo
 import importlib.util
 from discord.ext import commands, tasks
 from bs4 import BeautifulSoup
@@ -49,11 +50,11 @@ def jsonc( obj : list[str] | str ) -> dict | list:
             __js_split__ = f'{__js_split__}\n{__line__}';
     return json.loads( __js_split__ )
 
-global abs;
-abs = os.path.abspath( "" );
+global abspath;
+abspath = os.path.abspath( "" );
 
 global config
-config:dict = jsonc( '{}\\config.json'.format( abs ) );
+config:dict = jsonc( '{}\\config.json'.format( abspath ) );
 
 if not config:
     raise Exception( 'Can not open config.json!' )

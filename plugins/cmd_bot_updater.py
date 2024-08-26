@@ -14,11 +14,9 @@ command.allowed = [ config[ "mikkserver" ][ "MODERATOR_ROLE" ], config[ "testser
 
 RegisterCommand( plugin_name='cmd_bot_updater', command_name='update', command_class=command );
 
-from git import Repo
-
 async def on_command( message: discord.Message, arguments: dict ):
 
-    repo = Repo( abs );
+    repo = Repo( abspath );
 
     origin = repo.remotes.origin;
     origin.fetch();
