@@ -81,7 +81,6 @@ async def on_message( message: discord.Message ):
 
         message.content = message.content[ len( config[ "prefix" ] ) : ];
 
-
         if message.content == 'help':
 
             st = '# List of available commands:\n'
@@ -108,9 +107,9 @@ async def on_message( message: discord.Message ):
                     return;
 
                 if command.allowed:
-                    for role in message.author.roles:
-                        if role.id in command.allowed:
-                            return;
+                    if not any( role_id in [ role.id for role in message.author.roles ] for role_id in command.allowed ):
+                        await message.reply( f"{message.author.mention} This command is for specific roles only." );
+                        return;
 
                 module = importlib.import_module( f'plugins.{command.plugin}' );
                 hook = getattr( module, command.function );
