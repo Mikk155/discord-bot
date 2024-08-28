@@ -35,4 +35,4 @@ async def on_command( message: discord.Message, arguments: dict ):
     if '0' in arguments:
         counts = json.load( open( '{}\\plugins\\ping_counter.json'.format( abspath ), 'r' ) );
         times = 0 if not arguments[ '0' ] in counts else counts[ arguments[ '0' ] ]
-        await message.reply( "The user {} has been pinged {} times <:pingreee:911150900666572842>".format( arguments[ '0' ], times ))
+        await message.channel.send( "The user {} has been pinged {} times <:pingreee:911150900666572842>".format( arguments[ '0' ], times ))

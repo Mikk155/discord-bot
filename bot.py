@@ -33,7 +33,7 @@ PluginsInit();
 
 async def on_ready():
 
-    print('We have logged in as {0.user}'.format( bot ) )
+    await log_channel('We have logged in as {0.user}'.format( bot ) )
 
     await bot.wait_until_ready();
 
@@ -42,7 +42,6 @@ async def on_ready():
     await HookManager.CallHook( 'on_ready' );
 
     on_think.start()
-
 
 
 @bot.event
@@ -170,7 +169,7 @@ async def on_message( message: discord.Message ):
                 try:
                     await hook( message, args_dict )
                 except Exception as e:
-                    print( 'Exception on plugin {} at function {} error: {}'.format( command.plugin, command.function, e ) );
+                    await log_channel( 'Exception on plugin {} at function {} error: {}'.format( command.plugin, command.function, e ) );
 
 
 

@@ -33,7 +33,7 @@ async def on_command( message: discord.Message, arguments: dict ):
 
     if changes > 0:
 
-        await message.reply( 'The local repository is out of date. Pulling changes... {}'.format( changes ) );
+        await message.channel.send( 'The local repository is out of date. Pulling changes... {}'.format( changes ) );
 
         origin.pull();
 
@@ -41,11 +41,11 @@ async def on_command( message: discord.Message, arguments: dict ):
 
     elif not restart:
 
-        await message.reply( 'The upstream repository is up to date.' );
+        await message.channel.send( 'The upstream repository is up to date.' );
 
     if restart:
 
-        await message.reply( 'Restarting..' );
+        await message.channel.send( 'Restarting..' );
 
         bot_path = os.path.join( os.path.dirname( os.path.dirname( os.path.abspath( __file__ ) ) ), 'bot.py' );
 

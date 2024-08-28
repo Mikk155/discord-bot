@@ -15,4 +15,4 @@ async def on_command( message: discord.Message, arguments: dict ):
     if len(arguments) >= 1:
         choice = random.randint( 0, len( arguments ) - 1 );
         choice = arguments[ str( choice ) ];
-        await message.reply( "I pick ``{}``".format( choice ) );
+        await message.channel.send( "I pick ``{}``".format( choice ) );

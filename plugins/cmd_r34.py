@@ -67,7 +67,7 @@ async def on_command( message: discord.Message, arguments: dict ):
 
     if url:
 
-        media: discord.Message = await message.reply(url);
+        media: discord.Message = await message.channel.send(url);
 
         await media.add_reaction('❌');
 

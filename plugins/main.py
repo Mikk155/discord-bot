@@ -32,10 +32,33 @@ class gpGlobals:
     Set to *True* for getting loggers
     '''
 
+async def log_channel( message: str, arguments: list = [] ):
+    for __arg__ in arguments:
+        string = string.replace( "{}", str( __arg__ ), 1 )
+    return await bot.get_channel( 1211204941490688030 ).send( message );
+
 def get_time( seconds : int ) -> str:
     m = seconds // 60;
     sr = seconds % 60;
     return f"{m}m:{sr:02d}s";
+
+def emote_number( number : str | int = None ) -> str | dict:
+    numbers = {
+        '0': 'zero',
+        '1': 'one',
+        '2': 'two',
+        '3': 'three',
+        '4': 'four',
+        '5': 'five',
+        '6': 'six',
+        '7': 'seven',
+        '8': 'eight',
+        '9': 'nine'
+    };
+    if number is not None:
+        return ':' + numbers[ number if isinstance( number, str ) else str( number ) ] + ':';
+    else:
+        return numbers
 
 def jsonc( obj : list[str] | str ) -> dict | list:
     __js_split__ = '';
@@ -142,4 +165,4 @@ class HookManager:
                     if hook_code == ReturnCode.Handled:
                         break;
                 except Exception as e:
-                    print( 'Exception on plugin {} at function {} error: {}'.format( plugin, hook_name, e ) );
+                    await log_channel( 'Exception on plugin {} at function {} error: {}'.format( plugin, hook_name, e ) );
