@@ -1,3 +1,6 @@
+# Warning
+### Deprecated. moved to [discord-bot](https://github.com/Mikk155/discord-bot)
+
 # Walter
 
 ```
