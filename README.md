@@ -46,4 +46,4 @@ If you need any extra library to downoad create your own requirements at ``plugi
 
 ### Why
 
-> I made this almost for experimenting with python and the discord API but then i though on doing a discord bot for my server that i could easly implement/modify/remove features at any time because i have kind of memory problems, i always forget the logics i write after some months so here it is, this dumb plugin system for easly administration. Almost all plugins defined in this repo are actually running over a bot i have, you can invite it [here](https://discord.com/oauth2/authorize?client_id=1125019455035023440)
+> I made this almost for experimenting with python and the discord API but then i though on doing a discord bot for my server that i could easly implement/modify/remove features at any time because i have kind of memory problems, i always forget the logics i write after some months so here it is, this dumb plugin system for easly administration.
