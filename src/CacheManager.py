@@ -39,7 +39,7 @@ class CacheManager:
         
         from utils.jsonc import jsonc;
 
-        self.__cache__ = CCacheDictionary( jsonc( self.GetCacheDir ) );
+        self.__cache__ = CCacheDictionary( jsonc( self.GetCacheDir, exists_ok=True ) );
 
     def UpdateCache( self ):
 
