@@ -19,6 +19,9 @@ if not g_ConfigContext.developer:
 from src.main import g_Logger;
 from src.main import bot;
 
+from src.PluginManager import g_PluginManager;
+g_PluginManager.CallFunction( "OnInitialize" );
+
 try:
 
     from src.ConfigContext import g_ConfigContext;

@@ -3,6 +3,10 @@ class Plugin():
     def __init__( self ):
         print( "Hello world from PluginManager Plugin Base" );
 
+    def OnInitialize( self ) -> bool:
+        '''The python scripts has just been run. This is called before the bot is running'''
+        return True;
+
 class PluginManager():
 
     from utils.Logger import Logger
@@ -47,6 +51,22 @@ class PluginManager():
     def push_back( self, plugin: Plugin ):
 
         self.Plugins.append( plugin );
+
+    def CallFunction( self, fnName: str, *args ) -> None:
+
+        for plugin in self.Plugins:
+
+            fn = getattr( plugin, fnName );
+
+            if len(args) > 0:
+
+                if fn(*args) is False:
+
+                    break;
+
+            elif fn() is False:
+
+                break;
 
 global g_PluginManager;
 g_PluginManager: PluginManager = PluginManager();
