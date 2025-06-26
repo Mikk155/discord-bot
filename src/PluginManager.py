@@ -1,7 +1,16 @@
 class Plugin():
 
+    '''
+        Plugin base. every plugin must inherit from this class
+
+        Every method should return a boolean, True for keep executing plugins in the list. False if the plugin manager should stop calling subsequent plugins.
+    '''
+
+    guilds: list[int] = [];
+    '''Guilds list to only listen events (if empty == all)'''
+
     def __init__( self ):
-        print( "Hello world from PluginManager Plugin Base" );
+        ''''''
 
     def OnInitialize( self ) -> bool:
         '''The python scripts has just been run. This is called before the bot is running and just after every plugin has been loaded'''
@@ -27,6 +36,12 @@ class PluginManager():
         PluginsContext: list[dict] = jsonc( Path.enter( "config", "plugins.json" ) );
     
         for PluginName, PluginData in PluginsContext.items():
+
+            if PluginData.get( "disabled", False ) is True:
+                self.m_Logger.debug( "Plugin \"<c>{}<>\" disabled by config.", PluginName );
+                continue;
+
+            self.m_Logger.info( "Registering plugin \"<c>{}<>\"", PluginName );
 
             if not g_ConfigContext.developer and "requirements" in PluginData:
 
@@ -62,17 +77,20 @@ class PluginManager():
 
             plugin = getattr( module, module_name )();
 
-            self.push_back( plugin );
+            plugin = PluginData.get( "guilds", [] );
 
-        return 
+            self.push_back( plugin );
 
     def push_back( self, plugin: Plugin ):
 
         self.Plugins.append( plugin );
 
-    def CallFunction( self, fnName: str, *args ) -> None:
+    def CallFunction( self, fnName: str, *args, GuildID = None ) -> None:
 
         for plugin in self.Plugins:
+
+            if GuildID is not None and len( plugin.guilds ) > 0 and not GuildID in plugin.guilds:
+                continue; # This plugin doesn't want to work on this guild.
 
             fn = getattr( plugin, fnName );
 
