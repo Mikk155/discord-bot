@@ -41,8 +41,7 @@ class CacheManager:
 
         self.__cache__ = CCacheDictionary( jsonc( self.GetCacheDir ) );
 
-    @staticmethod
-    def UpdateCache():
+    def UpdateCache( self ):
 
         from json import dumps;
 
@@ -62,7 +61,6 @@ class CacheManager:
 
             self.m_Logger.warn( "Failed to store the cache: <r>{}<>", e );
 
-    @staticmethod
     def get( self, label: str = None ) -> CCacheDictionary:
 
         '''
