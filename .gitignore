@@ -1,9 +1,15 @@
+# Bot token
+config/token.txt
+
+
+
+# Cache
+__pycache__
+**/__pycache__/**
+
 cache.json
 config.json
 dev.bat
-
-__pycache__
-**/__pycache__/**
 
 # Work in progress
 wip/*

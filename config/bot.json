@@ -1,0 +1,10 @@
+{
+    "token": "token.txt",
+
+    "developer":
+    {
+        "active": true,
+        "token": "token.txt",
+        "guild": 1145236064596918304
+    }
+}
