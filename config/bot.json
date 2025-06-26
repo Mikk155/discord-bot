@@ -4,7 +4,7 @@
     "developer":
     {
         "active": true,
-        "token": "token.txt",
+        "token": "token_dev.txt",
         "guild": 1145236064596918304
     }
 }

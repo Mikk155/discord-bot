@@ -2,6 +2,7 @@ from utils.Logger import Logger;
 global g_Logger;
 g_Logger: Logger = Logger( "Global" );
 
-from src.Bot import Bot
-global bot;
-bot: Bot = Bot();
+from src.CacheManager import g_Cache;
+
+from src.Bot import bot
+

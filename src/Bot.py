@@ -10,9 +10,9 @@ class Bot( discord.Client ):
 
     def __init__( self ):
 
-        super().__init__( intents = discord.Intents.all() )
+        super().__init__( intents = discord.Intents.all() );
 
-        self.tree = app_commands.CommandTree( self )
+        self.tree = app_commands.CommandTree( self );
 
     async def setup_hook( self ):
 
@@ -33,3 +33,6 @@ class Bot( discord.Client ):
                 return;
 
         await self.tree.sync();
+
+global bot;
+bot: Bot = Bot();
