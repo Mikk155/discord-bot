@@ -4,7 +4,7 @@ class Plugin():
         print( "Hello world from PluginManager Plugin Base" );
 
     def OnInitialize( self ) -> bool:
-        '''The python scripts has just been run. This is called before the bot is running'''
+        '''The python scripts has just been run. This is called before the bot is running and just after every plugin has been loaded'''
         return True;
 
 class PluginManager():
@@ -16,16 +16,34 @@ class PluginManager():
 
     def __init__( self ):
 
+        from os.path import exists;
         from utils.Path import Path;
         from utils.jsonc import jsonc;
         from pathlib import Path as PathLib;
+        from src.ConfigContext import g_ConfigContext;
+        from src.InstallRequirements import InstallRequirements;
         from importlib.util import spec_from_file_location, module_from_spec;
 
         PluginsContext: list[dict] = jsonc( Path.enter( "config", "plugins.json" ) );
     
         for PluginName, PluginData in PluginsContext.items():
 
-            print(PluginData)
+            if not g_ConfigContext.developer and "requirements" in PluginData:
+
+                requirements = PluginData[ "requirements" ];
+
+                if requirements and requirements != '':
+
+                    requirements_path = Path.enter( "plugins", f'{requirements}.txt' );
+
+                    if exists( requirements_path ):
+
+                        InstallRequirements( requirements_path );
+
+                    else:
+
+                        self.m_Logger.warn( "Invalid requirement file \"<c>{}<>\" for plugin <g>{}<>", PluginName );
+
             script_path = PathLib( Path.enter( "plugins", f'{PluginName}.py' ) );
 
             module_name = script_path.stem;
