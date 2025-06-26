@@ -21,16 +21,45 @@ class ConfigContext( dict ):
 
         super().__init__( jsonc( Path.enter( "config", "bot.json" ) ) );
 
+        self.DeveloperContext();
+        self.token = self.pop( "token", None );
+        self.LoggerContext();
+
+    def DeveloperContext( self ) -> None:
+
         DeveloperContext: dict = self.pop( "developer", {} );
         self.developer = DeveloperContext.pop( "active", False );
         self.developer_token = DeveloperContext.pop( "token", None );
         self.developer_guild = DeveloperContext.pop( "guild", None );
 
         if self.developer_guild is None or self.developer_token is None:
-
             self.developer = False;
 
-        self.token = self.pop( "token", None );
+    def LoggerContext( self ) -> None:
+
+        from utils.Logger import LoggerSetLevel, LoggerClearLevel, LoggerLevel;
+
+        LoggerContext: dict[ str, bool ] = self.pop( "Logger", {} );
+
+        if LoggerContext.pop( "Warning", False ):
+            LoggerSetLevel( LoggerLevel.Warning );
+        else:
+            LoggerClearLevel( LoggerLevel.Warning );
+
+        if LoggerContext.pop( "Information", False ):
+            LoggerSetLevel( LoggerLevel.Information );
+        else:
+            LoggerClearLevel( LoggerLevel.Information );
+
+        if LoggerContext.pop( "Debug", False ):
+            LoggerSetLevel( LoggerLevel.Debug );
+        else:
+            LoggerClearLevel( LoggerLevel.Debug );
+
+        if LoggerContext.pop( "Trace", False ):
+            LoggerSetLevel( LoggerLevel.Trace );
+        else:
+            LoggerClearLevel( LoggerLevel.Trace );
 
 global g_ConfigContext;
 g_ConfigContext: ConfigContext = ConfigContext();
