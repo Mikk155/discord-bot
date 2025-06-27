@@ -5,6 +5,18 @@ async def on_message( message: discord.Message ):
 
     await g_PluginManager.CallFunction( "OnMessage", message, GuildID=message.guild.id );
 
+    if g_ConfigContext.prefix is not None and message.content.startswith( g_ConfigContext.prefix ):
+
+        arguments_string = message.content[ len(g_ConfigContext.prefix) : ];
+
+        from shlex import split as SplitArgs;
+
+        arguments = SplitArgs( arguments_string );
+
+        command = arguments.pop(0);
+
+        await g_PluginManager.CallFunction( "OnCommand", message, command, arguments, GuildID=message.guild.id );
+
     if message.mentions and len( message.mentions ) > 0:
 
         await g_PluginManager.CallFunction( "OnMention", message, message.mentions, GuildID=message.guild.id );

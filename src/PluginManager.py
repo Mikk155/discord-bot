@@ -81,6 +81,11 @@ class Plugin():
         '''Called when a message's reaction has changed'''
         return True;
 
+
+    async def OnCommand( self, message: Message, command: str, *args ) -> bool:
+        '''Called when a message contains a command prefix'''
+        return True;
+
 class PluginManager():
 
     from utils.Logger import Logger

@@ -14,6 +14,8 @@ class ConfigContext( dict ):
     token: str;
     '''Bot token to use'''
 
+    prefix: str = None;
+
     def __init__( self ) -> None:
 
         from utils.Path import Path;
@@ -23,6 +25,7 @@ class ConfigContext( dict ):
 
         self.DeveloperContext();
         self.token = self.pop( "token", None );
+        self.prefix = self.pop( "prefix", None );
         self.LoggerContext();
 
     def DeveloperContext( self ) -> None:
