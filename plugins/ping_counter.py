@@ -19,9 +19,9 @@ class ping_counter( Plugin ):
 
                 mention = fmt.DiscordUserMention( user );
 
-                counts = cache.get( mention, [ 0, user.global_name ] );
+                counts = cache.get( mention, [ 0, user.name ] );
 
-                counts[1] = user.global_name;
+                counts[1] = user.name;
 
                 counts[0] = counts[0] + 1;
 
@@ -34,10 +34,9 @@ class ping_counter( Plugin ):
         if command != 'pings':
             return True;
 
-        target: discord.Member = message.author; # -TODO Utility to get members by name like Nekotina
+        target: discord.Member = message.author;
 
         if len(args) > 0:
-            print(args)
             target = await bot.FindMemberByName( args[0], message.guild );
 
         if target is None:
