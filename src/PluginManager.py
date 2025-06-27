@@ -154,17 +154,13 @@ class PluginManager():
 
             plugin.filename = PluginName;
 
-            self.push_back( plugin );
-
-    def push_back( self, plugin: Plugin ):
-
-        self.Plugins.append( plugin );
+            self.Plugins.append( plugin );
 
     async def CallFunction( self, fnName: str, *args, GuildID = None ) -> None:
 
         for p in self.Plugins:
 
-            if GuildID is not None and len( p.guilds ) > 0 and not GuildID in p.guilds:
+            if len( p.guilds ) > 0 and GuildID is not None and not GuildID in p.guilds:
                 continue; # This plugin doesn't want to work on this guild.
 
             fn = getattr( p, fnName );
