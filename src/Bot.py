@@ -34,5 +34,22 @@ class Bot( discord.Client ):
 
         await self.tree.sync();
 
+    async def FindMemberByName( self, name: str, guild: discord.Guild | int ) -> None | discord.Member:
+
+        if isinstance( guild, int ):
+
+            guild = discord.Object( id = guild );
+
+        for member in guild.members:
+
+            if name in ( member.name, member.display_name, member.global_name ):
+                return member;
+
+            # Partial? This maybe is a bad idea
+            if name in member.name or name in member.display_name or name in member.global_name:
+                return member;
+
+        return None;
+
 global bot;
 bot: Bot = Bot();

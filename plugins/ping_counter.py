@@ -29,26 +29,36 @@ class ping_counter( Plugin ):
 
         return True;
 
-    async def OnCommand(self, message, command, *args):
+    async def OnCommand(self, message, command, args):
 
         if command != 'pings':
             return True;
 
         target: discord.Member = message.author; # -TODO Utility to get members by name like Nekotina
 
+        if len(args) > 0:
+            print(args)
+            target = await bot.FindMemberByName( args[0], message.guild );
+
+        if target is None:
+
+            await message.reply( "Failed to find user {}".format( args[0] ), mention_author=False, silent=True, allowed_mentions=False );
+
+            return False;
+
         await self.GetPingCount( target, message );
 
         return False;
 
-    async def GetPingCount( self, target, channel: discord.TextChannel | discord.Message ):
+    async def GetPingCount( self, target: discord.Member, channel: discord.TextChannel | discord.Message ):
 
         cache = g_Cache.get();
 
         mention = fmt.DiscordUserMention( target );
 
-        counts = cache.get( mention, [ 0, target.global_name ] );
+        counts = cache.get( mention, [ 0, target.name ] );
 
-        MessagePrinter = 'The user has not been pinged yet. This will be his first ping {}'.format( mention );
+        MessagePrinter = 'The user {} has not been pinged yet. This will be his first ping {}'.format( target.name, mention );
 
         if counts[0] > 0:
 
