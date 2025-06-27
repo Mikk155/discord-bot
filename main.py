@@ -22,10 +22,12 @@ from src.main import bot;
 # -TODO Lazy shit, maybe importlib events/*?
 from src.events.on_member_join import on_member_join;
 from src.events.on_member_remove import on_member_remove;
-from src.events.on_ready import on_ready;
-from src.events.on_message import on_message;
 from src.events.on_message_delete import on_message_delete;
 from src.events.on_message_edit import on_message_edit;
+from src.events.on_message import on_message;
+from src.events.on_reaction_add import on_reaction_add;
+from src.events.on_reaction_remove import on_reaction_remove;
+from src.events.on_ready import on_ready;
 
 from asyncio import run as AsyncRun;
 from src.PluginManager import g_PluginManager;

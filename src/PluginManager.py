@@ -7,10 +7,14 @@ class Plugin():
     '''
 
     from datetime import datetime; # Decorators
-    from discord import Member, GroupChannel, TextChannel, DMChannel, User, Message;
+    from discord import Member, GroupChannel, TextChannel, DMChannel, User, Message, Reaction;
 
     guilds: list[int] = [];
     '''Guilds list to only listen events (if empty == all)'''
+
+    class ReactionState:
+        Added = 1;
+        Removed = 0;
 
     def __init__( self ):
         ''''''
@@ -71,6 +75,10 @@ class Plugin():
 
     async def OnMessageEdited( self, before: Message, after: Message ) -> bool:
         '''Called when a message is edited'''
+        return True;
+
+    async def OnReaction( self, reaction: Reaction, state: ReactionState, user: User | Member ) -> bool:
+        '''Called when a message's reaction has changed'''
         return True;
 
 class PluginManager():
