@@ -15,6 +15,12 @@ class Plugin():
     def __init__( self ):
         ''''''
 
+    def GetAuthorName( self ) -> str:
+        return "Mikk155";
+
+    def GetAuthorSite( self ) -> str:
+        return "https://github.com/Mikk155/discord-bot";
+
     async def OnInitialize( self ) -> bool:
         '''The python scripts has just been run. This is called before the bot is running and just after every plugin has been loaded'''
         return True;
