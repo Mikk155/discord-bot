@@ -73,7 +73,8 @@ class CacheManager:
 
             frame = stack()[1]; # Get caller plugin name
 
-            label = frame.filename;
+            from os.path import basename;
+            label = basename( frame.filename );
 
         return self.__cache__[ label ];
 
