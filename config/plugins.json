@@ -9,5 +9,10 @@
 
         // List of guilds ID that this plugin should ONLY receive calls from. leave empty for any guild.
         "guilds": []
+    },
+    "woman_moment":
+    {
+        "disabled": false,
+        "guilds": [ 744769532513615922 ]
     }
 }
