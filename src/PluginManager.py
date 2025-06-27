@@ -19,6 +19,9 @@ class Plugin():
     def __init__( self ):
         ''''''
 
+    def GetDescription( self ) -> str:
+        return "";
+
     def GetAuthorName( self ) -> str:
         return "Mikk155";
 
