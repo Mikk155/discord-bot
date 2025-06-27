@@ -1,4 +1,6 @@
-import discord
+from typing import *;
+import discord;
+from discord import app_commands;
 
 from utils.Logger import Logger;
 global g_Logger;
