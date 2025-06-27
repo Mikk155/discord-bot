@@ -64,7 +64,6 @@ class Bot( discord.Client ):
         allowed_mentions: Optional[discord.AllowedMentions] = None,
         suppress_embeds: bool = False,
         silent: bool = False,
-        reference: Union[discord.Message, discord.MessageReference, discord.PartialMessage] = ...,
         mention_author: bool = ...,
         poll: discord.Poll = ...,
         view: Optional[discord.ui.View] = None,
@@ -92,8 +91,6 @@ class Bot( discord.Client ):
 
             `nonce`: Used for optimistic message sending (client-side identifier).
 
-            `reference`: The message to reply to; only used when `target` is not already a Message.
-
             `silent`: Whether the message should not trigger notifications for mentioned users.
 
             `mention_author`: Whether to mention the author of the message being replied to.
@@ -109,13 +106,13 @@ class Bot( discord.Client ):
 
         if isinstance( target, discord.Message ):
             return await target.reply( content, tts=tts, embed=embed, embeds=embeds, file=file, stickers=stickers,
-                delete_after=delete_after, nonce=nonce, reference=reference, silent=silent, mention_author=mention_author,
+                delete_after=delete_after, nonce=nonce, silent=silent, mention_author=mention_author,
                 allowed_mentions=allowed_mentions, suppress_embeds=suppress_embeds, view=view, poll=poll
             );
 
         else:
             return await target.send( content, tts=tts, embed=embed, embeds=embeds, file=file, stickers=stickers,
-                delete_after=delete_after, nonce=nonce, reference=reference, silent=silent, mention_author=mention_author,
+                delete_after=delete_after, nonce=nonce, silent=silent, mention_author=mention_author,
                 allowed_mentions=allowed_mentions, suppress_embeds=suppress_embeds, view=view, poll=poll
             );
 
