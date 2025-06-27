@@ -16,6 +16,9 @@ class ConfigContext( dict ):
 
     prefix: str = None;
 
+    language: str = "english";
+    '''Default language to use for sentences'''
+
     def __init__( self ) -> None:
 
         from utils.Path import Path;
@@ -26,6 +29,7 @@ class ConfigContext( dict ):
         self.DeveloperContext();
         self.token = self.pop( "token", None );
         self.prefix = self.pop( "prefix", None );
+        self.language = self.pop( "language", "english" );
         self.LoggerContext();
 
     def DeveloperContext( self ) -> None:

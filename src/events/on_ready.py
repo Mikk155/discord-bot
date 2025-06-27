@@ -5,14 +5,13 @@ async def on_ready():
 
     await bot.wait_until_ready();
 
-#            bot.user.name,
-#            bot.user.discriminator
-
     if not bot.__on_start_called__:
 
         await g_PluginManager.CallFunction( "OnBotStart" );
 
         bot.__on_start_called__ = True;
+
+        print( g_Sentences.get( "ready", bot.user.name, bot.user.discriminator ) );
 
     else:
 
