@@ -1,0 +1,74 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties":
+    {
+        "$schema":
+        {
+            "type": "string"
+        },
+        "token":
+        {
+            "type": "string",
+            "description": "Your discord BOT application token"
+        },
+        "prefix":
+        {
+            "type": "string",
+            "description": "bot prefix to use plugins commands via messages"
+        },
+        "developer":
+        {
+            "type": "object",
+            "properties":
+            {
+                "active":
+                {
+                    "type": "boolean",
+                    "description": "Whatever to run on developer or not"
+                },
+                "token":
+                {
+                    "type": "string",
+                    "description": "Your discord BOT application token for when this context is active"
+                },
+                "guild":
+                {
+                    "type": "integer",
+                    "description": "The ID of your main server for sync app_commands fast"
+                }
+            },
+            "additionalProperties": false,
+            "required":
+            [
+                "guild",
+                "token"
+            ],
+            "description": "Developer context variables"
+        },
+        "owner":
+        {
+            "type": "integer",
+            "description": "The owner ID. This user will have total authority over the bot commands"
+        },
+        "Logger":
+        {
+            "type": "object",
+            "properties":
+            {
+                "Warning": { "type": "boolean" },
+                "Information": { "type": "boolean" },
+                "Debug": { "type": "boolean" },
+                "Trace": { "type": "boolean" }
+            },
+            "additionalProperties": false,
+            "description": "Logging system, Loggers to display, note \"critical\" and \"error\" will be always shown"
+        },
+        "additionalProperties": false
+    },
+    "additionalProperties": false,
+    "required":
+    [
+        "token"
+    ]
+}

@@ -1,4 +1,6 @@
 {
+    "$schema": "../schemas/bot.json",
+
     "token": "token.txt",
 
     "prefix": "walter ",

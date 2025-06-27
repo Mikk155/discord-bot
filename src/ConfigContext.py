@@ -30,6 +30,8 @@ class ConfigContext( dict ):
 
     def DeveloperContext( self ) -> None:
 
+        self.pop( "$schema", "" );
+
         DeveloperContext: dict = self.pop( "developer", {} );
         self.developer = DeveloperContext.pop( "active", False );
         self.developer_token = DeveloperContext.pop( "token", None );
