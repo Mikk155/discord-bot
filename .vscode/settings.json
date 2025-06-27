@@ -1,11 +1,15 @@
 {
     "files.exclude":
     {
+        "config/token_dev.txt": true,
+        "config/token.txt": true,
         "**/__pycache__/**": true
     },
 
     "search.exclude":
     {
+        "config/token_dev.txt": true,
+        "config/token.txt": true,
         "**/__pycache__/**": true
     },
 

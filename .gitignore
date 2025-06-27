@@ -2,15 +2,11 @@
 config/token.txt
 config/token_dev.txt
 
-
-
 # Cache
 __pycache__
 **/__pycache__/**
-
-cache.json
-config.json
-dev.bat
+config/cache.json
 
 # Work in progress
+dev.bat
 wip/*
