@@ -21,8 +21,9 @@ from src.main import bot;
 
 from src.events.on_ready import on_ready;
 
+from asyncio import run as AsyncRun;
 from src.PluginManager import g_PluginManager;
-g_PluginManager.CallFunction( "OnInitialize" );
+AsyncRun( g_PluginManager.CallFunction( "OnInitialize" ) );
 
 try:
 

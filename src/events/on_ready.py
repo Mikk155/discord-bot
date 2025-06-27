@@ -10,12 +10,12 @@ async def on_ready():
 
     if not bot.__on_start_called__:
 
-        g_PluginManager.CallFunction( "OnBotStart" );
+        await g_PluginManager.CallFunction( "OnBotStart" );
 
         bot.__on_start_called__ = True;
 
     else:
 
-        g_PluginManager.CallFunction( "OnReconnect" );
+        await g_PluginManager.CallFunction( "OnReconnect" );
 
     print( f"Connected as {bot.user.name}#{bot.user.discriminator}")

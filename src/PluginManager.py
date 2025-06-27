@@ -12,15 +12,15 @@ class Plugin():
     def __init__( self ):
         ''''''
 
-    def OnInitialize( self ) -> bool:
+    async def OnInitialize( self ) -> bool:
         '''The python scripts has just been run. This is called before the bot is running and just after every plugin has been loaded'''
         return True;
 
-    def OnBotStart( self ) -> bool:
+    async def OnBotStart( self ) -> bool:
         '''Called once. when the bot first starts.'''
         return True;
 
-    def OnReconnect( self ) -> bool:
+    async def OnReconnect( self ) -> bool:
         '''Called when the bot is back online after a connection lost'''
         return True;
 
@@ -93,7 +93,7 @@ class PluginManager():
 
         self.Plugins.append( plugin );
 
-    def CallFunction( self, fnName: str, *args, GuildID = None ) -> None:
+    async def CallFunction( self, fnName: str, *args, GuildID = None ) -> None:
 
         for p in self.Plugins:
 
@@ -104,11 +104,11 @@ class PluginManager():
 
             if len(args) > 0:
 
-                if fn(*args) is False:
+                if await fn(*args) is False:
 
                     break;
 
-            elif fn() is False:
+            elif await fn() is False:
 
                 break;
 
