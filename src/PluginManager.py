@@ -110,6 +110,8 @@ class PluginManager():
 
         PluginsContext: list[dict] = jsonc( Path.enter( "config", "plugins.json" ) );
     
+        PluginsContext.pop( "$schema", "" );
+
         for PluginName, PluginData in PluginsContext.items():
 
             if PluginData.get( "disabled", False ) is True:
