@@ -69,6 +69,10 @@ class Plugin():
         '''Called when a message is deleted'''
         return True;
 
+    async def OnMessageEdited( self, before: Message, after: Message ) -> bool:
+        '''Called when a message is edited'''
+        return True;
+
 class PluginManager():
 
     from utils.Logger import Logger
