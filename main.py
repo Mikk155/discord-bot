@@ -19,6 +19,8 @@ if not g_ConfigContext.developer:
 from src.main import g_Logger;
 from src.main import bot;
 
+from src.events.on_member_join import on_member_join;
+from src.events.on_member_remove import on_member_remove;
 from src.events.on_ready import on_ready;
 
 from asyncio import run as AsyncRun;

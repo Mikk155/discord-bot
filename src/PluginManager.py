@@ -29,6 +29,15 @@ class Plugin():
         '''Called every second. time is the current time when the plugin manager is just called. use this as a prediction.'''
         return True;
 
+    from discord import Member;
+    async def OnMemberLeave( self, user: Member ) -> bool:
+        '''when a user leaves a guild'''
+        return True;
+
+    async def OnMemberJoin( self, user: Member ) -> bool:
+        '''when a user joins a guild'''
+        return True;
+
 class PluginManager():
 
     from utils.Logger import Logger

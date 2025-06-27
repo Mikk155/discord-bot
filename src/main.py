@@ -1,3 +1,5 @@
+import discord
+
 from utils.Logger import Logger;
 global g_Logger;
 g_Logger: Logger = Logger( "Global" );
