@@ -61,25 +61,9 @@ class Plugin():
         '''Called when a user sends a message replying to a message'''
         return True;
 
-    async def OnReply( self, message: Message, urls: tuple[str] ) -> bool:
+    async def OnLink( self, message: Message, urls: tuple[str] ) -> bool:
         '''Called when a user sends a message containing urls'''
         return True;
-
-    if 'https://' in message.content or 'www.' in message.content:
-
-        contents = message.content.split();
-
-        urls=[]
-
-        for c in contents:
-
-            if c.startswith( 'https://' ) or c.startswith( 'www.' ):
-
-                urls.append( c );
-
-        if len( urls ) > 0:
-
-            await g_PluginManager.CallFunction( "OnLink", message, urls, GuildID=message.guild.id );
 
 class PluginManager():
 
