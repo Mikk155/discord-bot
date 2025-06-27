@@ -3,6 +3,18 @@ from src.PluginManager import Plugin;
 
 class ping_counter( Plugin ):
 
+    def __init__(self):
+
+        command = app_commands.Command(
+            name="pings",
+            description="Get the pings of a user",
+            callback=self.command_pings,
+        );
+
+        command.guild_only = True
+
+        bot.tree.add_command( command )
+
     def GetName(self):
         return "Ping counter";
 
@@ -63,10 +75,15 @@ class ping_counter( Plugin ):
 
             MessagePrinter = "The user {} has been pinged {} times".format( counts[1], counts[0] );
 
-        if isinstance( channel, discord.Message ):
+        if isinstance( target, discord.Interaction ):
 
-            await channel.reply( MessagePrinter, mention_author=False, silent=True, allowed_mentions=False );
+            await bot.SendResponse( channel, MessagePrinter, );
 
         else:
 
-            await channel.send( MessagePrinter, mention_author=False, silent=True, allowed_mentions=False );
+            await bot.SendMessage( channel, MessagePrinter, mention_author=False, silent=True, allowed_mentions=False );
+
+    @app_commands.describe( member='Member' )
+    async def command_pings( self, interaction: discord.Interaction, member: discord.Member ):
+
+        await self.GetPingCount( member, interaction );
