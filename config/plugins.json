@@ -1,5 +1,5 @@
 {
-    "test":
+    "ping_counter":
     {
         // Name of the requirements file for this plugin. the path is within plugins/
         "requirements": "",
