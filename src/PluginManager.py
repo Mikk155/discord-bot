@@ -16,12 +16,20 @@ class Plugin():
         '''The python scripts has just been run. This is called before the bot is running and just after every plugin has been loaded'''
         return True;
 
+    def OnBotStart( self ) -> bool:
+        '''Called once. when the bot first starts.'''
+        return True;
+
+    def OnReconnect( self ) -> bool:
+        '''Called when the bot is back online after a connection lost'''
+        return True;
+
 class PluginManager():
 
     from utils.Logger import Logger
     m_Logger = Logger( "Plugin Manager" );
 
-    Plugins: list = [];
+    Plugins: list[Plugin] = [];
 
     def __init__( self ):
 
@@ -77,7 +85,7 @@ class PluginManager():
 
             plugin = getattr( module, module_name )();
 
-            plugin = PluginData.get( "guilds", [] );
+            plugin.guilds = PluginData.get( "guilds", [] );
 
             self.push_back( plugin );
 
@@ -87,12 +95,12 @@ class PluginManager():
 
     def CallFunction( self, fnName: str, *args, GuildID = None ) -> None:
 
-        for plugin in self.Plugins:
+        for p in self.Plugins:
 
-            if GuildID is not None and len( plugin.guilds ) > 0 and not GuildID in plugin.guilds:
+            if GuildID is not None and len( p.guilds ) > 0 and not GuildID in p.guilds:
                 continue; # This plugin doesn't want to work on this guild.
 
-            fn = getattr( plugin, fnName );
+            fn = getattr( p, fnName );
 
             if len(args) > 0:
 

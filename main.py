@@ -19,6 +19,8 @@ if not g_ConfigContext.developer:
 from src.main import g_Logger;
 from src.main import bot;
 
+from src.events.on_ready import on_ready;
+
 from src.PluginManager import g_PluginManager;
 g_PluginManager.CallFunction( "OnInitialize" );
 
