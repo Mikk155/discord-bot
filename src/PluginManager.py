@@ -7,7 +7,7 @@ class Plugin():
     '''
 
     from datetime import datetime; # Decorators
-    from discord import Member, GroupChannel, TextChannel, DMChannel, User;
+    from discord import Member, GroupChannel, TextChannel, DMChannel, User, Message;
 
     guilds: list[int] = [];
     '''Guilds list to only listen events (if empty == all)'''
@@ -48,6 +48,38 @@ class Plugin():
     async def OnTyping( self, channel: TextChannel | GroupChannel | DMChannel, user: Member | User, when: datetime ) -> bool:
         '''Called when a user starts typing'''
         return True;
+
+    async def OnMessage( self, message: Message ) -> bool:
+        '''Called when a user sends a message'''
+        return True;
+
+    async def OnMention( self, message: Message, mentions: tuple[ User | Member ] ) -> bool:
+        '''Called when a user sends a message containing mentions'''
+        return True;
+
+    async def OnReply( self, message: Message, replied: Message ) -> bool:
+        '''Called when a user sends a message replying to a message'''
+        return True;
+
+    async def OnReply( self, message: Message, urls: tuple[str] ) -> bool:
+        '''Called when a user sends a message containing urls'''
+        return True;
+
+    if 'https://' in message.content or 'www.' in message.content:
+
+        contents = message.content.split();
+
+        urls=[]
+
+        for c in contents:
+
+            if c.startswith( 'https://' ) or c.startswith( 'www.' ):
+
+                urls.append( c );
+
+        if len( urls ) > 0:
+
+            await g_PluginManager.CallFunction( "OnLink", message, urls, GuildID=message.guild.id );
 
 class PluginManager():
 

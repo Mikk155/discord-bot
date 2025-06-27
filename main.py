@@ -19,9 +19,11 @@ if not g_ConfigContext.developer:
 from src.main import g_Logger;
 from src.main import bot;
 
+# -TODO Lazy shit, maybe importlib events/*?
 from src.events.on_member_join import on_member_join;
 from src.events.on_member_remove import on_member_remove;
 from src.events.on_ready import on_ready;
+from src.events.on_message import on_message;
 
 from asyncio import run as AsyncRun;
 from src.PluginManager import g_PluginManager;
