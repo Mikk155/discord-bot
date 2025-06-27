@@ -6,6 +6,9 @@ class Plugin():
         Every method should return a boolean, True for keep executing plugins in the list. False if the plugin manager should stop calling subsequent plugins.
     '''
 
+    from datetime import datetime; # Decorators
+    from discord import Member, GroupChannel, TextChannel, DMChannel, User;
+
     guilds: list[int] = [];
     '''Guilds list to only listen events (if empty == all)'''
 
@@ -24,18 +27,20 @@ class Plugin():
         '''Called when the bot is back online after a connection lost'''
         return True;
 
-    from datetime import datetime;
     async def OnThink( self, time: datetime ) -> bool:
         '''Called every second. time is the current time when the plugin manager is just called. use this as a prediction.'''
         return True;
 
-    from discord import Member;
     async def OnMemberLeave( self, user: Member ) -> bool:
-        '''when a user leaves a guild'''
+        '''Called when a user leaves a guild'''
         return True;
 
     async def OnMemberJoin( self, user: Member ) -> bool:
-        '''when a user joins a guild'''
+        '''Called when a user joins a guild'''
+        return True;
+
+    async def OnTyping( self, channel: TextChannel | GroupChannel | DMChannel, user: Member | User, when: datetime ) -> bool:
+        '''Called when a user starts typing'''
         return True;
 
 class PluginManager():
