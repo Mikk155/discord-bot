@@ -22,6 +22,9 @@ class Plugin():
     def GetAuthorName( self ) -> str:
         return "Mikk155";
 
+    def GetName( self ) -> str:
+        return self.filename;
+
     def GetAuthorSite( self ) -> str:
         return "https://github.com/Mikk155/discord-bot";
 
@@ -148,6 +151,8 @@ class PluginManager():
             plugin = getattr( module, module_name )();
 
             plugin.guilds = PluginData.get( "guilds", [] );
+
+            plugin.filename = PluginName;
 
             self.push_back( plugin );
 
