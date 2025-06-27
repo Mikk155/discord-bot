@@ -18,4 +18,8 @@ async def on_ready():
 
         await g_PluginManager.CallFunction( "OnReconnect" );
 
-    print( f"Connected as {bot.user.name}#{bot.user.discriminator}")
+    from src.events.on_think import on_think;
+
+    if not on_think.is_running():
+
+        on_think.start()

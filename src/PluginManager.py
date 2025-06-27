@@ -24,6 +24,11 @@ class Plugin():
         '''Called when the bot is back online after a connection lost'''
         return True;
 
+    from datetime import datetime;
+    async def OnThink( self, time: datetime ) -> bool:
+        '''Called every second. time is the current time when the plugin manager is just called. use this as a prediction.'''
+        return True;
+
 class PluginManager():
 
     from utils.Logger import Logger
