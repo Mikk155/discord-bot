@@ -24,6 +24,7 @@ from src.events.on_member_join import on_member_join;
 from src.events.on_member_remove import on_member_remove;
 from src.events.on_ready import on_ready;
 from src.events.on_message import on_message;
+from src.events.on_message_delete import on_message_delete;
 
 from asyncio import run as AsyncRun;
 from src.PluginManager import g_PluginManager;

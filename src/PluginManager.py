@@ -65,6 +65,10 @@ class Plugin():
         '''Called when a user sends a message containing urls'''
         return True;
 
+    async def OnMessageDelete( self, message: Message, deleter: User | Member ) -> bool:
+        '''Called when a message is deleted'''
+        return True;
+
 class PluginManager():
 
     from utils.Logger import Logger
