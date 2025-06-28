@@ -1,4 +1,35 @@
 {
+    "$defs":
+    {
+        "Loggers":
+        {
+            "type": "object",
+            "properties":
+            {
+                "Warning":
+                {
+                    "type": "boolean",
+                    "description": "Warning messages, usually used when a not relevant problem happens"
+                },
+                "Information":
+                {
+                    "type": "boolean",
+                    "description": "Information messages."
+                },
+                "Debug":
+                {
+                    "type": "boolean",
+                    "description": "Debug messages. Spamming messages of the program behaviour"
+                },
+                "Trace":
+                {
+                    "type": "boolean",
+                    "description": "Trace messages, Exactly like debug but these are more annoying :)"
+                }
+            },
+            "additionalProperties": false
+        }
+    },
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
     "properties":
@@ -51,16 +82,55 @@
             "type": "integer",
             "description": "The owner ID. This user will have total authority over the bot commands"
         },
-        "Logger":
+        "Loggin":
         {
             "type": "object",
             "properties":
             {
-                "Warning": { "type": "boolean" },
-                "Information": { "type": "boolean" },
-                "Debug": { "type": "boolean" },
-                "Trace": { "type": "boolean" }
+                "terminal":
+                {
+                    "$ref": "#/$defs/Loggers",
+                    "description": "Logger levels to enable for the terminal internal messages"
+                },
+                "bot":
+                {
+                    "$ref": "#/$defs/Loggers",
+                    "description": "These loggers from the terminal will be reflected to the developer's guild test channel"
+                },
+                "channel":
+                {
+                    "type": "integer",
+                    "description": "Channel ID to reflect the \"bot\" log messages"
+                },
+                "max_mps":
+                {
+                    "type": "integer",
+                    "description": "Max messages per second"
+                }
             },
+            "required":
+            [
+                "terminal"
+            ],
+              "allOf":
+              [
+                {
+                    "if":
+                    {
+                        "required":
+                        [
+                            "bot"
+                        ]
+                    },
+                    "then":
+                    {
+                        "required":
+                        [
+                            "channel"
+                        ]
+                    }
+                }
+            ],
             "additionalProperties": false,
             "description": "Logging system, Loggers to display, note \"critical\" and \"error\" will be always shown"
         },

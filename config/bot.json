@@ -12,12 +12,26 @@
         "guild": 1145236064596918304
     },
 
-    // Active logger levels for the terminal console to show
-    "Logger":
+    "Loggin":
     {
-        "Warning": true,
-        "Information": true,
-        "Debug": true,
-        "Trace": true
+        "terminal":
+        {
+            "Warning": true,
+            "Information": true,
+            "Debug": true,
+            "Trace": true
+        },
+
+        "bot":
+        {
+            "Warning": true,
+            "Information": true,
+            "Debug": true,
+            "Trace": true
+        },
+
+        "channel": 1343235842822504481,
+
+        "max_mps" 5
     }
 }

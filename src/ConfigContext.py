@@ -43,6 +43,8 @@ class ConfigContext( dict ):
     language: str = "english";
     '''Default language to use for sentences'''
 
+    Loggin: tuple[ bool, int, int, int ];
+
     def __init__( self ) -> None:
 
         from utils.Path import Path;
@@ -54,7 +56,41 @@ class ConfigContext( dict ):
         self.token = self.pop( "token", None );
         self.prefix = self.pop( "prefix", None );
         self.language = self.pop( "language", "english" );
-        self.LoggerContext();
+
+        LogginContext: dict[ str, bool ] = self.pop( "Loggin", {} );
+
+        self.TerminalLoggerContext( LogginContext.pop( "terminal", {} ) );
+
+        self.BotDevLoggerContext( LogginContext );
+
+    def BotDevLoggerContext( self, LogginContext: dict ) -> None:
+
+        ReflectionLogger = False;
+
+        from src.BotLogger import LoggerLevel;
+
+        LoggerBits: int = ( LoggerLevel.Critical | LoggerLevel.Error );
+
+        if len(LogginContext) > 0:
+
+            if "bot" in LogginContext and "channel" in LogginContext:
+
+                BotLoggers = [ k for k, v in LogginContext.pop( "bot", {} ).items() if v is True ];
+
+                for i in BotLoggers:
+
+                    if i == "Warning": # -TODO Maybe an utility from string to LoggerLevel?
+                        LoggerBits |= LoggerLevel.Warning;
+                    elif i == "Information":
+                        LoggerBits |= LoggerLevel.Information;
+                    elif i == "Debug":
+                        LoggerBits |= LoggerLevel.Debug;
+                    elif i == "Trace":
+                        LoggerBits |= LoggerLevel.Trace;
+        
+                ReflectionLogger = True;
+
+        self.Loggin = ( ReflectionLogger, LoggerBits, LogginContext.pop( "channel", 0 ), LogginContext.pop( "max_mps", 5 ) );
 
     def DeveloperContext( self ) -> None:
 
@@ -68,28 +104,26 @@ class ConfigContext( dict ):
         if self.developer_guild is None or self.developer_token is None:
             self.developer = False;
 
-    def LoggerContext( self ) -> None:
+    def TerminalLoggerContext( self, TerminalLogger: dict ) -> None:
 
-        from utils.Logger import LoggerSetLevel, LoggerClearLevel, LoggerLevel;
+        from src.BotLogger import LoggerSetLevel, LoggerClearLevel, LoggerLevel;
 
-        LoggerContext: dict[ str, bool ] = self.pop( "Logger", {} );
-
-        if LoggerContext.pop( "Warning", False ):
+        if TerminalLogger.pop( "Warning", False ):
             LoggerSetLevel( LoggerLevel.Warning );
         else:
             LoggerClearLevel( LoggerLevel.Warning );
 
-        if LoggerContext.pop( "Information", False ):
+        if TerminalLogger.pop( "Information", False ):
             LoggerSetLevel( LoggerLevel.Information );
         else:
             LoggerClearLevel( LoggerLevel.Information );
 
-        if LoggerContext.pop( "Debug", False ):
+        if TerminalLogger.pop( "Debug", False ):
             LoggerSetLevel( LoggerLevel.Debug );
         else:
             LoggerClearLevel( LoggerLevel.Debug );
 
-        if LoggerContext.pop( "Trace", False ):
+        if TerminalLogger.pop( "Trace", False ):
             LoggerSetLevel( LoggerLevel.Trace );
         else:
             LoggerClearLevel( LoggerLevel.Trace );
