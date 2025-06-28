@@ -1,0 +1,7 @@
+class HexColor:
+    RED = 0xFF0000
+    GREEN = 0x00FF00
+    YELLOW = 0xFFFF00
+    BLUE = 0x0000FF
+    MAGENTA = 0xFF00FF
+    CYAN = 0x00FFFF
