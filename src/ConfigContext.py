@@ -52,7 +52,8 @@ class ContextBotDeveloper( ContextBot ):
     def IsDeveloper( self ) -> bool:
         return True;
 
-    def __init__( self, label: dict ) -> None:
+    def __init__( self, label: dict, guild ) -> None:
+        self.__guild__ = guild;
         super().__init__( label );
 
 class ContextBotLoggin():
@@ -84,7 +85,7 @@ class ContextBotLoggin():
 
             for k, v in label[ "bot" ].items():
                 if v is True:
-                    LogLevels |= ToLoggerLevel(k);
+                    self.LogLevels |= ToLoggerLevel(k);
 
 class ConfigContext():
 
@@ -112,13 +113,13 @@ class ConfigContext():
         self.bot = ContextBot( data[ "bot" ] ) if DataDeveloper.pop( "active", False ) is False \
             else ContextBotDeveloper( DataDeveloper[ "bot" ], DataDeveloper[ "guild" ] );
 
-        self.__language__ = self.pop( "language", "english" );
+        self.__language__ = data.pop( "language", "english" );
 
-        LogginContext: dict[ str, bool ] = self.pop( "Loggin", {} );
+        LogginContext: dict[ str, bool ] = data.pop( "Loggin", {} );
 
         from utils.Logger import LoggerSetLevel, LoggerClearLevel, ToLoggerLevel;
 
-        for k, v in LogginContext[ "terminal" ]:
+        for k, v in LogginContext[ "terminal" ].items():
 
             if v is True:
                 LoggerSetLevel( ToLoggerLevel(k) )
