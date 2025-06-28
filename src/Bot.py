@@ -223,5 +223,45 @@ class Bot( discord.Client ):
                 wait=wait, suppress_embeds=suppress_embeds, silent=silent, applied_tags=applied_tags, poll=poll,
             );
 
+    from datetime import datetime;
+    def CreateEmbed( self, title: str, channel: int, *,
+        description: str = None,
+        color: int =0xf000FF,
+        time: datetime = None,
+        items: tuple[ str, str, bool ] = None
+    ) -> discord.Embed:
+
+        embed = discord.Embed( color = color, title=title, description=description, timestamp=time );
+
+        if items is not None:
+
+            fields = 0;
+
+            for item in items:
+
+                fields += 1;
+
+                if fields > 25:
+
+                    from src.main import g_Logger;
+
+                    g_Logger.warn( "Can not add all fields to the message \"<c>{}<>\" it's above discord's max capacity of 24 fields!", title );
+
+                    break;
+
+                field_title = item[0];
+                if len( field_title ) > 256:
+                      field_title = field_title[ : 256 ];
+
+                field_description = item[1];
+                if len( field_description ) > 1024:
+                      field_description = field_description[ : 1024 ];
+
+                field_inline = item[2] if len(item) > 2 else True;
+
+                embed.add_field( name=field_title, value=field_description, inline =field_inline );
+
+        return embed;
+
 global bot;
 bot: Bot = Bot();
