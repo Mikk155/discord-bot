@@ -63,6 +63,7 @@ class CacheManager:
         
         from utils.jsonc import jsonc;
 
+        from src.BotLoggin import g_BotLog;
         self.__cache__ = CCacheDictionary( jsonc( self.GetCacheDir, exists_ok=True ) );
 
     def UpdateCache( self ):

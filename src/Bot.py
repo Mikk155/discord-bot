@@ -28,9 +28,6 @@ from discord import app_commands
 
 class Bot( discord.Client ):
 
-    from src.BotLoggin import BotLoggin;
-    m_Loggin = BotLoggin();
-
     __on_start_called__: bool = False
 
     def __init__( self ):
@@ -43,7 +40,7 @@ class Bot( discord.Client ):
 
         from src.ConfigContext import g_ConfigContext;
 
-        if g_ConfigContext.bot.IsDeveloper:
+        if g_ConfigContext.bot.IsDeveloper is True and g_ConfigContext.bot.TargetGuildCommands is not None:
 
             TargetGuild = discord.Object( id = g_ConfigContext.bot.TargetGuildCommands );
 
@@ -224,7 +221,8 @@ class Bot( discord.Client ):
             );
 
     from datetime import datetime;
-    def CreateEmbed( self, title: str, channel: int, *,
+    @staticmethod
+    def CreateEmbed( title: str, *,
         description: str = None,
         color: int =0xf000FF,
         time: datetime = None,
@@ -233,7 +231,7 @@ class Bot( discord.Client ):
 
         embed = discord.Embed( color = color, title=title, description=description, timestamp=time );
 
-        if items is not None:
+        if items is not None and isinstance( items, ( tuple | list ) ):
 
             fields = 0;
 

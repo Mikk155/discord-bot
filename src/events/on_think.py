@@ -32,6 +32,10 @@ async def on_think():
 
     g_Cache.UpdateCache();
 
+    if g_ConfigContext.log.IsActive:
+
+        await g_BotLog.SendAllMessages();
+
     from datetime import datetime;
 
     now: datetime = datetime.now();

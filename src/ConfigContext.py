@@ -35,6 +35,7 @@ class ContextBot():
     @property
     def TargetGuildCommands( self ) -> None | int:
         return self.__guild__;
+    __guild__ = None;
 
     token: str;
 
@@ -43,8 +44,6 @@ class ContextBot():
         self.token = label.pop( "token", None );
 
         self.__prefix__ = label.pop( "prefix", None );
-
-        self.__guild__ = label.pop( "guild", None );
 
 class ContextBotDeveloper( ContextBot ):
 
