@@ -29,9 +29,9 @@ async def on_message( message: discord.Message ):
 
     await g_PluginManager.CallFunction( "OnMessage", message, GuildID=message.guild.id );
 
-    if g_ConfigContext.prefix is not None and message.content.startswith( g_ConfigContext.prefix ):
+    if g_ConfigContext.bot.Prefix is not None and message.content.startswith( g_ConfigContext.bot.Prefix ):
 
-        arguments_string = message.content[ len(g_ConfigContext.prefix) : ];
+        arguments_string = message.content[ len(g_ConfigContext.bot.Prefix) : ];
 
         from shlex import split as SplitArgs;
 

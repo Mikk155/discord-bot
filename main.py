@@ -39,7 +39,7 @@ if "-licence" in sys.argv:
     exit(0);
 from src.ConfigContext import g_ConfigContext;
 
-if not g_ConfigContext.developer:
+if not g_ConfigContext.bot.IsDeveloper:
 
     from src.InstallRequirements import InstallRequirements;
     InstallRequirements( Path.enter( "requirements.txt" ) );
@@ -66,17 +66,7 @@ try:
 
     from src.ConfigContext import g_ConfigContext;
 
-    TokenFile: str;
-
-    if g_ConfigContext.developer:
-
-        TokenFile = g_ConfigContext.developer_token;
-    
-    else:
-
-        TokenFile = g_ConfigContext.token;
-
-    TokenPath = Path.enter( "config", TokenFile );
+    TokenPath = Path.enter( "config", g_ConfigContext.bot.token );
 
     if not exists( TokenPath ):
 

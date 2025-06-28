@@ -88,7 +88,7 @@ class Sentences( dict ):
 
         from src.ConfigContext import g_ConfigContext;
 
-        DefaultLanguage = g_ConfigContext.language;
+        DefaultLanguage = g_ConfigContext.Language;
 
         if Sentence is None:
 

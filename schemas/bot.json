@@ -28,6 +28,28 @@
                 }
             },
             "additionalProperties": false
+        },
+        "bot":
+        {
+            "type": "object",
+            "properties":
+            {
+                "token":
+                {
+                    "type": "string",
+                    "description": "Your discord BOT application token"
+                },
+                "prefix":
+                {
+                    "type": "string",
+                    "description": "bot prefix to use plugins commands via messages"
+                }
+            },
+            "required":
+            [
+                "token"
+            ],
+            "additionalProperties": false
         }
     },
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -38,15 +60,9 @@
         {
             "type": "string"
         },
-        "token":
+        "bot":
         {
-            "type": "string",
-            "description": "Your discord BOT application token"
-        },
-        "prefix":
-        {
-            "type": "string",
-            "description": "bot prefix to use plugins commands via messages"
+            "$ref": "#/$defs/bot"
         },
         "developer":
         {
@@ -58,10 +74,9 @@
                     "type": "boolean",
                     "description": "Whatever to run on developer or not"
                 },
-                "token":
+                "bot":
                 {
-                    "type": "string",
-                    "description": "Your discord BOT application token for when this context is active"
+                    "$ref": "#/$defs/bot"
                 },
                 "guild":
                 {
@@ -69,12 +84,30 @@
                     "description": "The ID of your main server for sync app_commands fast"
                 }
             },
-            "additionalProperties": false,
-            "required":
+            "allOf":
             [
-                "guild",
-                "token"
+                {
+                    "if":
+                    {
+                        "properties":
+                        {
+                            "active":
+                            {
+                                "const": true
+                            }
+                        }
+                    },
+                    "then":
+                    {
+                        "required":
+                        [
+                            "bot",
+                            "guild"
+                        ]
+                    }
+                }
             ],
+            "additionalProperties": false,
             "description": "Developer context variables"
         },
         "owner":
@@ -112,8 +145,8 @@
             [
                 "terminal"
             ],
-              "allOf":
-              [
+            "allOf":
+            [
                 {
                     "if":
                     {

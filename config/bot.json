@@ -1,14 +1,21 @@
 {
     "$schema": "../schemas/bot.json",
 
-    "token": "token.txt",
+    "bot":
+    {
+        "token": "token.txt",
+        "prefix": "walter "
+    },
 
-    "prefix": "walter ",
-
+    // Config in here overrides globals if "active" is true.
     "developer":
     {
         "active": true,
-        "token": "token_dev.txt",
+
+        "bot":
+        {
+            "token": "token.txt"
+        },
         "guild": 1145236064596918304
     },
 
@@ -32,6 +39,6 @@
 
         "channel": 1343235842822504481,
 
-        "max_mps" 5
+        "max_mps": 5
     }
 }

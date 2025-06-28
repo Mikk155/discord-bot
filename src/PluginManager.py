@@ -144,7 +144,7 @@ class PluginManager():
 
             self.m_Logger.info( "Registering plugin \"<c>{}<>\"", PluginName );
 
-            if not g_ConfigContext.developer and "requirements" in PluginData:
+            if not g_ConfigContext.bot.IsDeveloper and "requirements" in PluginData:
 
                 requirements = PluginData[ "requirements" ];
 

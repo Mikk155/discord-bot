@@ -22,111 +22,110 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE
 '''
 
-class ConfigContext( dict ):
+class ContextBot():
 
-    '''
-        Configuration context
-    '''
+    @property
+    def IsDeveloper( self ) -> bool:
+        return False;
 
-    developer: bool;
-    '''Is this bot running on developer mode?'''
-    developer_token: str;
-    '''Bot token to use if developer is true'''
-    developer: int;
-    '''Guild target to update commands if developer is true'''
+    @property
+    def Prefix( self ) -> None | str:
+        return self.__prefix__;
+
+    @property
+    def TargetGuildCommands( self ) -> None | int:
+        return self.__guild__;
 
     token: str;
-    '''Bot token to use'''
 
-    prefix: str = None;
+    def __init__( self, label: dict ) -> None:
 
-    language: str = "english";
-    '''Default language to use for sentences'''
+        self.token = label.pop( "token", None );
 
-    Loggin: tuple[ bool, int, int, int ];
+        self.__prefix__ = label.pop( "prefix", None );
+
+        self.__guild__ = label.pop( "guild", None );
+
+class ContextBotDeveloper( ContextBot ):
+
+    @property
+    def IsDeveloper( self ) -> bool:
+        return True;
+
+    def __init__( self, label: dict ) -> None:
+        super().__init__( label );
+
+class ContextBotLoggin():
+
+    @property
+    def MaxMessages( self ) -> int:
+        return self.__max_mps__;
+
+    @property
+    def IsActive( self ) -> bool:
+        return self.__active__;
+    __active__ = False;
+
+    @property
+    def Channel( self ) -> int:
+        return self.__channel__;
+
+    LogLevels: int = 0;
+
+    def __init__( self, label: dict ) -> None:
+
+        if "bot" in label and "channel" in label:
+
+            self.__active__ = True
+            self.__channel__ = label[ "channel" ];
+            self.__max_mps__ = label.get( "max_mps", 5 );
+
+            from utils.Logger import ToLoggerLevel;
+
+            for k, v in label[ "bot" ].items():
+                if v is True:
+                    LogLevels |= ToLoggerLevel(k);
+
+class ConfigContext():
+
+    '''
+        Configuration contexts
+    '''
+
+    bot: ContextBot | ContextBotDeveloper;
+
+    log: ContextBotLoggin;
+
+    @property
+    def Language( self ) -> str:
+        return self.__language__;
 
     def __init__( self ) -> None:
 
         from utils.Path import Path;
         from utils.jsonc import jsonc;
 
-        super().__init__( jsonc( Path.enter( "config", "bot.json" ) ) );
+        data = jsonc( Path.enter( "config", "bot.json" ) );
 
-        self.DeveloperContext();
-        self.token = self.pop( "token", None );
-        self.prefix = self.pop( "prefix", None );
-        self.language = self.pop( "language", "english" );
+        DataDeveloper = data.pop( "developer", {} );
+
+        self.bot = ContextBot( data[ "bot" ] ) if DataDeveloper.pop( "active", False ) is False \
+            else ContextBotDeveloper( DataDeveloper[ "bot" ], DataDeveloper[ "guild" ] );
+
+        self.__language__ = self.pop( "language", "english" );
 
         LogginContext: dict[ str, bool ] = self.pop( "Loggin", {} );
 
-        self.TerminalLoggerContext( LogginContext.pop( "terminal", {} ) );
+        from utils.Logger import LoggerSetLevel, LoggerClearLevel, ToLoggerLevel;
 
-        self.BotDevLoggerContext( LogginContext );
+        for k, v in LogginContext[ "terminal" ]:
 
-    def BotDevLoggerContext( self, LogginContext: dict ) -> None:
+            if v is True:
+                LoggerSetLevel( ToLoggerLevel(k) )
+            else:
+                LoggerClearLevel( ToLoggerLevel(k) );
 
-        ReflectionLogger = False;
-
-        from src.BotLogger import LoggerLevel;
-
-        LoggerBits: int = ( LoggerLevel.Critical | LoggerLevel.Error );
-
-        if len(LogginContext) > 0:
-
-            if "bot" in LogginContext and "channel" in LogginContext:
-
-                BotLoggers = [ k for k, v in LogginContext.pop( "bot", {} ).items() if v is True ];
-
-                for i in BotLoggers:
-
-                    if i == "Warning": # -TODO Maybe an utility from string to LoggerLevel?
-                        LoggerBits |= LoggerLevel.Warning;
-                    elif i == "Information":
-                        LoggerBits |= LoggerLevel.Information;
-                    elif i == "Debug":
-                        LoggerBits |= LoggerLevel.Debug;
-                    elif i == "Trace":
-                        LoggerBits |= LoggerLevel.Trace;
-        
-                ReflectionLogger = True;
-
-        self.Loggin = ( ReflectionLogger, LoggerBits, LogginContext.pop( "channel", 0 ), LogginContext.pop( "max_mps", 5 ) );
-
-    def DeveloperContext( self ) -> None:
-
-        self.pop( "$schema", "" );
-
-        DeveloperContext: dict = self.pop( "developer", {} );
-        self.developer = DeveloperContext.pop( "active", False );
-        self.developer_token = DeveloperContext.pop( "token", None );
-        self.developer_guild = DeveloperContext.pop( "guild", None );
-
-        if self.developer_guild is None or self.developer_token is None:
-            self.developer = False;
-
-    def TerminalLoggerContext( self, TerminalLogger: dict ) -> None:
-
-        from src.BotLogger import LoggerSetLevel, LoggerClearLevel, LoggerLevel;
-
-        if TerminalLogger.pop( "Warning", False ):
-            LoggerSetLevel( LoggerLevel.Warning );
-        else:
-            LoggerClearLevel( LoggerLevel.Warning );
-
-        if TerminalLogger.pop( "Information", False ):
-            LoggerSetLevel( LoggerLevel.Information );
-        else:
-            LoggerClearLevel( LoggerLevel.Information );
-
-        if TerminalLogger.pop( "Debug", False ):
-            LoggerSetLevel( LoggerLevel.Debug );
-        else:
-            LoggerClearLevel( LoggerLevel.Debug );
-
-        if TerminalLogger.pop( "Trace", False ):
-            LoggerSetLevel( LoggerLevel.Trace );
-        else:
-            LoggerClearLevel( LoggerLevel.Trace );
+        self.log = ContextBotLoggin( LogginContext );
 
 global g_ConfigContext;
 g_ConfigContext: ConfigContext = ConfigContext();

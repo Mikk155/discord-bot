@@ -43,9 +43,9 @@ class Bot( discord.Client ):
 
         from src.ConfigContext import g_ConfigContext;
 
-        if g_ConfigContext.developer:
+        if g_ConfigContext.bot.IsDeveloper:
 
-            TargetGuild = discord.Object( id = g_ConfigContext.developer_guild );
+            TargetGuild = discord.Object( id = g_ConfigContext.bot.TargetGuildCommands );
 
             if TargetGuild:
 
