@@ -33,6 +33,8 @@ class Bot( discord.Client ):
 
                 return;
 
+        self.tree.clear_commands();
+
         await self.tree.sync();
 
     async def FindMemberByName( self, name: str, guild: discord.Guild | int ) -> None | discord.Member:
@@ -51,6 +53,10 @@ class Bot( discord.Client ):
                 return member;
 
         return None;
+
+    #================================================
+    # Utilities bellow
+    #================================================
 
     async def SendMessage( self, target: discord.TextChannel | discord.Message | discord.Interaction,
         content: Optional[str] = ..., *,
