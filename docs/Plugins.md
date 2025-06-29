@@ -95,7 +95,7 @@ The order of it is just as how they're installed in the plugins.json file.
 Registering slash commands
 
 ```py
-    def __init__(self):
+    def OnPluginActivate(self):
 
         command = app_commands.Command(
             name="pings",
@@ -106,6 +106,10 @@ Registering slash commands
         command.guild_only = True;
 
         bot.tree.add_command( command );
+
+    def OnPluginDeactivate(self):
+
+        bot.tree.remove_command( "pings" );
 
     @app_commands.describe( member='Member' )
     async def command_pings( self, interaction: discord.Interaction, member: discord.Member ):

@@ -3,7 +3,7 @@ from src.PluginManager import Plugin;
 
 class ping_counter( Plugin ):
 
-    def __init__(self):
+    def OnPluginActivate(self):
 
         command = app_commands.Command(
             name="pings",
@@ -11,9 +11,13 @@ class ping_counter( Plugin ):
             callback=self.command_pings,
         );
 
-        command.guild_only = True
+        command.guild_only = True;
 
-        bot.tree.add_command( command )
+        bot.tree.add_command( command );
+
+    def OnPluginDeactivate(self):
+
+        bot.tree.remove_command( "pings" );
 
     @property
     def GetName(self):

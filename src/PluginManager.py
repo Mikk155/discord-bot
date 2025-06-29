@@ -64,6 +64,14 @@ class Plugin():
         '''The python scripts has just been run. This is called before the bot is running and just after every plugin has been loaded'''
         return True;
 
+    async def OnPluginActivate( self ) -> bool:
+        '''The has been enabled'''
+        return True;
+
+    async def OnPluginDeactivate( self ) -> bool:
+        '''The has been disabled'''
+        return True;
+
     async def OnBotStart( self ) -> bool:
         '''Called once. when the bot first starts.'''
         return True;
@@ -166,10 +174,6 @@ class PluginManager():
 
         for PluginName, PluginData in PluginsContext.items():
 
-            if PluginData.get( "disabled", False ) is True:
-                g_BotLogger.debug( "Plugin \"<c>{}<>\" disabled by config.", PluginName, name=self.GetName );
-                continue;
-
             g_BotLogger.info( "Registering plugin \"<c>{}<>\"", PluginName, name=self.GetName );
 
             if not g_ConfigContext.bot.IsDeveloper and "requirements" in PluginData:
@@ -186,7 +190,8 @@ class PluginManager():
 
                     else:
 
-                        g_BotLogger.warn( "Invalid requirement file \"<c>{}<>\" for plugin <g>{}<>", PluginName, name=self.GetName );
+                        g_BotLogger.warn( "Invalid requirement file \"<c>{}<>\" for plugin <g>{}<>.", PluginName, name=self.GetName );
+                        continue;
 
             script_path = PathLib( Path.enter( "plugins", f'{PluginName}.py' ) );
 
@@ -205,17 +210,30 @@ class PluginManager():
 
                 continue;
 
-            plugin = getattr( module, module_name )();
+            plugin: Plugin = getattr( module, module_name )();
 
             plugin.guilds = PluginData.get( "guilds", [] );
 
             plugin.filename = PluginName;
+
+            plugin.disabled = PluginData.get( "disabled", False );
+
+            if plugin.disabled is True:
+
+                g_BotLogger.debug( "Plugin \"<c>{}<>\" disabled by config.", PluginName, name=self.GetName );
+
+            else:
+
+                plugin.OnPluginActivate();
 
             self.Plugins.append( plugin );
 
     async def CallFunction( self, fnName: str, *args, GuildID = None ) -> None:
 
         for p in self.Plugins:
+
+            if p.disabled is True:
+                continue;
 
             if len( p.guilds ) > 0 and GuildID is not None and not GuildID in p.guilds:
                 continue; # This plugin doesn't want to work on this guild.
