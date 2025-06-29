@@ -101,11 +101,11 @@ class Bot( discord.Client ):
 
         for member in guild.members:
 
-            if name in ( member.name, member.display_name, member.global_name ):
+            if name in ( member.name, member.display_name, member.name ):
                 return member;
 
             # Partial? This maybe is a bad idea
-            if name in member.name or name in member.display_name or name in member.global_name:
+            if name in member.name or name in member.display_name or ( member.global_name is not None and name in member.global_name ):
                 return member;
 
         return None;
@@ -115,19 +115,19 @@ class Bot( discord.Client ):
     #================================================
 
     async def SendMessage( self, target: discord.TextChannel | discord.Message | discord.Interaction,
-        content: Optional[str] = ..., *,
+        content: Optional[str] = None, *,
         tts: bool = False,
         embed: Optional[discord.Embed] = None,
         embeds: Optional[list[discord.Embed]] = None,
         file: Optional[discord.File] = None,
         stickers: Optional[list[discord.StickerItem]] = None,
-        delete_after: float = ...,
-        nonce: Union[str, int] = ...,
+        delete_after: float = None,
+        nonce: Union[str, int] = None,
         allowed_mentions: Optional[discord.AllowedMentions] = None,
         suppress_embeds: bool = False,
         silent: bool = False,
-        mention_author: bool = ...,
-        poll: discord.Poll = ...,
+        mention_author: bool = None,
+        poll: discord.Poll = None,
         view: Optional[discord.ui.View] = None,
         ) -> discord.Message:
         '''
@@ -179,24 +179,24 @@ class Bot( discord.Client ):
             );
 
     async def SendResponse( self, target: discord.TextChannel | discord.Message | discord.Interaction,
-        content: Optional[str] = ..., *,
-        username: str = ...,
-        avatar_url: Any = ...,
-        tts: bool = ...,
-        ephemeral: bool = ...,
-        file: discord.File = ...,
-        files: Sequence[discord.File] = ...,
-        embed: discord.Embed = ...,
-        embeds: Sequence[discord.Embed] = ...,
-        allowed_mentions: discord.AllowedMentions = ...,
-        view: discord.ui.View = ...,
-        thread = ...,
-        thread_name: str = ...,
-        wait: Literal[True] = ...,
-        suppress_embeds: bool = ...,
-        silent: bool = ...,
-        applied_tags: List[discord.ForumTag] = ...,
-        poll: discord.Poll = ...,
+        content: Optional[str] = None, *,
+        username: str = None,
+        avatar_url: Any = None,
+        tts: bool = None,
+        ephemeral: bool = None,
+        file: discord.File = None,
+        files: Sequence[discord.File] = None,
+        embed: discord.Embed = None,
+        embeds: Sequence[discord.Embed] = None,
+        allowed_mentions: discord.AllowedMentions = None,
+        view: discord.ui.View = None,
+        thread = None,
+        thread_name: str = None,
+        wait: Literal[True] = None,
+        suppress_embeds: bool = None,
+        silent: bool = None,
+        applied_tags: List[discord.ForumTag] = None,
+        poll: discord.Poll = None
         ) -> discord.WebhookMessage:
         '''
             Sends a response to an interaction, choosing between
@@ -255,8 +255,7 @@ class Bot( discord.Client ):
                 wait=wait, suppress_embeds=suppress_embeds, silent=silent, applied_tags=applied_tags, poll=poll,
             );
 
-    @staticmethod
-    def AddEmbedFields( embed: discord.Embed, items: tuple[ str, str, bool ] ) -> discord.Embed:
+    def AddEmbedFields( self, embed: discord.Embed, items: tuple[ str, str, bool ] ) -> discord.Embed:
 
         fields = 0;
 
@@ -287,8 +286,7 @@ class Bot( discord.Client ):
         return embed;
 
     from datetime import datetime;
-    @staticmethod
-    def CreateEmbed( title: str, *,
+    def CreateEmbed( self, title: str, *,
         description: str = None,
         color: int =0xf000FF,
         time: datetime = None,
@@ -298,7 +296,7 @@ class Bot( discord.Client ):
         embed = discord.Embed( color = color, title=title, description=description, timestamp=time );
 
         if items is not None and isinstance( items, ( tuple | list ) ):
-            embed = Bot.AddEmbedFields( embed, items );
+            embed = self.AddEmbedFields( embed, items );
 
         return embed;
 

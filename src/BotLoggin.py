@@ -65,7 +65,7 @@ class BotLoggin():
         items: tuple[ str, str, bool ] = ...
         ) -> Embed:
 
-        from src.Bot import Bot; # Static method, do not initialize the bot yet.
+        from src.Bot import bot;
         from datetime import datetime;
 
         message = message.format( *args );
@@ -86,7 +86,7 @@ class BotLoggin():
         if name:
             title += f' {name}';
 
-        embed: Embed = Bot.CreateEmbed( title, description=message, time=datetime.now(), items=items, color=color );
+        embed: Embed = bot.CreateEmbed( title, description=message, time=datetime.now(), items=items, color=color );
 
         if send & BotLogMode.DeveloperChannel:
 
