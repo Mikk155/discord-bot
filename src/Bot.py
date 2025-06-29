@@ -241,9 +241,9 @@ class Bot( discord.Client ):
 
                 if fields > 25:
 
-                    from src.main import g_Logger;
+                    from src.BotLoggin import g_BotLogger;
 
-                    g_Logger.warn( "Can not add all fields to the message \"<c>{}<>\" it's above discord's max capacity of 24 fields!", title );
+                    g_BotLogger.warn( "Can not add all fields to the message \"<c>{}<>\" it's above discord's max capacity of 24 fields!", title );
 
                     break;
 

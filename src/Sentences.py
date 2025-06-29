@@ -24,8 +24,9 @@ SOFTWARE
 
 class Sentences( dict ):
 
-    from utils.Logger import Logger;
-    m_Logger: Logger = Logger( "Sentences" );
+    @property
+    def GetName( self ) -> str:
+        return "Sentences";
 
     def __init__( self ):
 
@@ -59,14 +60,17 @@ class Sentences( dict ):
 
             else:
 
-                self.m_Logger.warn( "Sentence \"<g>{}<>\" already exists!", s )
+                from src.BotLoggin import g_BotLogger;
+                g_BotLogger.warn( "Sentence \"<g>{}<>\" already exists!", s, name=self.GetName );
 
     from discord import Guild
     def get( self, name: str, *args, Guild: Guild | int = None ) -> str:
 
+        from src.BotLoggin import g_BotLogger;
+
         if not name in self:
 
-            self.m_Logger.warn( "Sentence \"<g>{}<>\" does not exists!", name )
+            g_BotLogger.warn( "Sentence \"<g>{}<>\" does not exists!", name=self.GetName );
 
             return "";
 
@@ -98,7 +102,7 @@ class Sentences( dict ):
 
             else:
 
-                self.m_Logger.error( "No \"<c>{}<>\" label on sentence name \"<g>{}<>\"", DefaultLanguage, name );
+                g_BotLogger.error( "No \"<c>{}<>\" label on sentence name \"<g>{}<>\"", DefaultLanguage, name, name=self.GetName );
 
                 return '';
 

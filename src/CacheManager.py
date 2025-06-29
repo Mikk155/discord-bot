@@ -78,10 +78,6 @@ class CacheManager:
 
                 open( self.GetCacheDir, 'w' ).write( obj );
 
-            else:
-
-                self.m_Logger.warn( "Failed to store the cache" );
-
         except Exception as e:
 
             self.m_Logger.warn( "Failed to store the cache: <r>{}<>", e );
