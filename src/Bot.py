@@ -58,6 +58,41 @@ class Bot( discord.Client ):
 
         await self.tree.sync();
 
+    from inspect import FrameInfo;
+    def GetCallChain( self ) -> list[ FrameInfo ]:
+        from inspect import stack;
+        return stack()[2:] # Ignore GetCallChain itself and where it was called
+
+    @staticmethod
+    def GetCallChainEmbeds( embed: discord.Embed, PythonLibraries = False ) -> discord.Embed:
+
+        callbacks = bot.GetCallChain();
+
+        from utils.Path import Path;
+
+        EmbedFields = [];
+        
+        for call in callbacks:
+
+            if PythonLibraries is False and call.filename.find( "Python" ) != -1:
+                break;
+
+            EmbedFields.append(
+                (
+                    call.function, '``{}``\n```py\n{}\n```\nL: {}'.format(
+                        call.filename[ call.filename.rfind( "Python" ) \
+                            if ( call.filename.find( "Python" ) != -1 ) \
+                                else len(Path.Workspace()) : ],
+                        ''.join( i.strip( ' ' ) for i in call.code_context ) \
+                            if call.code_context is not None else '<--Unknown-->',
+                        call.lineno
+                    ),
+                    False
+                )
+            );
+
+        return Bot.AddEmbedFields( embed, EmbedFields );
+
     async def FindMemberByName( self, name: str, guild: discord.Guild | int ) -> None | discord.Member:
 
         if isinstance( guild, int ):
@@ -220,6 +255,37 @@ class Bot( discord.Client ):
                 wait=wait, suppress_embeds=suppress_embeds, silent=silent, applied_tags=applied_tags, poll=poll,
             );
 
+    @staticmethod
+    def AddEmbedFields( embed: discord.Embed, items: tuple[ str, str, bool ] ) -> discord.Embed:
+
+        fields = 0;
+
+        for item in items:
+
+            fields += 1;
+
+            if fields > 25:
+
+                from src.BotLoggin import g_BotLogger;
+
+                g_BotLogger.warn( "Can not add all fields to the message \"<c>{}<>\" it's above discord's max capacity of 24 fields!", embed.title );
+
+                break;
+
+            field_title = item[0];
+            if len( field_title ) > 256:
+                    field_title = field_title[ : 256 ];
+
+            field_description = item[1];
+            if len( field_description ) > 1024:
+                    field_description = field_description[ : 1024 ];
+
+            field_inline = item[2] if len(item) > 2 else True;
+
+            embed.add_field( name=field_title, value=field_description, inline =field_inline );
+
+        return embed;
+
     from datetime import datetime;
     @staticmethod
     def CreateEmbed( title: str, *,
@@ -232,32 +298,7 @@ class Bot( discord.Client ):
         embed = discord.Embed( color = color, title=title, description=description, timestamp=time );
 
         if items is not None and isinstance( items, ( tuple | list ) ):
-
-            fields = 0;
-
-            for item in items:
-
-                fields += 1;
-
-                if fields > 25:
-
-                    from src.BotLoggin import g_BotLogger;
-
-                    g_BotLogger.warn( "Can not add all fields to the message \"<c>{}<>\" it's above discord's max capacity of 24 fields!", title );
-
-                    break;
-
-                field_title = item[0];
-                if len( field_title ) > 256:
-                      field_title = field_title[ : 256 ];
-
-                field_description = item[1];
-                if len( field_description ) > 1024:
-                      field_description = field_description[ : 1024 ];
-
-                field_inline = item[2] if len(item) > 2 else True;
-
-                embed.add_field( name=field_title, value=field_description, inline =field_inline );
+            embed = Bot.AddEmbedFields( embed, items );
 
         return embed;
 
