@@ -100,12 +100,15 @@ class Bot( discord.Client ):
 
         for member in guild.members:
 
-            if name in ( member.name, member.display_name, member.name ):
+            ListNames = [ MemberName.lower() for MemberName in ( member.name, member.display_name, member.name ) if MemberName is not None ];
+
+            if name.lower() in ListNames:
                 return member;
 
-            # Partial? This maybe is a bad idea
-            if name in member.name or name in member.display_name or ( member.global_name is not None and name in member.global_name ):
-                return member;
+            # Maybe it was a partial name?
+            for n in ListNames:
+                if n.startswith( name ):
+                    return member;
 
         return None;
 
