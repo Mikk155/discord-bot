@@ -1,4 +1,9 @@
 {
+    "languages":
+    [
+        "english",
+        "spanish"
+    ],
     "ready":
     {
         "english": "Bot connected and logged as {}#{}"
