@@ -42,8 +42,8 @@ Override `__init__` if you need to handle stuff.
 ###### Note: `__init__` is called way before the bot initializes.
 
 ```py
-    def __init__(self):
-        '''Handle your stuff here'''
+def __init__(self):
+    '''Handle your stuff here'''
 ```
 
 ---
@@ -51,21 +51,21 @@ Override `__init__` if you need to handle stuff.
 Override these for information
 
 ```py
-    @property
-    def GetName( self ):
-        return "Ping counter";
+@property
+def GetName( self ):
+    return "Ping counter";
 
-    @property
-    def GetDescription( self ):
-        return "Keep track of users mentioning";
+@property
+def GetDescription( self ):
+    return "Keep track of users mentioning";
 
-    @property
-    def GetAuthorName( self ) -> str:
-        return "Your name";
+@property
+def GetAuthorName( self ) -> str:
+    return "Your name";
 
-    @property
-    def GetAuthorSite( self ) -> str:
-        return "URL to contact you";
+@property
+def GetAuthorSite( self ) -> str:
+    return "URL to contact you";
 ```
 
 ---
@@ -79,15 +79,15 @@ If the returned value is **False** the PluginSystem will stop the execution of s
 The order of it is just as how they're installed in the plugins.json file.
 
 ```py
-    async def OnMention(self, message, mentions):
+async def OnMention(self, message, mentions):
 
-        if mentions[0].bot:
+    if mentions[0].bot:
 
-            await message.reply( "Hello" );
+        await message.reply( "Hello" );
 
-            return False;
+        return False;
 
-        return True;
+    return True;
 ```
 
 ---
@@ -95,39 +95,40 @@ The order of it is just as how they're installed in the plugins.json file.
 Registering slash commands
 
 ```py
-    def OnPluginActivate(self):
+def OnPluginActivate(self):
 
-        command = app_commands.Command(
-            name="pings",
-            description="Get the pings of a user",
-            callback=self.command_pings,
-        );
+    command = app_commands.Command(
+        name="pings",
+        description="Get the pings of a user",
+        callback=self.command_pings,
+    );
 
-        command.guild_only = True;
+    command.guild_only = True;
 
-        bot.tree.add_command( command );
+    bot.tree.add_command( command );
 
-    def OnPluginDeactivate(self):
+def OnPluginDeactivate(self):
 
-        bot.tree.remove_command( "pings" );
+    bot.tree.remove_command( "pings" );
 
-    @app_commands.describe( member='Member' )
-    async def command_pings( self, interaction: discord.Interaction, member: discord.Member ):
+@app_commands.describe( member='Member' )
+async def command_pings( self, interaction: discord.Interaction, member: discord.Member ):
 
-        try:
+    try:
 
-            await self.GetPingCount( member, interaction );
+        await self.GetPingCount( member, interaction );
 
-        except Exception as e:
+    except Exception as e:
 
-            from src.Bot import bot;
+        from src.Bot import bot;
 
-            bot.SendResponse( interaction.channel,
-                embeds=bot.HandleException( e,
-                    "ping_counter::command_pings",
-                    SendToDevs=True
-                )
-            );
+        if interaction.response.is_done():
+
+            await interaction.followup.send( embeds=bot.HandleException( e, "ping_counter::command_pings", SendToDevs=True ) );
+
+        else:
+
+            await interaction.response.send_message( embeds=bot.HandleException( e, "ping_counter::command_pings", SendToDevs=True ) );
 ```
 
 ### NOTE:

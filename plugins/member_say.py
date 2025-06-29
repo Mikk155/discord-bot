@@ -62,10 +62,21 @@ class member_say( Plugin ):
     async def command_say( self, interaction: discord.Interaction, message: str, member: Optional[discord.Member] = None ):
 
         if not member:
+
             member = bot.user;
 
         try:
+
             await self.MakeUserSay( member, message, interaction.channel );
+
         except Exception as e:
+
             from src.Bot import bot;
-            bot.SendResponse( interaction.channel, embeds=bot.HandleException( e, "member_say::command_say", SendToDevs=True ) );
+
+            if interaction.response.is_done():
+
+                await interaction.followup.send( embeds=bot.HandleException( e, "ping_counter::command_pings", SendToDevs=True ) );
+
+            else:
+
+                await interaction.response.send_message( embeds=bot.HandleException( e, "member_say::command_pings", SendToDevs=True ) );

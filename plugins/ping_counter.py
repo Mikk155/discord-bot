@@ -14,10 +14,12 @@ class ping_counter( Plugin ):
         command.guild_only = True;
 
         bot.tree.add_command( command );
+        print("Called OnPluginActivate")
 
     def OnPluginDeactivate(self):
 
         bot.tree.remove_command( "pings" );
+        print("Called OnPluginDeactivate")
 
     @property
     def GetName(self):
@@ -67,7 +69,7 @@ class ping_counter( Plugin ):
 
         return False;
 
-    async def GetPingCount( self, target: discord.Member, channel: discord.TextChannel | discord.Message ):
+    async def GetPingCount( self, target: discord.Member, channel: discord.TextChannel | discord.Message | discord.Interaction ):
 
         cache = g_Cache.get();
 
@@ -81,19 +83,23 @@ class ping_counter( Plugin ):
 
             MessagePrinter = "The user {} has been pinged {} times".format( counts[1], counts[0] );
 
-        if isinstance( target, discord.Interaction ):
-
-            await bot.SendResponse( channel, MessagePrinter, );
-
-        else:
-
-            await bot.SendMessage( channel, MessagePrinter, mention_author=False, silent=True, allowed_mentions=False );
+        await bot.SendMessage( channel, MessagePrinter, mention_author=False, silent=True, allowed_mentions=False );
 
     @app_commands.describe( member='Member' )
     async def command_pings( self, interaction: discord.Interaction, member: discord.Member ):
 
         try:
+
             await self.GetPingCount( member, interaction );
+
         except Exception as e:
+
             from src.Bot import bot;
-            bot.SendResponse( interaction.channel, embeds=bot.HandleException( e, "ping_counter::command_pings", SendToDevs=True ) );
+
+            if interaction.response.is_done():
+
+                await interaction.followup.send( embeds=bot.HandleException( e, "ping_counter::command_pings", SendToDevs=True ) );
+
+            else:
+
+                await interaction.response.send_message( embeds=bot.HandleException( e, "ping_counter::command_pings", SendToDevs=True ) );

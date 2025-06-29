@@ -206,91 +206,22 @@ class Bot( discord.Client ):
 
         elif isinstance( target, discord.Interaction ):
 
-            return await self.SendResponse( target, content, tts=tts, embed=embed, embeds=embeds, file=file,
-                silent=silent, allowed_mentions=allowed_mentions, suppress_embeds=suppress_embeds, view=view, poll=poll
-            );
+            if target.response.is_done():
+
+                return await target.followup.send( content, tts=tts, embed=embed, embeds=embeds, file=file,
+                    silent=silent, allowed_mentions=allowed_mentions, suppress_embeds=suppress_embeds, view=view, poll=poll
+                );
+
+            else:
+
+                return await target.response.send_message( content, tts=tts, embed=embed, embeds=embeds, file=file,
+                    silent=silent, allowed_mentions=allowed_mentions, suppress_embeds=suppress_embeds, view=view, poll=poll
+                );
 
         else:
             return await target.send( content, tts=tts, embed=embed, embeds=embeds, file=file, stickers=stickers,
                 delete_after=delete_after, nonce=nonce, silent=silent, mention_author=mention_author,
                 allowed_mentions=allowed_mentions, suppress_embeds=suppress_embeds, view=view, poll=poll
-            );
-
-    async def SendResponse( self, interaction: discord.Interaction,
-        content: Optional[str] = None, *,
-        username: str = None,
-        avatar_url: Any = None,
-        tts: bool = None,
-        ephemeral: bool = None,
-        file: discord.File = None,
-        files: Sequence[discord.File] = None,
-        embed: discord.Embed = None,
-        embeds: Sequence[discord.Embed] = None,
-        allowed_mentions: discord.AllowedMentions = None,
-        view: discord.ui.View = None,
-        thread = None,
-        thread_name: str = None,
-        wait: Literal[True] = None,
-        suppress_embeds: bool = None,
-        silent: bool = None,
-        applied_tags: List[discord.ForumTag] = None,
-        poll: discord.Poll = None
-        ) -> discord.WebhookMessage:
-        '''
-            Sends a response to an interaction, choosing between
-            `interaction.response.send_message()` and `interaction.followup.send()`.
-
-            `target`: The interaction to respond to.
-
-            `content`: The message content (text). Can be None if sending only embed or file.
-
-            `username`: Override the default bot username for this message (webhook only).
-
-            `avatar_url`: Override the default bot avatar for this message (webhook only).
-
-            `tts`: Whether the message should be sent as a text-to-speech message.
-
-            `ephemeral`: Whether the message should only be visible to the invoking user.
-
-            `file`: A single file to attach to the message.
-
-            `files`: A list of files to attach (cannot be used with `file`).
-
-            `embed`: A single embed object to include in the message.
-
-            `embeds`: A list of embeds to include in the message (cannot be used with `embed`).
-
-            `allowed_mentions`: Controls which mentions are allowed (roles, users, everyone).
-
-            `view`: A `discord.ui.View` with interactive components to attach to the message.
-
-            `thread`: The thread to send the message to.
-
-            `thread_name`: Name of the thread to create (if applicable).
-
-            `wait`: Whether to wait for the webhook message to be created and return it.
-
-            `suppress_embeds`: If True, disables link embeds.
-
-            `silent`: Whether to send the message without triggering mention notifications.
-
-            `applied_tags`: A list of `discord.ForumTag` to apply (for use in forum threads).
-
-            `poll`: A `discord.Poll` object to attach to the message (if supported).
-        '''
-
-        if interaction.response.is_done():
-            return await interaction.followup.send( content, username=username, avatar_url=avatar_url,
-                tts=tts, ephemeral=ephemeral, file=file, files=files, embed=embed, embeds=embeds,
-                allowed_mentions=allowed_mentions, view=view, thread=thread, thread_name=thread_name,
-                wait=wait, suppress_embeds=suppress_embeds, silent=silent, applied_tags=applied_tags, poll=poll,
-            );
-
-        else:
-            return await interaction.response.send_message( content, username=username, avatar_url=avatar_url,
-                tts=tts, ephemeral=ephemeral, file=file, files=files, embed=embed, embeds=embeds,
-                allowed_mentions=allowed_mentions, view=view, thread=thread, thread_name=thread_name,
-                wait=wait, suppress_embeds=suppress_embeds, silent=silent, applied_tags=applied_tags, poll=poll,
             );
 
     def AddEmbedFields( self, embed: discord.Embed, items: tuple[ str, str, bool ] ) -> discord.Embed:
