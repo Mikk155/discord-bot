@@ -49,6 +49,8 @@ if not g_ConfigContext.bot.IsDeveloper:
 from src.main import g_Logger;
 from src.main import bot;
 
+from src.commands.plugin_list import plugin_list;
+
 # -TODO Lazy shit, maybe importlib events/*?
 from src.events.on_member_join import on_member_join;
 from src.events.on_member_remove import on_member_remove;

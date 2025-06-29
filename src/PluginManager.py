@@ -42,7 +42,7 @@ class Plugin():
 
     @property
     def GetFilename( self ) -> str:
-        return __name__;
+        return self.filename;
 
     @property
     def GetDescription( self ) -> str:
@@ -64,11 +64,11 @@ class Plugin():
         '''The python scripts has just been run. This is called before the bot is running and just after every plugin has been loaded'''
         return True;
 
-    async def OnPluginActivate( self ) -> bool:
+    def OnPluginActivate( self ) -> bool:
         '''The has been enabled'''
         return True;
 
-    async def OnPluginDeactivate( self ) -> bool:
+    def OnPluginDeactivate( self ) -> bool:
         '''The has been disabled'''
         return True;
 
