@@ -49,15 +49,23 @@ class Plugin():
     def __init__( self ):
         ''''''
 
+    @property
+    def GetFilename( self ) -> str:
+        return __name__;
+
+    @property
     def GetDescription( self ) -> str:
         return "";
 
+    @property
     def GetAuthorName( self ) -> str:
         return "Mikk155";
 
+    @property
     def GetName( self ) -> str:
-        return self.filename;
+        return self.GetFilename;
 
+    @property
     def GetAuthorSite( self ) -> str:
         return "https://github.com/Mikk155/discord-bot";
 

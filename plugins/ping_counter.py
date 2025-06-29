@@ -15,9 +15,11 @@ class ping_counter( Plugin ):
 
         bot.tree.add_command( command )
 
+    @property
     def GetName(self):
         return "Ping counter";
 
+    @property
     def GetDescription(self):
         return "Keep track of users mentioning";
 

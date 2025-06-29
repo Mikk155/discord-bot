@@ -16,9 +16,11 @@ class member_say( Plugin ):
 
         bot.tree.add_command( command )
 
+    @property
     def GetName(self):
         return "User say";
 
+    @property
     def GetDescription(self):
         return "Makes the bot say something";
 

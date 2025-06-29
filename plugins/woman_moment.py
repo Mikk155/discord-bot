@@ -5,9 +5,11 @@ import re;
 
 class woman_moment( Plugin ):
 
+    @property
     def GetName(self):
         return "Woman moment";
 
+    @property
     def GetDescription(self):
         return "Keep track of how many times bunnt was foolish";
 

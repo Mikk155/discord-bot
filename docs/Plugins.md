@@ -51,18 +51,19 @@ Override `__init__` if you need to handle stuff.
 Override these for information
 
 ```py
-    def GetName(self):
+    @property
+    def GetName( self ):
         return "Ping counter";
 
-    def GetDescription(self):
+    @property
+    def GetDescription( self ):
         return "Keep track of users mentioning";
 
+    @property
     def GetAuthorName( self ) -> str:
         return "Your name";
 
-    def GetName( self ) -> str:
-        return self.filename;
-
+    @property
     def GetAuthorSite( self ) -> str:
         return "URL to contact you";
 ```
