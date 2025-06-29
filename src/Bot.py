@@ -376,6 +376,8 @@ class Bot( discord.Client ):
 
             if data is not None and len(data) > 0:
 
+                from utils.fmt import fmt;
+
                 for k, v in data.copy().items():
 
                     if isinstance( v, str ):
@@ -384,7 +386,6 @@ class Bot( discord.Client ):
                     if isinstance( v, ( float | int | bool ) ):
                         data[ k ] = str(v);
                     elif isinstance( v, ( discord.User | discord.Member ) ):
-                        from utils.fmt import fmt;
                         data[ k ] = f'User: {fmt.DiscordUserMention(v)}';
                         data[ k ] = f'Guild: {v.guild} {v.guild.id if v.guild else ""}';
                     elif isinstance( v, discord.Message ):

@@ -72,3 +72,14 @@ class Days:
     @staticmethod
     def FromInt( day: int ) -> int:
         return Days.Array[ day - 1 ] if day <= len(Days.Array) else None;
+
+global __RegexMessageReference__;
+__RegexMessageReference__ = None;
+
+from re import Pattern;
+def RegexMessageReference() -> Pattern[str]:
+    global __RegexMessageReference__;
+    if __RegexMessageReference__ is None:
+        import re;
+        __RegexMessageReference__ = re.compile( r"https:\/\/(?:canary\.|ptb\.)?discord(?:app)?\.com\/channels\/(\d+)\/(\d+)\/(\d+)" );
+    return __RegexMessageReference__;

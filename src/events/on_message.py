@@ -63,10 +63,48 @@ async def on_message( message: discord.Message ):
 
         if 'https://' in message.content or 'www.' in message.content:
 
-            urls: tuple[str] = ( url for url in message.content.split() if url.startswith( 'https://' ) or url.startswith( 'www.' ) );
+            urls: tuple[str] = tuple( url for url in message.content.split() if url.startswith( 'https://' ) or url.startswith( 'www.' ) );
 
             if len(urls) > 0:
+
                 await g_PluginManager.CallFunction( "OnLink", message, urls, GuildID=message.guild.id );
+
+                from src.constants import RegexMessageReference;
+
+                for ReGuildID, ReChannelID, ReMessageID in RegexMessageReference().findall( message.content ):
+
+                    await g_PluginManager.CallFunction( "OnMessageReference", message, ReGuildID,ReChannelID, ReMessageID,GuildID=message.guild.id );
+
+                if any( ( a.lower().endswith( '.gif' ) and 'cdn.discordapp.com' in a ) for a in urls ):
+
+                    await g_PluginManager.CallFunction( "OnMessageGIF", message, GuildID=message.guild.id );
+
+        if message.attachments:
+
+            await g_PluginManager.CallFunction( "OnAttachment", message, message.attachments, GuildID=message.guild.id );
+
+        BoostServerMessages = (
+            discord.MessageType.premium_guild_subscription,
+            discord.MessageType.premium_guild_tier_1,
+            discord.MessageType.premium_guild_tier_2,
+            discord.MessageType.premium_guild_tier_3
+        );
+
+        if message.type == discord.MessageType.pins_add:
+
+            PinnedMessages = await message.channel.pins()
+
+            if PinnedMessages:
+
+                await g_PluginManager.CallFunction("OnMessagePinned", message, PinnedMessages[0], GuildID=message.guild.id)
+
+        # elif message.type == discord.MessageType.forwarded:
+
+        #     await g_PluginManager.CallFunction("OnMessageForwarded", message, GuildID=message.guild.id)
+
+        elif message.type in BoostServerMessages:
+
+            await g_PluginManager.CallFunction("OnServerBoost", message, BoostServerMessages.index( message.type ), GuildID=message.guild.id)
 
     except Exception as e:
 

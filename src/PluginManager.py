@@ -26,6 +26,12 @@ class ReactionState:
     Added = 1;
     Removed = 0;
 
+class ServerBoostState:
+    Suscription = 0;
+    TierOne = 1;
+    TierTwo = 2;
+    TierThree = 3;
+
 class Plugin():
 
     '''
@@ -35,7 +41,7 @@ class Plugin():
     '''
 
     from datetime import datetime; # Decorators
-    from discord import Member, GroupChannel, TextChannel, DMChannel, User, Message, Reaction;
+    from discord import Member, GroupChannel, TextChannel, DMChannel, User, Message, Reaction, Attachment;
 
     guilds: list[int] = [];
     '''Guilds list to only listen events (if empty == all)'''
@@ -97,6 +103,26 @@ class Plugin():
 
     async def OnLink( self, message: Message, urls: tuple[str] ) -> bool:
         '''Called when a user sends a message containing urls'''
+        return True;
+
+    async def OnMessageReference( self, message: Message, guild_id: int, channel_id: int, message_id: int ) -> bool:
+        '''Called when a user sends a message containing a url to a discord message'''
+        return True;
+
+    async def OnAttachment( self, message: Message, attachments: list[Attachment] ) -> bool:
+        '''Called when a user sends a message containing attachments'''
+        return True;
+
+    async def OnMessageGIF( self, message: Message ) -> bool:
+        '''Called when a user sends a message containing a GIF'''
+        return True;
+
+    async def OnMessagePinned( self, message: Message, pinned: Message ) -> bool:
+        '''Called when a message is pinned'''
+        return True;
+
+    async def OnServerBoost( self, message: Message, boost: ServerBoostState ) -> bool:
+        '''Called when a the server is boosted'''
         return True;
 
     async def OnMessageDelete( self, message: Message, deleter: User | Member ) -> bool:
