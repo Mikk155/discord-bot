@@ -58,6 +58,36 @@ class Bot( discord.Client ):
 
         await self.tree.sync();
 
+    def GetCallTraceEmbeds( self, embed: discord.Embed, PythonLibraries = False ) -> discord.Embed:
+
+        from utils.Path import Path;
+        from sys import exc_info;
+        from traceback import extract_tb;
+        exc_type, exc_value, exc_traceback = exc_info();
+        traceback_list = extract_tb( exc_traceback );
+
+        EmbedFields = [];
+        
+        for frame in traceback_list:
+
+            if PythonLibraries is False and frame.filename.find( "Python" ) != -1:
+                continue;
+
+            EmbedFields.append(
+                (
+                    f'**{exc_type.__name__}** line: ``{frame.lineno}``',
+                    "```py\n{}``` `{}`".format(
+                        frame.line,
+                        frame.filename[ frame.filename.rfind( "Python" )
+                            if ( frame.filename.find( "Python" ) != -1 )
+                            else len(Path.Workspace()) : ]
+                    ),
+                    False
+                )
+            );
+
+        return self.AddEmbedFields( embed, EmbedFields );
+
     from inspect import FrameInfo;
     def GetCallChain( self, overloads: int = 1 ) -> list[ FrameInfo ]:
         from inspect import stack;
@@ -74,7 +104,7 @@ class Bot( discord.Client ):
         for call in callbacks:
 
             if PythonLibraries is False and call.filename.find( "Python" ) != -1:
-                break;
+                continue;
 
             EmbedFields.append(
                 (
@@ -328,13 +358,13 @@ class Bot( discord.Client ):
             g_BotLogger.Messages.append( embed );
 
             g_BotLogger.Messages.append(
-                self.GetCallChainEmbeds(
+                self.GetCallTraceEmbeds(
                     self.CreateEmbed(
                         "Callback traces",
                         description="The previous Exception were the cause of these callbacks",
                         color=embed.color
                     ),
-                    True, 3
+                    True
                 )
             );
 
