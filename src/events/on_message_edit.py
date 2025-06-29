@@ -27,4 +27,10 @@ from src.main import *;
 @bot.event
 async def on_message_edit( before: discord.Message, after: discord.Message ):
 
-    await g_PluginManager.CallFunction( "OnMessageEdited", before, after, GuildID=after.guild.id );
+    try:
+
+        await g_PluginManager.CallFunction( "OnMessageEdited", before, after, GuildID=after.guild.id );
+
+    except Exception as e:
+
+        bot.HandleException( e, "on_message_edit", SendToDevs=True, data={ "message": before } );

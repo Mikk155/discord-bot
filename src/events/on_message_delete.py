@@ -30,4 +30,11 @@ async def on_message_delete( message: discord.Message ):
     # -TODO Get audith log and pass on the deleter
     deleter = message.author;
 
-    await g_PluginManager.CallFunction( "OnMessageDelete", message, deleter, GuildID=message.guild.id );
+    try:
+
+        await g_PluginManager.CallFunction( "OnMessageDelete", message, deleter, GuildID=message.guild.id );
+
+    except Exception as e:
+
+        bot.HandleException( e, "on_message_delete", SendToDevs=True, data={ "message": message } );
+

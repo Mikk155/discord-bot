@@ -86,4 +86,8 @@ class ping_counter( Plugin ):
     @app_commands.describe( member='Member' )
     async def command_pings( self, interaction: discord.Interaction, member: discord.Member ):
 
-        await self.GetPingCount( member, interaction );
+        try:
+            await self.GetPingCount( member, interaction );
+        except Exception as e:
+            from src.Bot import bot;
+            bot.SendResponse( interaction.channel, embeds=bot.HandleException( e, "ping_counter::command_pings", SendToDevs=True ) );

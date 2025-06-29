@@ -22,6 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE
 '''
 
+class ReactionState:
+    Added = 1;
+    Removed = 0;
+
 class Plugin():
 
     '''
@@ -35,10 +39,6 @@ class Plugin():
 
     guilds: list[int] = [];
     '''Guilds list to only listen events (if empty == all)'''
-
-    class ReactionState:
-        Added = 1;
-        Removed = 0;
 
     def __init__( self ):
         ''''''
@@ -195,17 +195,24 @@ class PluginManager():
             if len( p.guilds ) > 0 and GuildID is not None and not GuildID in p.guilds:
                 continue; # This plugin doesn't want to work on this guild.
 
-            fn = getattr( p, fnName );
+            try:
 
-            if len(args) > 0:
+                fn = getattr( p, fnName );
 
-                if await fn(*args) is False:
+                if len(args) > 0:
+
+                    if await fn(*args) is False:
+
+                        break;
+
+                elif await fn() is False:
 
                     break;
 
-            elif await fn() is False:
+            except Exception as e:
 
-                break;
+                from src.Bot import bot;
+                bot.HandleException( e, "PluginManager::CallFunction", SendToDevs=True );
 
 global g_PluginManager;
 g_PluginManager: PluginManager = PluginManager();

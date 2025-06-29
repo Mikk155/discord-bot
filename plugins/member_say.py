@@ -63,4 +63,8 @@ class member_say( Plugin ):
         if not member:
             member = bot.user;
 
-        await self.MakeUserSay( member, message, interaction.channel );
+        try:
+            await self.MakeUserSay( member, message, interaction.channel );
+        except Exception as e:
+            from src.Bot import bot;
+            bot.SendResponse( interaction.channel, embeds=bot.HandleException( e, "member_say::command_say", SendToDevs=True ) );

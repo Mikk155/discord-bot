@@ -23,8 +23,15 @@ SOFTWARE
 '''
 
 from src.main import *;
+from src.PluginManager import ReactionState
 
 @bot.event
 async def on_reaction_remove( reaction: discord.Reaction, user : discord.User ):
 
-    await g_PluginManager.CallFunction( "OnReaction", reaction, 0, user, GuildID=reaction.guild.id );
+    try:
+
+        await g_PluginManager.CallFunction( "OnReaction", reaction, ReactionState.Removed, user, GuildID=reaction.guild.id );
+
+    except Exception as e:
+
+        bot.HandleException( e, "on_reaction_remove", SendToDevs=True, data={ "message": reaction.message, "user": user } );

@@ -27,34 +27,47 @@ from src.main import *;
 @bot.event
 async def on_message( message: discord.Message ):
 
-    await g_PluginManager.CallFunction( "OnMessage", message, GuildID=message.guild.id );
+    try:
 
-    if g_ConfigContext.bot.Prefix is not None and message.content.startswith( g_ConfigContext.bot.Prefix ):
+        await g_PluginManager.CallFunction( "OnMessage", message, GuildID=message.guild.id );
 
-        arguments_string = message.content[ len(g_ConfigContext.bot.Prefix) : ];
+        if g_ConfigContext.bot.Prefix is not None and message.content.startswith( g_ConfigContext.bot.Prefix ):
 
-        from shlex import split as SplitArgs;
+            try:
 
-        arguments = SplitArgs( arguments_string );
+                arguments_string = message.content[ len(g_ConfigContext.bot.Prefix) : ];
 
-        command = arguments.pop(0);
+                from shlex import split as SplitArgs;
 
-        await g_PluginManager.CallFunction( "OnCommand", message, command, arguments, GuildID=message.guild.id );
+                arguments = SplitArgs( arguments_string );
 
-    if message.mentions and len( message.mentions ) > 0:
+                command = arguments.pop(0);
 
-        await g_PluginManager.CallFunction( "OnMention", message, message.mentions, GuildID=message.guild.id );
+                await g_PluginManager.CallFunction( "OnCommand", message, command, arguments, GuildID=message.guild.id );
+        
+            except Exception as e:
 
-    if message.reference and message.reference.message_id:
+                await message.reply( embed=bot.HandleException( e ) );
 
-        replied_message = await message.channel.fetch_message( message.reference.message_id );
+        if message.mentions and len( message.mentions ) > 0:
 
-        if replied_message:
+            await g_PluginManager.CallFunction( "OnMention", message, message.mentions, GuildID=message.guild.id );
 
-            await g_PluginManager.CallFunction( "OnReply", message, replied_message, GuildID=message.guild.id );
+        if message.reference and message.reference.message_id:
 
-    if 'https://' in message.content or 'www.' in message.content:
+            try:
+                replied_message = await message.channel.fetch_message( message.reference.message_id );
+                await g_PluginManager.CallFunction( "OnReply", message, replied_message, GuildID=message.guild.id );
+            except:
+                pass;
 
-        urls: tuple[str] = ( url for url in message.content.split() if url.startswith( 'https://' ) or url.startswith( 'www.' ) );
+        if 'https://' in message.content or 'www.' in message.content:
 
-        await g_PluginManager.CallFunction( "OnLink", message, urls, GuildID=message.guild.id );
+            urls: tuple[str] = ( url for url in message.content.split() if url.startswith( 'https://' ) or url.startswith( 'www.' ) );
+
+            if len(urls) > 0:
+                await g_PluginManager.CallFunction( "OnLink", message, urls, GuildID=message.guild.id );
+
+    except Exception as e:
+
+        bot.HandleException( e, "on_message", SendToDevs=True, data={ "message": message } );

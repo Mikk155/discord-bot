@@ -72,7 +72,7 @@ class Sentences( dict ):
 
             g_BotLogger.warn( "Sentence \"<g>{}<>\" does not exists!", name=self.GetName );
 
-            return "";
+            return name;
 
         SentenceGroup = super().__getitem__( name );
 
@@ -106,7 +106,13 @@ class Sentences( dict ):
 
                 return '';
 
-        return Sentence.format( *args );
+        try:
+            Sentence = Sentence.format( *args );
+        except Exception as e:
+            from src.Bot import bot;
+            bot.HandleException( e, "PluginManager::CallFunction", SendToDevs=True );
+
+        return Sentence;
 
 global g_Sentences;
 g_Sentences: Sentences = Sentences();

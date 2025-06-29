@@ -204,13 +204,19 @@ class Bot( discord.Client ):
                 allowed_mentions=allowed_mentions, suppress_embeds=suppress_embeds, view=view, poll=poll
             );
 
+        elif isinstance( target, discord.Interaction ):
+
+            return await self.SendResponse( target, content, tts=tts, embed=embed, embeds=embeds, file=file,
+                silent=silent, allowed_mentions=allowed_mentions, suppress_embeds=suppress_embeds, view=view, poll=poll
+            );
+
         else:
             return await target.send( content, tts=tts, embed=embed, embeds=embeds, file=file, stickers=stickers,
                 delete_after=delete_after, nonce=nonce, silent=silent, mention_author=mention_author,
                 allowed_mentions=allowed_mentions, suppress_embeds=suppress_embeds, view=view, poll=poll
             );
 
-    async def SendResponse( self, target: discord.TextChannel | discord.Message | discord.Interaction,
+    async def SendResponse( self, interaction: discord.Interaction,
         content: Optional[str] = None, *,
         username: str = None,
         avatar_url: Any = None,
@@ -273,15 +279,15 @@ class Bot( discord.Client ):
             `poll`: A `discord.Poll` object to attach to the message (if supported).
         '''
 
-        if target.response.is_done():
-            return await target.followup.send( content, username=username, avatar_url=avatar_url,
+        if interaction.response.is_done():
+            return await interaction.followup.send( content, username=username, avatar_url=avatar_url,
                 tts=tts, ephemeral=ephemeral, file=file, files=files, embed=embed, embeds=embeds,
                 allowed_mentions=allowed_mentions, view=view, thread=thread, thread_name=thread_name,
                 wait=wait, suppress_embeds=suppress_embeds, silent=silent, applied_tags=applied_tags, poll=poll,
             );
 
         else:
-            return await target.response.send_message( content, username=username, avatar_url=avatar_url,
+            return await interaction.response.send_message( content, username=username, avatar_url=avatar_url,
                 tts=tts, ephemeral=ephemeral, file=file, files=files, embed=embed, embeds=embeds,
                 allowed_mentions=allowed_mentions, view=view, thread=thread, thread_name=thread_name,
                 wait=wait, suppress_embeds=suppress_embeds, silent=silent, applied_tags=applied_tags, poll=poll,
@@ -380,11 +386,13 @@ class Bot( discord.Client ):
                     elif isinstance( v, ( discord.User | discord.Member ) ):
                         from utils.fmt import fmt;
                         data[ k ] = f'User: {fmt.DiscordUserMention(v)}';
+                        data[ k ] = f'Guild: {v.guild} {v.guild.id if v.guild else ""}';
                     elif isinstance( v, discord.Message ):
                         data[ k ] = f'Message: {v.jump_url} {v.content}';
-                        data[ k ] = f'Guild: {v.channel.guild} {v.channel.guild.id}';
+                        data[ k ] = f'Guild: {v.channel.guild if v.channel else ""} {v.channel.guild.id if v.channel.guild else ""}';
+                        data[ k ] = f'User: {fmt.DiscordUserMention(v.author)}';
                     elif isinstance( v, discord.TextChannel ):
-                        data[ k ] = f'Guild: {v.guild} {v.guild.id}';
+                        data[ k ] = f'Guild: {v.guild} {v.guild.id if v.guild else ""}';
                     elif isinstance( v, discord.Interaction ):
                         data[ k ] = f'Guild: {v.guild} {v.guild_id}';
                         data[ k ] = f'User: {fmt.DiscordUserMention(v.user)}';

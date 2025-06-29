@@ -28,16 +28,22 @@ from discord.ext.tasks import loop as Loop
 @Loop( seconds = 1.0, reconnect=True, name="on_think" )
 async def on_think():
 
-    await bot.wait_until_ready()
+    try:
 
-    g_Cache.UpdateCache();
+        await bot.wait_until_ready()
 
-    if g_ConfigContext.log.IsActive:
+        g_Cache.UpdateCache();
 
-        await g_BotLogger.SendAllMessages();
+        if g_ConfigContext.log.IsActive:
 
-    from datetime import datetime;
+            await g_BotLogger.SendAllMessages();
 
-    now: datetime = datetime.now();
+        from datetime import datetime;
 
-    await g_PluginManager.CallFunction( "OnThink", now );
+        now: datetime = datetime.now();
+
+        await g_PluginManager.CallFunction( "OnThink", now );
+
+    except Exception as e:
+
+        bot.HandleException( e, "on_reaction_remove", SendToDevs=True );

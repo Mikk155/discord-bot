@@ -66,7 +66,7 @@ class BotLoggin():
 
             channel = bot.get_channel( g_ConfigContext.log.Channel );
 
-            if channel:
+            if channel and ( MessageToSend is not None or EmbedToSend is not None ):
 
                 await channel.send( content=MessageToSend, embed=EmbedToSend, silent=True, allowed_mentions=False, mention_author=False );
 
@@ -82,7 +82,13 @@ class BotLoggin():
         from src.Bot import bot;
         from datetime import datetime;
 
-        message = message.format( *args );
+        try:
+
+            message = message.format( *args );
+
+        except Exception as e:
+
+            bot.HandleException( e, "BotLoggin::log", SendToDevs=True );
 
         if send & BotLogMode.ConsoleTerminal:
 

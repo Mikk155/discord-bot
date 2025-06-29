@@ -27,4 +27,10 @@ from src.main import *;
 @bot.event
 async def on_member_remove( member : discord.Member ):
 
-    await g_PluginManager.CallFunction( "OnMemberLeave", member, GuildID=member.guild.id );
+    try:
+
+        await g_PluginManager.CallFunction( "OnMemberLeave", member, GuildID=member.guild.id );
+
+    except Exception as e:
+
+        bot.HandleException( e, "on_member_remove", SendToDevs=True, data={ "member": member } );

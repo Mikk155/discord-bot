@@ -27,19 +27,25 @@ from src.main import *;
 @bot.event
 async def on_ready():
 
-    await bot.wait_until_ready();
+    try:
 
-    if not bot.__on_start_called__:
+        await bot.wait_until_ready();
 
-        await g_PluginManager.CallFunction( "OnBotStart" );
+        if not bot.__on_start_called__:
 
-        bot.__on_start_called__ = True;
+            await g_PluginManager.CallFunction( "OnBotStart" );
 
-        print( g_Sentences.get( "ready", bot.user.name, bot.user.discriminator ) );
+            bot.__on_start_called__ = True;
 
-    else:
+            print( g_Sentences.get( "ready", bot.user.name, bot.user.discriminator ) );
 
-        await g_PluginManager.CallFunction( "OnReconnect" );
+        else:
+
+            await g_PluginManager.CallFunction( "OnReconnect" );
+
+    except Exception as e:
+
+        bot.HandleException( e, "on_ready", SendToDevs=True );
 
     from src.events.on_think import on_think;
 
