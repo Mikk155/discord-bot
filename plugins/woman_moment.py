@@ -36,7 +36,7 @@ class woman_moment( Plugin ):
 
         if bunnt:
 
-            cache = g_Cache.get();
+            cache = g_Cache.Get();
 
             number = cache.get( "moment", 0 );
 

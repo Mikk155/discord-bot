@@ -35,7 +35,7 @@ class ping_counter( Plugin ):
 
             if user:
 
-                cache = g_Cache.get();
+                cache = g_Cache.Get();
 
                 mention = fmt.DiscordUserMention( user );
 
@@ -71,7 +71,7 @@ class ping_counter( Plugin ):
 
     async def GetPingCount( self, target: discord.Member, channel: discord.TextChannel | discord.Message | discord.Interaction ):
 
-        cache = g_Cache.get();
+        cache = g_Cache.Get();
 
         mention = fmt.DiscordUserMention( target );
 

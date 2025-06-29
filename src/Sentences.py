@@ -77,7 +77,7 @@ class Sentences( dict ):
 
         from src.CacheManager import g_Cache;
 
-        cache = g_Cache.get( "language" );
+        cache = g_Cache.Get( "language" );
 
         if Guild is not None:
 

@@ -11,7 +11,7 @@ async def cfg_language( interaction: discord.Interaction, language: app_commands
 
     try:
 
-        cache = g_Cache.get( "language" );
+        cache = g_Cache.Get( "language" );
 
         cache[ str( interaction.guild_id ) ] = language.name;
 

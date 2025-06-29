@@ -53,7 +53,7 @@ class CacheManager:
     m_Logger = Logger( "Cache System" );
 
     __cache__: CCacheDictionary = {};
-    '''The whole cache (Do NOT modify directly! use g_Cache.get())'''
+    '''The whole cache (Do NOT modify directly! use g_Cache.Get())'''
 
     @property
     def GetCacheDir( self ) -> str:
@@ -63,8 +63,6 @@ class CacheManager:
     def __init__( self ):
         
         from utils.jsonc import jsonc;
-
-        from src.BotLoggin import g_BotLogger;
         self.__cache__ = CCacheDictionary( jsonc( self.GetCacheDir, exists_ok=True ) );
 
     def UpdateCache( self ):
@@ -83,7 +81,7 @@ class CacheManager:
 
             self.m_Logger.warn( "Failed to store the cache: <r>{}<>", e );
 
-    def get( self, label: str = None ) -> CCacheDictionary:
+    def Get( self, label: str = None ) -> CCacheDictionary:
 
         '''
             Return a dict which automatically stores into the cache.json when setting variables to it
@@ -99,6 +97,10 @@ class CacheManager:
             label = basename( frame.filename );
 
         return self.__cache__[ label ];
+
+    def Set( self, label: str, value ) -> None:
+
+        self.__cache__[ label ] = value;
 
 global g_Cache;
 g_Cache: CacheManager = CacheManager();
