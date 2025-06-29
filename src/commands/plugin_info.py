@@ -23,6 +23,7 @@ async def plugin_info( interaction: discord.Interaction, plugin: str ):
         embed.add_field( name = "Description", value = plgn.GetDescription, inline = False );
         embed.add_field( name = "Author", value = plgn.GetAuthorName, inline = False );
         embed.add_field( name = "Author site", value = plgn.GetAuthorSite, inline = False );
+        embed.add_field( name = "State", value = "❌Disabled" if plgn.disabled else "✅Enabled", inline = False );
 
         await interaction.response.send_message( embed=embed );
 
