@@ -56,6 +56,7 @@ class BotLoggin():
         emoji: Optional[str] = ...,
         color: Optional[int] = 0xf000FF,
         level: Optional[str] = ...,
+        cmd: Optional[bool] = ...,
         items: tuple[ str, str, bool ] = ...
         ) -> Embed:
         '''
@@ -67,7 +68,20 @@ class BotLoggin():
         from src.Bot import Bot; # Static method, do not initialize the bot yet.
         from datetime import datetime;
 
-        embed: Embed = Bot.CreateEmbed( f'{emoji} [{level}]', description=message.format( *args ), time=datetime.now(), items=items, color=color );
+        message = message.format( *args );
+
+        if cmd is True:
+
+            ColorList = ( "R", "G", "Y", "B", "M", "C", "red", "green", "yellow", "blue", "magenta", "cyan" );
+
+            for pv in ColorList:
+                pv = [ pv.upper(), pv.lower() ];
+                for p in pv:
+                    while f'<{p}>' in message:
+                        message = message.replace( f'<{p}>', '``', 1 );
+                        message = message.replace( f'<>', '``', 1 );
+
+        embed: Embed = Bot.CreateEmbed( f'{emoji} [{level}]', description=message, time=datetime.now(), items=items, color=color );
 
         if report is True:
 
@@ -83,7 +97,7 @@ class BotLoggin():
         if cmd is True:
             g_Logger.debug( message, *args );
         return self.log( message, *args, level="Debug", emoji="📝", color=HexColor.CYAN,
-            report=report, items=items );
+            cmd=cmd, report=report, items=items );
 
     def warn( self, message: str, *args,
         cmd: Optional[bool] = ...,
@@ -93,7 +107,7 @@ class BotLoggin():
         if cmd is True:
             g_Logger.debug( message, *args );
         return self.log( message, *args, level="Warning", emoji="⚠️", color=HexColor.YELLOW,
-            report=report, items=items );
+            cmd=cmd, report=report, items=items );
 
     def error( self, message: str, *args,
         cmd: Optional[bool] = ...,
@@ -107,7 +121,7 @@ class BotLoggin():
             print( message.format( *args ) );
             exit(0);
         return self.log( message, *args, level="Error", emoji="‼️", color=HexColor.RED,
-            report=report, items=items );
+            cmd=cmd, report=report, items=items );
 
     def info( self, message: str, *args,
         cmd: Optional[bool] = ...,
@@ -117,7 +131,7 @@ class BotLoggin():
         if cmd is True:
             g_Logger.debug( message, *args );
         return self.log( message, *args, level="Info", emoji="❕", color=HexColor.GREEN,
-            report=report, items=items );
+            cmd=cmd, report=report, items=items );
 
     def critical( self, message: str, *args,
         cmd: Optional[bool] = ...,
@@ -131,7 +145,7 @@ class BotLoggin():
             print( message.format( *args ) );
             exit(0);
         return self.log( message, *args, level="Critical", emoji="⛔", color=HexColor.RED,
-            report=report, items=items );
+            cmd=cmd, report=report, items=items );
 
     def trace( self, message: str, *args,
         cmd: Optional[bool] = ...,
@@ -141,7 +155,7 @@ class BotLoggin():
         if cmd is True:
             g_Logger.debug( message, *args );
         return self.log( message, *args, level="Trace", emoji="➡", color=HexColor.BLUE,
-            report=report, items=items );
+            cmd=cmd, report=report, items=items );
 
 global g_BotLog;
 g_BotLog = BotLoggin();
