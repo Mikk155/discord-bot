@@ -5,3 +5,70 @@ class HexColor:
     BLUE = 0x0000FF
     MAGENTA = 0xFF00FF
     CYAN = 0x00FFFF
+
+def CommonTimezones() -> tuple[str]:
+
+    return (
+        "UTC",
+        "America/Argentina/Cordoba",
+        "America/Lima",
+        "America/New_York",
+        "America/Los_Angeles",
+        "America/Mexico_City",
+        "Europe/London",
+        "Europe/Paris",
+        "Europe/Berlin",
+        "Europe/Moscow",
+        "Asia/Shanghai",
+        "Asia/Tokyo",
+        "Asia/Kolkata",
+        "Asia/Dubai",
+        "Africa/Johannesburg",
+        "Australia/Sydney",
+        "America/Sao_Paulo",
+        "Pacific/Auckland",
+        "Pacific/Honolulu",
+        "Asia/Singapore",
+        "America/Toronto",
+        "Asia/Seoul",
+        "America/Bogota",
+        "Asia/Jakarta",
+        "Europe/Istanbul"
+    );
+
+class Days:
+    MONDAY = 1;
+    TUESDAY = 2;
+    WEDNESDAY = 3;
+    THURSDAY = 4;
+    FRIDAY = 5;
+    SATURDAY = 6;
+    SUNDAY = 7;
+
+    Map: dict[ str, int ] = {
+        'MONDAY': 1,
+        'TUESDAY': 2,
+        'WEDNESDAY': 3,
+        'THURSDAY': 4,
+        'FRIDAY': 5,
+        'SATURDAY': 6,
+        'SUNDAY': 7,
+    };
+
+    Array: list[ str ] = [
+        'MONDAY',
+        'TUESDAY',
+        'WEDNESDAY',
+        'THURSDAY',
+        'FRIDAY',
+        'SATURDAY',
+        'SUNDAY',
+    ];
+
+    @staticmethod
+    def FromString( day: str ) -> int:
+        return Days.Map.get( day.upper(), None );
+
+    @staticmethod
+    def FromInt( day: int ) -> int:
+        return Days.Array[ day - 1 ] if day <= len(Days.Array) else None;
