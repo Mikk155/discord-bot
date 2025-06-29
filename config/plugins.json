@@ -2,6 +2,7 @@
     "$schema": "../schemas/plugins.json",
 
     "ping_counter": {},
+    "member_say": {},
 
     "woman_moment":
     {
