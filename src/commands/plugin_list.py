@@ -72,4 +72,12 @@ async def plugin_list( interaction: discord.Interaction ):
 
     except Exception as e:
 
-        bot.HandleException( e, "command::plugin_list", SendToDevs=True );
+        from src.Bot import bot;
+
+        if interaction.response.is_done():
+
+            await interaction.followup.send( embeds=bot.HandleException( e, "command::plugin_list" ) );
+
+        else:
+
+            await interaction.response.send_message( embeds=bot.HandleException( e, "command::plugin_list" ) );

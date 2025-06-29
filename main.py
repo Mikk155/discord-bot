@@ -50,6 +50,7 @@ from src.main import g_Logger;
 from src.main import bot;
 
 from src.commands.plugin_list import plugin_list;
+from src.commands.plugin_info import plugin_info;
 
 # -TODO Lazy shit, maybe importlib events/*?
 from src.events.on_member_join import on_member_join;
