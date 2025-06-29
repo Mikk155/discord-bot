@@ -125,14 +125,15 @@ class PluginManager():
 
     def __init__( self ):
 
+        from sys import executable;
         from os.path import exists;
         from utils.Path import Path;
         from utils.jsonc import jsonc;
         from pathlib import Path as PathLib;
-        from src.ConfigContext import g_ConfigContext;
-        from src.InstallRequirements import InstallRequirements;
-        from importlib.util import spec_from_file_location, module_from_spec;
+        from subprocess import check_call;
         from src.BotLoggin import g_BotLogger;
+        from src.ConfigContext import g_ConfigContext;
+        from importlib.util import spec_from_file_location, module_from_spec;
 
         PluginsContext: list[dict] = jsonc( Path.enter( "config", "plugins.json" ) );
     
@@ -156,7 +157,8 @@ class PluginManager():
 
                     if exists( requirements_path ):
 
-                        InstallRequirements( requirements_path );
+                        g_Logger.info( "Installing requirements <g>{}<>", requirements_path );
+                        check_call( [ executable, "-m", "pip", "install", "-r", requirements_path ] );
 
                     else:
 

@@ -41,9 +41,10 @@ from src.ConfigContext import g_ConfigContext;
 
 if not g_ConfigContext.bot.IsDeveloper:
 
-    from src.InstallRequirements import InstallRequirements;
-    InstallRequirements( Path.enter( "requirements.txt" ) );
-    InstallRequirements( Path.enter( "utils", "requirements.txt" ) );
+    from sys import executable;
+    from subprocess import check_call;
+    check_call( [ executable, "-m", "pip", "install", "-r", Path.enter( "requirements.txt" ) ] );
+    check_call( [ executable, "-m", "pip", "install", "-r", Path.enter( "utils", "requirements.txt" ) ] );
 
 from src.main import g_Logger;
 from src.main import bot;
