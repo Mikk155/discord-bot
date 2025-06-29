@@ -157,7 +157,6 @@ class PluginManager():
 
                     if exists( requirements_path ):
 
-                        g_Logger.info( "Installing requirements <g>{}<>", requirements_path );
                         check_call( [ executable, "-m", "pip", "install", "-r", requirements_path ] );
 
                     else:
