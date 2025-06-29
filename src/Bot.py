@@ -59,13 +59,13 @@ class Bot( discord.Client ):
         await self.tree.sync();
 
     from inspect import FrameInfo;
-    def GetCallChain( self ) -> list[ FrameInfo ]:
+    def GetCallChain( self, overloads: int = 1 ) -> list[ FrameInfo ]:
         from inspect import stack;
-        return stack()[2:] # Ignore GetCallChain itself and where it was called
+        return stack()[overloads:];
 
-    def GetCallChainEmbeds( self, embed: discord.Embed, PythonLibraries = False ) -> discord.Embed:
+    def GetCallChainEmbeds( self, embed: discord.Embed, PythonLibraries = False, overloads: int = 2 ) -> discord.Embed:
 
-        callbacks = self.GetCallChain();
+        callbacks = self.GetCallChain(overloads);
 
         from utils.Path import Path;
 
@@ -299,6 +299,68 @@ class Bot( discord.Client ):
 
         if items is not None and isinstance( items, ( tuple | list ) ):
             embed = self.AddEmbedFields( embed, items );
+
+        return embed;
+
+    def HandleException( self,
+        exception: Exception,
+        message: str = None,
+        *args,
+        SendToDevs = False,
+        data: dict = None,
+    ) -> discord.Embed:
+        '''
+            Build a exception message
+
+            message: Message to display as description, formated with *args.
+
+            SendToDevs: If true, this message will be delivered to the developer server formated with data
+
+            data: dictionary of anything that could be useful to print on the developer server.
+        '''
+
+        from src.BotLoggin import g_BotLogger;
+        embed = g_BotLogger.error( '' if message is None else message, *args, send=0, name="Exception" );
+        embed = self.AddEmbedFields( embed, [ ( "Exception", str(exception), False ) ] );
+
+        if SendToDevs is True:
+
+            g_BotLogger.Messages.append( embed );
+
+            g_BotLogger.Messages.append(
+                self.GetCallChainEmbeds(
+                    self.CreateEmbed(
+                        "Callback traces",
+                        description="The previous Exception were the cause of these callbacks",
+                        color=embed.color
+                    ),
+                    True, 3
+                )
+            );
+
+            if data is not None and len(data) > 0:
+
+                for k, v in data.copy().items():
+
+                    if isinstance( v, str ):
+                        continue;
+
+                    if isinstance( v, ( float | int | bool ) ):
+                        data[ k ] = str(v);
+                    elif isinstance( v, ( discord.User | discord.Member ) ):
+                        from utils.fmt import fmt;
+                        data[ k ] = f'User: {fmt.DiscordUserMention(v)}';
+                    elif isinstance( v, discord.Message ):
+                        data[ k ] = f'Message: {v.jump_url} {v.content}';
+                        data[ k ] = f'Guild: {v.channel.guild} {v.channel.guild.id}';
+                    elif isinstance( v, discord.TextChannel ):
+                        data[ k ] = f'Guild: {v.guild} {v.guild.id}';
+                    elif isinstance( v, discord.Interaction ):
+                        data[ k ] = f'Guild: {v.guild} {v.guild_id}';
+                        data[ k ] = f'User: {fmt.DiscordUserMention(v.user)}';
+
+                from json import dumps;
+                g_BotLogger.Messages.append( "Additional data providedby the Exception\n```json\n{}\n```".format( dumps(data, indent=1) ) );
 
         return embed;
 

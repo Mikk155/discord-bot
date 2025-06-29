@@ -34,7 +34,7 @@ class BotLogMode:
 
 class BotLoggin():
 
-    Messages: list[Embed] = [];
+    Messages: list[ Embed | str | tuple[ Embed | str ] ] = [];
 
     async def SendAllMessages( self ) -> None:
 
@@ -48,13 +48,27 @@ class BotLoggin():
 
             MessageSend = self.Messages.pop(0);
 
+            MessageToSend = None;
+            EmbedToSend = None;
+
+            if isinstance( MessageSend, Embed ):
+                EmbedToSend = MessageSend;
+            elif isinstance( MessageSend, str ):
+                MessageToSend = MessageSend;
+            elif isinstance( MessageSend, tuple ):
+                for i in MessageSend:
+                    if isinstance( i, Embed ):
+                        EmbedToSend = i;
+                    elif isinstance( i, str ):
+                        MessageToSend = i;
+
             from src.Bot import bot;
 
             channel = bot.get_channel( g_ConfigContext.log.Channel );
 
             if channel:
 
-                await channel.send( embed=MessageSend, silent=True, allowed_mentions=False, mention_author=False );
+                await channel.send( content=MessageToSend, embed=EmbedToSend, silent=True, allowed_mentions=False, mention_author=False );
 
     def log( self, message: str, *args,
         name: Optional[str] = None,
