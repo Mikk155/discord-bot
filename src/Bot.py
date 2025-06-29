@@ -356,7 +356,8 @@ class Bot( discord.Client ):
         '''
 
         from src.BotLoggin import g_BotLogger;
-        embed = g_BotLogger.error( '' if message is None else message, *args, send=0, name="Exception" );
+        from src.constants import BotLogMode;
+        embed = g_BotLogger.error( '' if message is None else message, *args, send=BotLogMode.Nothing, name="Exception" );
         embed = self.AddEmbedFields( embed, [ ( "Exception", str(exception), False ) ] );
 
         if SendToDevs is True:

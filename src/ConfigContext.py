@@ -86,6 +86,8 @@ class ContextBotLoggin():
                 if v is True:
                     self.LogLevels |= ToLoggerLevel(k);
 
+from discord import User, Member;
+
 class ConfigContext():
 
     '''
@@ -96,7 +98,6 @@ class ConfigContext():
 
     log: ContextBotLoggin;
 
-    from discord import User, Member;
     def IsOwner( self, user: User | Member | int ) -> bool:
 
         '''

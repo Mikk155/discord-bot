@@ -83,3 +83,18 @@ def RegexMessageReference() -> Pattern[str]:
         import re;
         __RegexMessageReference__ = re.compile( r"https:\/\/(?:canary\.|ptb\.)?discord(?:app)?\.com\/channels\/(\d+)\/(\d+)\/(\d+)" );
     return __RegexMessageReference__;
+
+class ReactionState:
+    Added = 1;
+    Removed = 0;
+
+class ServerBoostState:
+    Suscription = 0;
+    TierOne = 1;
+    TierTwo = 2;
+    TierThree = 3;
+
+class BotLogMode:
+    Nothing = 0;
+    DeveloperChannel = ( 1 << 0 );
+    ConsoleTerminal = ( 1 << 1 );

@@ -22,6 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE
 '''
 
+from utils.Path import Path;
+from utils.jsonc import jsonc;
+from discord import Guild
+
 class Sentences( dict ):
 
     @property
@@ -29,9 +33,6 @@ class Sentences( dict ):
         return "Sentences";
 
     def __init__( self ):
-
-        from utils.Path import Path;
-        from utils.jsonc import jsonc;
 
         super().__init__( jsonc( Path.enter( "sentences", "bot.json" ), exists_ok=True ) );
 
@@ -47,9 +48,6 @@ class Sentences( dict ):
             These sentences are merged in this object
         '''
 
-        from utils.Path import Path;
-        from utils.jsonc import jsonc;
-
         NewSentences = jsonc( Path.enter( "sentences", filename, ".json" ), exists_ok=True );
 
         for s, o in NewSentences.items():
@@ -63,18 +61,17 @@ class Sentences( dict ):
                 from src.BotLoggin import g_BotLogger;
                 g_BotLogger.warn( "Sentence \"<g>{}<>\" already exists!", s, name=self.GetName );
 
-    from discord import Guild
     def get( self, name: str, *args, Guild: Guild | int = None ) -> str:
 
-        from src.BotLoggin import g_BotLogger;
-
         if not name in self:
+
+            from src.BotLoggin import g_BotLogger;
 
             g_BotLogger.warn( "Sentence \"<g>{}<>\" does not exists!", name=self.GetName );
 
             return name;
 
-        SentenceGroup = super().__getitem__( name );
+        SentenceGroup: dict = super().__getitem__( name );
 
         Sentence: str = None;
 
@@ -102,9 +99,11 @@ class Sentences( dict ):
 
             else:
 
+                from src.BotLoggin import g_BotLogger;
+
                 g_BotLogger.error( "No \"<c>{}<>\" label on sentence name \"<g>{}<>\"", DefaultLanguage, name, name=self.GetName );
 
-                return '';
+                return SentenceGroup.get( "english", "" );
 
         try:
             Sentence = Sentence.format( *args );

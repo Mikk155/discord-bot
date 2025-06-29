@@ -22,15 +22,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE
 '''
 
-class ReactionState:
-    Added = 1;
-    Removed = 0;
-
-class ServerBoostState:
-    Suscription = 0;
-    TierOne = 1;
-    TierTwo = 2;
-    TierThree = 3;
+from datetime import datetime;
+from discord import Member, GroupChannel, TextChannel, DMChannel, User, Message, Reaction, Attachment;
+from src.constants import ReactionState, ServerBoostState;
 
 class Plugin():
 
@@ -39,9 +33,6 @@ class Plugin():
 
         Every method should return a boolean, True for keep executing plugins in the list. False if the plugin manager should stop calling subsequent plugins.
     '''
-
-    from datetime import datetime; # Decorators
-    from discord import Member, GroupChannel, TextChannel, DMChannel, User, Message, Reaction, Attachment;
 
     guilds: list[int] = [];
     '''Guilds list to only listen events (if empty == all)'''

@@ -23,14 +23,9 @@ SOFTWARE
 '''
 
 from discord import Embed;
-from src.constants import HexColor
+from src.constants import HexColor, BotLogMode
 from src.main import g_Logger;
 from typing import *
-
-class BotLogMode:
-
-    DeveloperChannel = ( 1 << 0 );
-    ConsoleTerminal = ( 1 << 1 );
 
 class BotLoggin():
 

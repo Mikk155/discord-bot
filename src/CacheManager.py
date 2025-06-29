@@ -46,9 +46,10 @@ class CCacheDictionary( dict ):
 
         return dumps( super().__repr__(), indent=4 );
 
+from utils.Logger import Logger
+
 class CacheManager:
 
-    from utils.Logger import Logger
     m_Logger = Logger( "Cache System" );
 
     __cache__: CCacheDictionary = {};
