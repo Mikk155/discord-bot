@@ -117,8 +117,9 @@ class Plugin():
 
 class PluginManager():
 
-    from utils.Logger import Logger
-    m_Logger = Logger( "Plugin Manager" );
+    @property
+    def GetName( self ) -> str:
+        return "Plugin Manager";
 
     Plugins: list[Plugin] = [];
 
@@ -131,6 +132,7 @@ class PluginManager():
         from src.ConfigContext import g_ConfigContext;
         from src.InstallRequirements import InstallRequirements;
         from importlib.util import spec_from_file_location, module_from_spec;
+        from src.BotLoggin import g_BotLogger;
 
         PluginsContext: list[dict] = jsonc( Path.enter( "config", "plugins.json" ) );
     
@@ -139,10 +141,10 @@ class PluginManager():
         for PluginName, PluginData in PluginsContext.items():
 
             if PluginData.get( "disabled", False ) is True:
-                self.m_Logger.debug( "Plugin \"<c>{}<>\" disabled by config.", PluginName );
+                g_BotLogger.debug( "Plugin \"<c>{}<>\" disabled by config.", PluginName, name=self.GetName );
                 continue;
 
-            self.m_Logger.info( "Registering plugin \"<c>{}<>\"", PluginName );
+            g_BotLogger.info( "Registering plugin \"<c>{}<>\"", PluginName, name=self.GetName );
 
             if not g_ConfigContext.bot.IsDeveloper and "requirements" in PluginData:
 
@@ -158,7 +160,7 @@ class PluginManager():
 
                     else:
 
-                        self.m_Logger.warn( "Invalid requirement file \"<c>{}<>\" for plugin <g>{}<>", PluginName );
+                        g_BotLogger.warn( "Invalid requirement file \"<c>{}<>\" for plugin <g>{}<>", PluginName, name=self.GetName );
 
             script_path = PathLib( Path.enter( "plugins", f'{PluginName}.py' ) );
 
@@ -172,7 +174,8 @@ class PluginManager():
 
             if not hasattr( module, module_name ):
 
-                self.m_Logger.error( "Couldn't find object \"<c>{}<>\" in module \"<g>{}<>\" in the script \"<g>{}<>\"", module_name, module_name, script_path );
+                g_BotLogger.error( "Couldn't find object \"<c>{}<>\" in module \"<g>{}<>\" in the script \"<g>{}<>\"", \
+                    module_name, module_name, script_path, name=self.GetName );
 
                 continue;
 

@@ -57,6 +57,7 @@ class BotLoggin():
                 await channel.send( embed=MessageSend, silent=True, allowed_mentions=False, mention_author=False );
 
     def log( self, message: str, *args,
+        name: Optional[str] = None,
         send: Optional[BotLogMode] = ( BotLogMode.ConsoleTerminal | BotLogMode.DeveloperChannel ),
         emoji: Optional[str] = ...,
         color: Optional[int] = 0xf000FF,
@@ -80,7 +81,12 @@ class BotLoggin():
                         message = message.replace( f'<{p}>', '``', 1 );
                         message = message.replace( f'<>', '``', 1 );
 
-        embed: Embed = Bot.CreateEmbed( f'{emoji} [{level}]', description=message, time=datetime.now(), items=items, color=color );
+        title = f'{emoji} [{level}]';
+
+        if name:
+            title += f' {name}';
+
+        embed: Embed = Bot.CreateEmbed( title, description=message, time=datetime.now(), items=items, color=color );
 
         if send & BotLogMode.DeveloperChannel:
 
@@ -89,67 +95,72 @@ class BotLoggin():
         return embed;
 
     def debug( self, message: str, *args,
-        cmd: Optional[bool] = ...,
+        name: Optional[str] = None,
         send: Optional[BotLogMode] = ( BotLogMode.ConsoleTerminal | BotLogMode.DeveloperChannel ),
         items: tuple[ str, str, bool ] = ...
     ) -> Embed:
         if send & BotLogMode.ConsoleTerminal:
-            g_Logger.debug( message, *args );
+            g_Logger.debug( message, *args, name=name );
         return self.log( message, *args, level="Debug", emoji="📝", color=HexColor.CYAN,
-            send=send, items=items );
+            name=name, send=send, items=items );
 
     def warn( self, message: str, *args,
+        name: Optional[str] = None,
         send: Optional[BotLogMode] = ( BotLogMode.ConsoleTerminal | BotLogMode.DeveloperChannel ),
         items: tuple[ str, str, bool ] = ...
     ) -> Embed:
         if send & BotLogMode.ConsoleTerminal:
-            g_Logger.debug( message, *args );
+            g_Logger.debug( message, *args, name=name );
         return self.log( message, *args, level="Warning", emoji="⚠️", color=HexColor.YELLOW,
-            send=send, items=items );
+            name=name, send=send, items=items );
 
     def error( self, message: str, *args,
+        name: Optional[str] = None,
         send: Optional[BotLogMode] = ( BotLogMode.ConsoleTerminal | BotLogMode.DeveloperChannel ),
         items: tuple[ str, str, bool ] = ...,
         Exit: Optional[bool] = False
     ) -> Embed:
         if send & BotLogMode.ConsoleTerminal:
-            g_Logger.debug( message, *args );
+            g_Logger.debug( message, *args, name=name );
         if Exit is True:
             print( message.format( *args ) );
             exit(0);
         return self.log( message, *args, level="Error", emoji="‼️", color=HexColor.RED,
-            send=send, items=items );
+            name=name, send=send, items=items );
 
     def info( self, message: str, *args,
+        name: Optional[str] = None,
         send: Optional[BotLogMode] = ( BotLogMode.ConsoleTerminal | BotLogMode.DeveloperChannel ),
         items: tuple[ str, str, bool ] = ...
     ) -> Embed:
         if send & BotLogMode.ConsoleTerminal:
-            g_Logger.debug( message, *args );
+            g_Logger.debug( message, *args, name=name );
         return self.log( message, *args, level="Info", emoji="❕", color=HexColor.GREEN,
-            send=send, items=items );
+            name=name, send=send, items=items );
 
     def critical( self, message: str, *args,
+        name: Optional[str] = None,
         send: Optional[BotLogMode] = ( BotLogMode.ConsoleTerminal | BotLogMode.DeveloperChannel ),
         items: tuple[ str, str, bool ] = ...,
         Exit: Optional[bool] = False
     ) -> Embed:
         if send & BotLogMode.ConsoleTerminal:
-            g_Logger.debug( message, *args );
+            g_Logger.debug( message, *args, name=name );
         if Exit is True:
             print( message.format( *args ) );
             exit(0);
         return self.log( message, *args, level="Critical", emoji="⛔", color=HexColor.RED,
-            send=send, items=items );
+            name=name, send=send, items=items );
 
     def trace( self, message: str, *args,
+        name: Optional[str] = None,
         send: Optional[BotLogMode] = ( BotLogMode.ConsoleTerminal | BotLogMode.DeveloperChannel ),
         items: tuple[ str, str, bool ] = ...
     ) -> Embed:
         if send & BotLogMode.ConsoleTerminal:
-            g_Logger.debug( message, *args );
+            g_Logger.debug( message, *args, name=name );
         return self.log( message, *args, level="Trace", emoji="➡", color=HexColor.BLUE,
-            send=send, items=items );
+            name=name, send=send, items=items );
 
-global g_BotLog;
-g_BotLog = BotLoggin();
+global g_BotLogger;
+g_BotLogger = BotLoggin();
