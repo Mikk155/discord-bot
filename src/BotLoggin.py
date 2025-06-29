@@ -49,7 +49,7 @@ class BotLoggin():
 
             if channel:
 
-                await channel.send( embed=MessageSend );
+                await channel.send( embed=MessageSend, silent=True, allowed_mentions=False, mention_author=False );
 
     def log( self, message: str, *args,
         report: Optional[bool] = ...,
