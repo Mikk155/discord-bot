@@ -63,10 +63,9 @@ class Bot( discord.Client ):
         from inspect import stack;
         return stack()[2:] # Ignore GetCallChain itself and where it was called
 
-    @staticmethod
-    def GetCallChainEmbeds( embed: discord.Embed, PythonLibraries = False ) -> discord.Embed:
+    def GetCallChainEmbeds( self, embed: discord.Embed, PythonLibraries = False ) -> discord.Embed:
 
-        callbacks = bot.GetCallChain();
+        callbacks = self.GetCallChain();
 
         from utils.Path import Path;
 
@@ -91,7 +90,7 @@ class Bot( discord.Client ):
                 )
             );
 
-        return Bot.AddEmbedFields( embed, EmbedFields );
+        return self.AddEmbedFields( embed, EmbedFields );
 
     async def FindMemberByName( self, name: str, guild: discord.Guild | int ) -> None | discord.Member:
 
