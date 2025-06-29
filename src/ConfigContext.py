@@ -96,6 +96,19 @@ class ConfigContext():
 
     log: ContextBotLoggin;
 
+    from discord import User, Member;
+    def IsOwner( self, user: User | Member | int ) -> bool:
+
+        '''
+            Returns whatever this user is the owner of this app
+        '''
+        if self.__owner__ is None:
+            return False;
+        if isinstance( user, int ):
+            return ( self.__owner__ == user );
+        return ( user and self.__owner__ == user.id );
+    __owner__ = None;
+
     @property
     def Language( self ) -> str:
         return self.__language__;
@@ -106,6 +119,8 @@ class ConfigContext():
         from utils.jsonc import jsonc;
 
         data = jsonc( Path.enter( "config", "bot.json" ) );
+
+        self.__owner__ = data.pop( "owner", None );
 
         DataDeveloper = data.pop( "developer", {} );
 

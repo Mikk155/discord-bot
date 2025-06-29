@@ -1,6 +1,8 @@
 {
     "$schema": "../schemas/bot.json",
 
+    "owner": 744768007892500481,
+
     "bot":
     {
         "token": "token.txt",
