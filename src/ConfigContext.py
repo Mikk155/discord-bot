@@ -109,8 +109,13 @@ class ConfigContext():
 
         DataDeveloper = data.pop( "developer", {} );
 
-        self.bot = ContextBot( data[ "bot" ] ) if DataDeveloper.pop( "active", False ) is False \
-            else ContextBotDeveloper( DataDeveloper[ "bot" ], DataDeveloper[ "guild" ] );
+        DataBot: dict = data[ "bot" ];
+
+        if DataDeveloper.pop( "active", False ) is False:
+            self.bot = ContextBot( DataBot )
+        else:
+            DataBot.update( DataDeveloper.get( "bot", {} ) );
+            self.bot = ContextBotDeveloper( DataBot, DataDeveloper[ "guild" ] )
 
         self.__language__ = data.pop( "language", "english" );
 
