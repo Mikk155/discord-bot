@@ -36,5 +36,5 @@ async def on_message_delete( message: discord.Message ):
 
     except Exception as e:
 
-        bot.HandleException( e, "on_message_delete", SendToDevs=True, data={ "message": message } );
+        bot.HandleException( e, SendToDevs=True, data={ "message": message } );
 

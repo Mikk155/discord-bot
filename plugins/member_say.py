@@ -3,7 +3,7 @@ from src.PluginManager import Plugin;
 
 class member_say( Plugin ):
 
-    def __init__(self):
+    def OnPluginActivate(self):
 
         command = app_commands.Command(
             name="say",
@@ -11,9 +11,11 @@ class member_say( Plugin ):
             callback=self.command_say,
         );
 
-        command.guild_only = True
+        command.guild_only = True;
 
-        bot.tree.add_command( command )
+        bot.tree.add_command( command );
+
+        g_Sentences.push_back( "member_say" );
 
     @property
     def GetName(self):
@@ -36,7 +38,9 @@ class member_say( Plugin ):
 
         else:
 
-            await message.reply( "You need to provide an argument surrounded by quotes", mention_author=False, silent=True, allowed_mentions=False );
+            embed = g_BotLogger.error( g_Sentences.get( "member_say_no_quotation", Guild=message.guild ), send=BotLogMode.Nothing );
+
+            await message.reply( embed=embed, mention_author=False, silent=True, allowed_mentions=False );
 
         return False;
 
@@ -75,8 +79,8 @@ class member_say( Plugin ):
 
             if interaction.response.is_done():
 
-                await interaction.followup.send( embeds=bot.HandleException( e, "ping_counter::command_pings", SendToDevs=True ) );
+                await interaction.followup.send( embeds=bot.HandleException( e, SendToDevs=True ) );
 
             else:
 
-                await interaction.response.send_message( embeds=bot.HandleException( e, "member_say::command_pings", SendToDevs=True ) );
+                await interaction.response.send_message( embeds=bot.HandleException( e, SendToDevs=True ) );

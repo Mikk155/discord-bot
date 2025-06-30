@@ -37,15 +37,18 @@ async def on_ready():
 
             bot.__on_start_called__ = True;
 
-            print( g_Sentences.get( "ready", bot.user.name, bot.user.discriminator ) );
+            g_BotLogger.info( g_Sentences.get( "on_bot_start", bot.user.name, bot.user.discriminator ) );
 
         else:
+
+            # -TODO Add timedelta?
+            g_BotLogger.info( g_Sentences.get( "on_bot_reconnect" ) );
 
             await g_PluginManager.CallFunction( "OnReconnect" );
 
     except Exception as e:
 
-        bot.HandleException( e, "on_ready", SendToDevs=True );
+        bot.HandleException( e, SendToDevs=True );
 
     from src.events.on_think import on_think;
 

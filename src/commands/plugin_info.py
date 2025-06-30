@@ -12,7 +12,9 @@ async def plugin_info( interaction: discord.Interaction, plugin: str ):
 
         if len( plugins ) == 0:
 
-            await interaction.response.send_message( f"Plugin \"{plugin}\" not found" );
+            embed = g_BotLogger.error( g_Sentences.get( "plugin_not_found", plugin, Guild=interaction.guild_id ), send=BotLogMode.Nothing );
+
+            await interaction.response.send_message( embed=embed );
 
             return;
 
@@ -20,10 +22,13 @@ async def plugin_info( interaction: discord.Interaction, plugin: str ):
 
         embed = discord.Embed( color = HexColor.CYAN, title = plgn.GetFilename, description = plgn.GetName );
 
-        embed.add_field( name = "Description", value = plgn.GetDescription, inline = False );
-        embed.add_field( name = "Author", value = plgn.GetAuthorName, inline = False );
-        embed.add_field( name = "Author site", value = plgn.GetAuthorSite, inline = False );
-        embed.add_field( name = "State", value = "❌Disabled" if plgn.disabled else "✅Enabled", inline = False );
+        
+        embed.add_field( name = g_Sentences.get( "description", Guild=interaction.guild_id ), value = plgn.GetDescription, inline = False );
+        embed.add_field( name = g_Sentences.get( "author", Guild=interaction.guild_id ), value = plgn.GetAuthorName, inline = False );
+        embed.add_field( name = g_Sentences.get( "author_site", Guild=interaction.guild_id ), value = plgn.GetAuthorSite, inline = False );
+        embed.add_field( name = g_Sentences.get( "state", Guild=interaction.guild_id ),
+            value = "❌" + g_Sentences.get( "disabled", Guild=interaction.guild_id ) if plgn.disabled
+                else "✅" + g_Sentences.get( "enabled", Guild=interaction.guild_id ), inline = False );
 
         await interaction.response.send_message( embed=embed );
 
@@ -33,8 +38,8 @@ async def plugin_info( interaction: discord.Interaction, plugin: str ):
 
         if interaction.response.is_done():
 
-            await interaction.followup.send( embeds=bot.HandleException( e, "command::plugin_info" ) );
+            await interaction.followup.send( embeds=bot.HandleException(e) );
 
         else:
 
-            await interaction.response.send_message( embeds=bot.HandleException( e, "command::plugin_info" ) );
+            await interaction.response.send_message( embeds=bot.HandleException(e) );

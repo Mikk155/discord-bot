@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE
 '''
 
+from src.Sentences import g_Sentences;
 from datetime import datetime;
 from discord import Member, GroupChannel, TextChannel, DMChannel, User, Message, Reaction, Attachment;
 from src.constants import ReactionState, ServerBoostState;
@@ -174,7 +175,7 @@ class PluginManager():
 
         for PluginName, PluginData in PluginsContext.items():
 
-            g_BotLogger.info( "Registering plugin \"<c>{}<>\"", PluginName, name=self.GetName );
+            g_BotLogger.trace( g_Sentences.get( "registering_plugin", PluginName ), name=self.GetName );
 
             if not g_ConfigContext.bot.IsDeveloper and "requirements" in PluginData:
 
@@ -190,7 +191,7 @@ class PluginManager():
 
                     else:
 
-                        g_BotLogger.warn( "Invalid requirement file \"<c>{}<>\" for plugin <g>{}<>.", PluginName, name=self.GetName );
+                        g_BotLogger.warn( g_Sentences.get( "invalid_requirements", PluginName ), name=self.GetName );
                         continue;
 
             script_path = PathLib( Path.enter( "plugins", f'{PluginName}.py' ) );
@@ -205,8 +206,7 @@ class PluginManager():
 
             if not hasattr( module, module_name ):
 
-                g_BotLogger.error( "Couldn't find object \"<c>{}<>\" in module \"<g>{}<>\" in the script \"<g>{}<>\"", \
-                    module_name, module_name, script_path, name=self.GetName );
+                g_BotLogger.error( g_Sentences.get( "fail_plugin_class", module_name, module_name, script_path ), name=self.GetName );
 
                 continue;
 
@@ -220,7 +220,7 @@ class PluginManager():
 
             if plugin.disabled is True:
 
-                g_BotLogger.debug( "Plugin \"<c>{}<>\" disabled by config.", PluginName, name=self.GetName );
+                g_BotLogger.debug( g_Sentences.get( "plugin_disabled", PluginName ), name=self.GetName );
 
             else:
 
@@ -255,7 +255,7 @@ class PluginManager():
             except Exception as e:
 
                 from src.Bot import bot;
-                bot.HandleException( e, "PluginManager::CallFunction", SendToDevs=True );
+                bot.HandleException( e, SendToDevs=True );
 
 global g_PluginManager;
 g_PluginManager: PluginManager = PluginManager();

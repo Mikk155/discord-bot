@@ -58,7 +58,9 @@ async def plugin_list( interaction: discord.Interaction ):
 
         if len( g_PluginManager.Plugins ) == 0:
 
-            await interaction.response.send_message( "There are no plugins running." );
+            embed = g_BotLogger.info( g_Sentences.get( "no_plugins_running", Guild=interaction.guild_id ), send=BotLogMode.Nothing );
+
+            await interaction.response.send_message( embed=embed );
 
             return;
 
@@ -76,8 +78,8 @@ async def plugin_list( interaction: discord.Interaction ):
 
         if interaction.response.is_done():
 
-            await interaction.followup.send( embeds=bot.HandleException( e, "command::plugin_list" ) );
+            await interaction.followup.send( embeds=bot.HandleException(e) );
 
         else:
 
-            await interaction.response.send_message( embeds=bot.HandleException( e, "command::plugin_list" ) );
+            await interaction.response.send_message( embeds=bot.HandleException(e) );

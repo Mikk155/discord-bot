@@ -15,7 +15,9 @@ async def cfg_language( interaction: discord.Interaction, language: app_commands
 
         cache[ str( interaction.guild_id ) ] = language.name;
 
-        await interaction.response.send_message( f"Updated language to {language.name}" );
+        embed = g_BotLogger.info( g_Sentences.get( "language_updated_to", language.name, Guild=interaction.guild_id ), send=BotLogMode.Nothing );
+
+        await interaction.response.send_message( embed=embed );
 
     except Exception as e:
 
@@ -23,8 +25,8 @@ async def cfg_language( interaction: discord.Interaction, language: app_commands
 
         if interaction.response.is_done():
 
-            await interaction.followup.send( embeds=bot.HandleException( e, "command::cfg_language" ) );
+            await interaction.followup.send( embeds=bot.HandleException(e) );
 
         else:
 
-            await interaction.response.send_message( embeds=bot.HandleException( e, "command::cfg_language" ) );
+            await interaction.response.send_message( embeds=bot.HandleException(e) );

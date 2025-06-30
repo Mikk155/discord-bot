@@ -33,4 +33,4 @@ async def on_message_edit( before: discord.Message, after: discord.Message ):
 
     except Exception as e:
 
-        bot.HandleException( e, "on_message_edit", SendToDevs=True, data={ "message": before } );
+        bot.HandleException( e, SendToDevs=True, data={ "message": before } );

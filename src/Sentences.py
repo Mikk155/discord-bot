@@ -48,7 +48,7 @@ class Sentences( dict ):
             These sentences are merged in this object
         '''
 
-        NewSentences = jsonc( Path.enter( "sentences", filename, ".json" ), exists_ok=True );
+        NewSentences = jsonc( Path.enter( "sentences", filename + ".json" ), exists_ok=True );
 
         for s, o in NewSentences.items():
 
@@ -59,7 +59,8 @@ class Sentences( dict ):
             else:
 
                 from src.BotLoggin import g_BotLogger;
-                g_BotLogger.warn( "Sentence \"<g>{}<>\" already exists!", s, name=self.GetName );
+
+                g_BotLogger.warn( self.get( "sentence_already_exists", s ), name=self.GetName );
 
     def get( self, name: str, *args, Guild: Guild | int = None ) -> str:
 
@@ -67,7 +68,8 @@ class Sentences( dict ):
 
             from src.BotLoggin import g_BotLogger;
 
-            g_BotLogger.warn( "Sentence \"<g>{}<>\" does not exists!", name=self.GetName );
+            # Prevent recursion. check if exists
+            g_BotLogger.warn( self.get( "sentence_no_exists", name ) if "sentence_no_exists" in self else '', name=self.GetName );
 
             return name;
 
@@ -101,7 +103,7 @@ class Sentences( dict ):
 
                 from src.BotLoggin import g_BotLogger;
 
-                g_BotLogger.error( "No \"<c>{}<>\" label on sentence name \"<g>{}<>\"", DefaultLanguage, name, name=self.GetName );
+                g_BotLogger.error( self.get( "sentence_no_label", DefaultLanguage, name ), name=self.GetName );
 
                 return SentenceGroup.get( "english", "" );
 
@@ -109,7 +111,7 @@ class Sentences( dict ):
             Sentence = Sentence.format( *args );
         except Exception as e:
             from src.Bot import bot;
-            bot.HandleException( e, "PluginManager::CallFunction", SendToDevs=True );
+            bot.HandleException( e, SendToDevs=True );
 
         return Sentence;
 

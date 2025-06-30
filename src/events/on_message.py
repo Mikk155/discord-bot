@@ -108,4 +108,4 @@ async def on_message( message: discord.Message ):
 
     except Exception as e:
 
-        bot.HandleException( e, "on_message", SendToDevs=True, data={ "message": message } );
+        bot.HandleException( e, SendToDevs=True, data={ "message": message } );

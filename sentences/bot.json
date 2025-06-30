@@ -4,8 +4,88 @@
         "english",
         "spanish"
     ],
-    "ready":
+    "on_bot_start":
     {
         "english": "Bot connected and logged as {}#{}"
+    },
+    "on_bot_reconnect":
+    {
+        "english": "Bot reconnected from connection lost"
+    },
+    "language_updated_to":
+    {
+        "english": "Updated language to ``{}``"
+    },
+    "plugin_not_found":
+    {
+        "english": "Plugin ``{}`` not found."
+    },
+    "description":
+    {
+        "english": "Description"
+    },
+    "author":
+    {
+        "english": "Author"
+    },
+    "author_site":
+    {
+        "english": "Author site"
+    },
+    "state":
+    {
+        "english": "State"
+    },
+    "disabled":
+    {
+        "english": "Disabled"
+    },
+    "enabled":
+    {
+        "english": "Enabled"
+    },
+    "no_plugins_running":
+    {
+        "english": "There are no plugins running."
+    },
+    "except_callbacks":
+    {
+        "english": "The previous Exception were the cause of these callbacks"
+    },
+    "except_data":
+    {
+        "english": "Additional data providedby the Exception"
+    },
+    "registering_plugin":
+    {
+        "english": "Registering plugin \"<c>{}<>\""
+    },
+    "invalid_requirements":
+    {
+        "english": "Invalid requirement file \"<c>{}<>\" for plugin <g>{}<>."
+    },
+    "fail_plugin_class":
+    {
+        "english": "Couldn't find object \"<c>{}<>\" in module \"<g>{}<>\" in the script \"<g>{}<>\""
+    },
+    "plugin_disabled":
+    {
+        "english": "Plugin \"<c>{}<>\" disabled by config."
+    },
+    "sentence_already_exists":
+    {
+        "english": "Sentence \"<g>{}<>\" already exists!"
+    },
+    "sentence_no_exists":
+    {
+        "english": "Sentence \"<g>{}<>\" does not exists!"
+    },
+    "sentence_no_label":
+    {
+        "english": "No \"<c>{}<>\" label on sentence name \"<g>{}<>\""
+    },
+    "failed_to_find_user":
+    {
+        "english": "Failed to find user ``{}``"
     }
 }

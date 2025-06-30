@@ -35,4 +35,4 @@ async def on_typing( channel: discord.TextChannel | discord.GroupChannel | disco
 
     except Exception as e:
 
-        bot.HandleException( e, "on_typing", SendToDevs=True, data={ "message": channel } );
+        bot.HandleException( e, SendToDevs=True, data={ "message": channel } );

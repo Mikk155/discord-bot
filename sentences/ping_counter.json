@@ -1,0 +1,10 @@
+{
+    "ping_counter_first_ping":
+    {
+        "english": "The user {} has not been pinged yet. This will be his first ping."
+    },
+    "ping_counter_ping_count":
+    {
+        "english": "The user {} has been pinged {} times."
+    }
+}

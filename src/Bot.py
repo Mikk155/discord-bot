@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE
 '''
 
+from src.Sentences import g_Sentences;
 from typing import *;
 import discord
 from discord import app_commands
@@ -299,7 +300,7 @@ class Bot( discord.Client ):
                 self.GetCallTraceEmbeds(
                     self.CreateEmbed(
                         "Callback traces",
-                        description="The previous Exception were the cause of these callbacks",
+                        description=g_Sentences.get( "except_callbacks" ),
                         color=embed.color
                     ),
                     True
@@ -331,7 +332,7 @@ class Bot( discord.Client ):
                         data[ k ] = f'User: {fmt.DiscordUserMention(v.user)}';
 
                 from json import dumps;
-                g_BotLogger.Messages.append( "Additional data providedby the Exception\n```json\n{}\n```".format( dumps(data, indent=1) ) );
+                g_BotLogger.Messages.append( g_Sentences.get( "except_data" ) + "\n```json\n{}\n```".format( dumps(data, indent=1) ) );
 
         return embed;
 

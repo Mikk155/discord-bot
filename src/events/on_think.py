@@ -46,4 +46,4 @@ async def on_think():
 
     except Exception as e:
 
-        bot.HandleException( e, "on_reaction_remove", SendToDevs=True );
+        bot.HandleException( e, SendToDevs=True );

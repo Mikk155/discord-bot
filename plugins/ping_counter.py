@@ -14,12 +14,12 @@ class ping_counter( Plugin ):
         command.guild_only = True;
 
         bot.tree.add_command( command );
-        print("Called OnPluginActivate")
+
+        g_Sentences.push_back( "ping_counter" );
 
     def OnPluginDeactivate(self):
 
         bot.tree.remove_command( "pings" );
-        print("Called OnPluginDeactivate")
 
     @property
     def GetName(self):
@@ -61,7 +61,9 @@ class ping_counter( Plugin ):
 
         if target is None:
 
-            await message.reply( "Failed to find user {}".format( args[0] ), mention_author=False, silent=True, allowed_mentions=False );
+            embed = g_BotLogger.error( g_Sentences.get( "failed_to_find_user", args[0], Guild=message.guild ), send=BotLogMode.Nothing );
+
+            await message.reply( embed=embed, mention_author=False, silent=True, allowed_mentions=False );
 
             return False;
 
@@ -77,13 +79,13 @@ class ping_counter( Plugin ):
 
         counts = cache.get( mention, [ 0, target.name ] );
 
-        MessagePrinter = 'The user {} has not been pinged yet. This will be his first ping {}'.format( target.name, mention );
-
         if counts[0] > 0:
 
-            MessagePrinter = "The user {} has been pinged {} times".format( counts[1], counts[0] );
+            await bot.SendMessage( channel, g_Sentences.get( "ping_counter_ping_count", counts[1], counts[0], Guild=channel.guild ), mention_author=False, silent=True, allowed_mentions=False );
 
-        await bot.SendMessage( channel, MessagePrinter, mention_author=False, silent=True, allowed_mentions=False );
+        else:
+
+            await bot.SendMessage( channel, g_Sentences.get( "ping_counter_first_ping", mention, Guild=channel.guild ), silent=True );
 
     @app_commands.describe( member='Member' )
     async def command_pings( self, interaction: discord.Interaction, member: discord.Member ):
@@ -98,8 +100,8 @@ class ping_counter( Plugin ):
 
             if interaction.response.is_done():
 
-                await interaction.followup.send( embeds=bot.HandleException( e, "ping_counter::command_pings", SendToDevs=True ) );
+                await interaction.followup.send( embeds=bot.HandleException( e, SendToDevs=True ) );
 
             else:
 
-                await interaction.response.send_message( embeds=bot.HandleException( e, "ping_counter::command_pings", SendToDevs=True ) );
+                await interaction.response.send_message( embeds=bot.HandleException( e, SendToDevs=True ) );

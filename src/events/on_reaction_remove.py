@@ -34,4 +34,4 @@ async def on_reaction_remove( reaction: discord.Reaction, user : discord.User ):
 
     except Exception as e:
 
-        bot.HandleException( e, "on_reaction_remove", SendToDevs=True, data={ "message": reaction.message, "user": user } );
+        bot.HandleException( e, SendToDevs=True, data={ "message": reaction.message, "user": user } );

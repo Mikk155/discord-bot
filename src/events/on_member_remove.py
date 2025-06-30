@@ -33,4 +33,4 @@ async def on_member_remove( member : discord.Member ):
 
     except Exception as e:
 
-        bot.HandleException( e, "on_member_remove", SendToDevs=True, data={ "member": member } );
+        bot.HandleException( e, SendToDevs=True, data={ "member": member } );
