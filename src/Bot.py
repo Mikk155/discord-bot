@@ -135,6 +135,19 @@ class Bot( discord.Client ):
 
         return await channel.create_webhook( name="walter" );
 
+    def JsonToFile( self, JsonObject: dict ) -> discord.File:
+
+        from io import BytesIO;
+        from json import dumps;
+
+        JsonSerialized = dumps( JsonObject, indent=2 );
+
+        Buffer = BytesIO( JsonSerialized.encode( 'utf-8' ) );
+
+        Buffer.seek(0);
+
+        return discord.File( Buffer, "json.json" );
+
     async def FindMemberByName( self, name: str, guild: discord.Guild | int ) -> None | discord.Member:
 
         if isinstance( guild, int ):
