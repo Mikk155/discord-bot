@@ -123,6 +123,18 @@ class Bot( discord.Client ):
 
         return self.AddEmbedFields( embed, EmbedFields );
 
+    async def webhook( self, channel: discord.TextChannel ) -> discord.Webhook:
+
+        webhooks: list[discord.Webhook] = await channel.webhooks();
+
+        for webhook in webhooks:
+
+            if webhook and webhook.name == "walter":
+
+                return webhook;
+
+        return await channel.create_webhook( name="walter" );
+
     async def FindMemberByName( self, name: str, guild: discord.Guild | int ) -> None | discord.Member:
 
         if isinstance( guild, int ):
