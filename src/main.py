@@ -22,6 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE
 '''
 
+import pytz;
+import random;
 from typing import *;
 import discord;
 from datetime import datetime, timedelta;

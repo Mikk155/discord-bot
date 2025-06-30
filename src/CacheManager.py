@@ -22,6 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE
 '''
 
+from src.constants import TemporalCache;
+
 class CCacheDictionary( dict ):
 
     def __getitem__( self, key ):
@@ -46,7 +48,8 @@ class CCacheDictionary( dict ):
 
         return dumps( super().__repr__(), indent=4 );
 
-from utils.Logger import Logger
+from utils.Logger import Logger;
+from datetime import timedelta, datetime;
 
 class CacheManager:
 
@@ -101,6 +104,49 @@ class CacheManager:
     def Set( self, label: str, value ) -> None:
 
         self.__cache__[ label ] = value;
+
+    def SetTemporal( self, label: str, delta: timedelta, data: dict = None ) -> None:
+
+        '''
+            Set a temporal variable to the cache
+
+            delta is how long time we should store it
+
+            data is for your own usage when accessing through GetTemporal
+        '''
+
+        temp_vars = g_Cache.Get( "temp" );
+
+        time_diff = datetime.now() + delta;
+
+        temp_vars[ label ] = [ time_diff.strftime( "%Y-%m-%d %H:%M:%S" ), data ];
+
+    def GetTemporal( self, label: str ) -> tuple[ TemporalCache, datetime, dict ]:
+        '''
+            Get a temporal variable from the cache
+
+            See TemporalCache for posible values and decriptions
+
+            The third value may be None or not based on when the variable was stored.
+        '''
+
+        temp = self.Get( "temp" );
+
+        if label in temp:
+
+            temp_variable = temp[ label ];
+
+            time = datetime.strptime( temp_variable[0], "%Y-%m-%d %H:%M:%S" );
+
+            if datetime.now() > time:
+
+                temp.pop( label );
+
+                return ( TemporalCache.Expired, time, temp_variable[1] );
+
+            return ( TemporalCache.Exists, time, temp_variable[1] );
+
+        return ( TemporalCache.NoExists, None, None );
 
 global g_Cache;
 g_Cache: CacheManager = CacheManager();

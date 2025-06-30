@@ -1,3 +1,5 @@
+from typing import *
+
 class HexColor:
     RED = 0xFF0000
     GREEN = 0x00FF00
@@ -90,16 +92,27 @@ def RegexMessageReference() -> Pattern[str]:
     return __RegexMessageReference__;
 
 class ReactionState:
-    Added = 1;
-    Removed = 0;
+    Added: Literal[1] = 1;
+    Removed: Literal[2] = 0;
 
 class ServerBoostState:
-    Suscription = 0;
-    TierOne = 1;
-    TierTwo = 2;
-    TierThree = 3;
+    Suscription: Literal[0] = 0;
+    TierOne: Literal[1] = 1;
+    TierTwo: Literal[2] = 2;
+    TierThree: Literal[3] = 3;
 
 class BotLogMode:
-    Nothing = 0;
-    DeveloperChannel = ( 1 << 0 );
-    ConsoleTerminal = ( 1 << 1 );
+    Nothing: Literal[0] = 0;
+    '''Literal 0 to not print anywhere and just build a embed'''
+    DeveloperChannel: Literal[1] = ( 1 << 0 );
+    '''Print to the developer guild log channel'''
+    ConsoleTerminal: Literal[2] = ( 1 << 1 );
+    '''Print to the console terminal'''
+
+class TemporalCache:
+    NoExists: Literal[0] = 0;
+    '''Temporal variable exists: ( NoExists, None, None )'''
+    Expired: Literal[1] = 1;
+    '''Temporal variable exists but it has expired and has just been removed from the cache: ( Expired, datetime, data? )'''
+    Exists: Literal[2] = 2;
+    '''Temporal variable exists and still has a time ahead to expire: ( Exists, datetime, data? )'''
