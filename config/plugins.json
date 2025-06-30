@@ -4,7 +4,21 @@
     "ping_counter": {},
     "member_say": {},
 
+    "offtopic_messages":
+    {
+        "guilds": [ 744769532513615922 ]
+    },
+
+    // Not relevant stuff. call at the end
     "woman_moment":
+    {
+        "guilds": [ 744769532513615922 ]
+    },
+    "marry_sara":
+    {
+        "guilds": [ 744769532513615922 ]
+    },
+    "control_arase":
     {
         "guilds": [ 744769532513615922 ]
     }
