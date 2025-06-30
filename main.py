@@ -54,6 +54,7 @@ from src.commands.plugin_info import plugin_info;
 from src.commands.cfg_language import cfg_language;
 
 # -TODO Lazy shit, maybe importlib events/*?
+from src.events.on_audit_log_entry_create import on_audit_log_entry_create;
 from src.events.on_member_join import on_member_join;
 from src.events.on_member_remove import on_member_remove;
 from src.events.on_message_delete import on_message_delete;

@@ -24,7 +24,7 @@ SOFTWARE
 
 from src.Sentences import g_Sentences;
 from datetime import datetime;
-from discord import Member, GroupChannel, TextChannel, DMChannel, User, Message, Reaction, Attachment;
+from discord import Member, GroupChannel, TextChannel, DMChannel, User, Message, Reaction, Attachment, audit_logs;
 from src.constants import ReactionState, ServerBoostState;
 
 class Plugin():
@@ -147,6 +147,10 @@ class Plugin():
 
     async def OnCommand( self, message: Message, command: str, args: list ) -> bool:
         '''Called when a message contains a command prefix'''
+        return True;
+
+    async def OnAuditLog( self, entry: audit_logs.AuditLogEntry  ) -> bool:
+        '''Called when a new entry to the audit log is made'''
         return True;
 
 class PluginManager():
