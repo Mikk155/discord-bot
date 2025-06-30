@@ -5,6 +5,10 @@ class HexColor:
     BLUE = 0x0000FF
     MAGENTA = 0xFF00FF
     CYAN = 0x00FFFF
+    PURPLE = 0x800080;
+    GRAY = 0x808080,;
+    BLACK = 0x000000,;
+    WHITE = 0xFFFFFF,;
 
 def CommonTimezones() -> tuple[str]:
 
