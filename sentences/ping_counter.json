@@ -1,10 +1,10 @@
 {
     "ping_counter_first_ping":
     {
-        "english": "The user {} has not been pinged yet. This will be his first ping."
+        "english": "The user {} has not been pinged yet. This will be his first ping <:pingreee:911150900666572842>"
     },
     "ping_counter_ping_count":
     {
-        "english": "The user {} has been pinged {} times."
+        "english": "The user {} has been pinged {} times <:pingreee:911150900666572842>"
     }
 }
