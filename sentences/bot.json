@@ -87,5 +87,21 @@
     "failed_to_find_user":
     {
         "english": "Failed to find user ``{}``"
+    },
+    "only_json_file_support":
+    {
+        "english": "Only .json files are supported."
+    },
+    "invalid_json_object":
+    {
+        "english": "Invalid json object:\n```\n{}\n```"
+    },
+    "updated":
+    {
+        "english": "Updated"
+    },
+    "fail_to_download":
+    {
+        "english": "Failed to download"
     }
 }

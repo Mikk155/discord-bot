@@ -148,6 +148,57 @@ class Bot( discord.Client ):
 
         return discord.File( Buffer, "json.json" );
 
+    async def FileToJson( self, JsonFile: discord.Attachment, Guild=None ) -> tuple[ dict | None, discord.Embed ]:
+
+        '''
+            Convert a discord file into a json object
+
+            Guild if provided it is used for the embed message
+        '''
+
+        data = None
+        embed = None
+
+        from src.BotLoggin import g_BotLogger;
+        from src.constants import BotLogMode;
+
+        if not JsonFile.filename.endswith( '.json' ):
+
+            embed = g_BotLogger.error( g_Sentences.get( "only_json_file_support", Guild=Guild ), send=BotLogMode.Nothing );
+
+        else:
+
+            from aiohttp import ClientSession;
+            from json import loads;
+
+            async with ClientSession() as session:
+
+                async with session.get( JsonFile.url ) as response:
+
+                    if response.status == 200:
+
+                        data_bytes = await response.read();
+
+                        try:
+
+                            data = loads( data_bytes );
+
+                        except Exception as e:
+
+                            embed = g_BotLogger.error( g_Sentences.get( "invalid_json_object", e, Guild=Guild ), send=BotLogMode.Nothing );
+
+                            return ( None, embed );
+
+                        embed = g_BotLogger.info( g_Sentences.get( "updated", Guild=Guild ), send=BotLogMode.Nothing );
+
+                    else:
+
+                        embed = g_BotLogger.error( g_Sentences.get( "fail_to_download", Guild=Guild ), send=BotLogMode.Nothing );
+
+                        return ( None, embed );
+
+        return ( data, embed );
+
     async def FindMemberByName( self, name: str, guild: discord.Guild | int ) -> None | discord.Member:
 
         if isinstance( guild, int ):
