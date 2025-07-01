@@ -54,6 +54,8 @@ class ping_counter( Plugin ):
         if command != 'pings':
             return True;
 
+        await message.channel.typing();
+
         target: discord.Member = message.author;
 
         if len(args) > 0:
@@ -67,11 +69,11 @@ class ping_counter( Plugin ):
 
             return False;
 
-        await self.GetPingCount( target, message );
+        await self.GetPingCount( target, message.channel );
 
         return False;
 
-    async def GetPingCount( self, target: discord.Member, channel: discord.TextChannel | discord.Message | discord.Interaction ):
+    async def GetPingCount( self, target: discord.Member, channel: discord.TextChannel ):
 
         cache = g_Cache.Get();
 
@@ -92,7 +94,7 @@ class ping_counter( Plugin ):
 
         try:
 
-            await self.GetPingCount( member, interaction );
+            await self.GetPingCount( member, interaction.channel );
 
         except Exception as e:
 
