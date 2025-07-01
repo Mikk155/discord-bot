@@ -34,6 +34,7 @@ global g_Logger;
 g_Logger: Logger = Logger( "Global" );
 
 from utils.fmt import fmt;
+from utils.RGB import RGB;
 
 from src.constants import *
 from src.Sentences import g_Sentences;
