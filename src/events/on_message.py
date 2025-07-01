@@ -29,7 +29,7 @@ async def on_message( message: discord.Message ):
 
     try:
 
-        await g_PluginManager.CallFunction( "OnMessage", message, GuildID=message.guild.id );
+        await g_PluginManager.CallFunction( "OnMessage", message, Guild=message.guild );
 
         if g_ConfigContext.bot.Prefix is not None and message.content.startswith( g_ConfigContext.bot.Prefix ):
 
@@ -43,7 +43,7 @@ async def on_message( message: discord.Message ):
 
                 command = arguments.pop(0);
 
-                await g_PluginManager.CallFunction( "OnCommand", message, command, arguments, GuildID=message.guild.id );
+                await g_PluginManager.CallFunction( "OnCommand", message, command, arguments, Guild=message.guild );
         
             except Exception as e:
 
@@ -51,13 +51,13 @@ async def on_message( message: discord.Message ):
 
         if message.mentions and len( message.mentions ) > 0:
 
-            await g_PluginManager.CallFunction( "OnMention", message, message.mentions, GuildID=message.guild.id );
+            await g_PluginManager.CallFunction( "OnMention", message, message.mentions, Guild=message.guild );
 
         if message.reference and message.reference.message_id:
 
             try:
                 replied_message = await message.channel.fetch_message( message.reference.message_id );
-                await g_PluginManager.CallFunction( "OnReply", message, replied_message, GuildID=message.guild.id );
+                await g_PluginManager.CallFunction( "OnReply", message, replied_message, Guild=message.guild );
             except:
                 pass;
 
@@ -67,21 +67,21 @@ async def on_message( message: discord.Message ):
 
             if len(urls) > 0:
 
-                await g_PluginManager.CallFunction( "OnLink", message, urls, GuildID=message.guild.id );
+                await g_PluginManager.CallFunction( "OnLink", message, urls, Guild=message.guild );
 
                 from src.constants import RegexMessageReference;
 
                 for ReGuildID, ReChannelID, ReMessageID in RegexMessageReference().findall( message.content ):
 
-                    await g_PluginManager.CallFunction( "OnMessageReference", message, ReGuildID,ReChannelID, ReMessageID,GuildID=message.guild.id );
+                    await g_PluginManager.CallFunction( "OnMessageReference", message, ReGuildID,ReChannelID, ReMessageID,Guild=message.guild );
 
                 if any( ( a.lower().endswith( '.gif' ) and 'cdn.discordapp.com' in a ) for a in urls ):
 
-                    await g_PluginManager.CallFunction( "OnMessageGIF", message, GuildID=message.guild.id );
+                    await g_PluginManager.CallFunction( "OnMessageGIF", message, Guild=message.guild );
 
         if message.attachments:
 
-            await g_PluginManager.CallFunction( "OnAttachment", message, message.attachments, GuildID=message.guild.id );
+            await g_PluginManager.CallFunction( "OnAttachment", message, message.attachments, Guild=message.guild );
 
         BoostServerMessages = (
             discord.MessageType.premium_guild_subscription,
@@ -96,15 +96,15 @@ async def on_message( message: discord.Message ):
 
             if PinnedMessages:
 
-                await g_PluginManager.CallFunction("OnMessagePinned", message, PinnedMessages[0], GuildID=message.guild.id)
+                await g_PluginManager.CallFunction("OnMessagePinned", message, PinnedMessages[0], Guild=message.guild );
 
         # elif message.type == discord.MessageType.forwarded:
 
-        #     await g_PluginManager.CallFunction("OnMessageForwarded", message, GuildID=message.guild.id)
+        #     await g_PluginManager.CallFunction("OnMessageForwarded", message, Guild=message.guild );
 
         elif message.type in BoostServerMessages:
 
-            await g_PluginManager.CallFunction("OnServerBoost", message, BoostServerMessages.index( message.type ), GuildID=message.guild.id)
+            await g_PluginManager.CallFunction("OnServerBoost", message, BoostServerMessages.index( message.type ), Guild=message.guild );
 
     except Exception as e:
 

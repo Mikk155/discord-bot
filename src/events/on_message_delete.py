@@ -32,7 +32,7 @@ async def on_message_delete( message: discord.Message ):
 
     try:
 
-        await g_PluginManager.CallFunction( "OnMessageDelete", message, deleter, GuildID=message.guild.id );
+        await g_PluginManager.CallFunction( "OnMessageDelete", message, deleter, Guild=message.guild );
 
     except Exception as e:
 

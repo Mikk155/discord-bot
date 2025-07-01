@@ -29,7 +29,7 @@ async def on_member_remove( member : discord.Member ):
 
     try:
 
-        await g_PluginManager.CallFunction( "OnMemberLeave", member, GuildID=member.guild.id );
+        await g_PluginManager.CallFunction( "OnMemberLeave", member, Guild=member.guild );
 
     except Exception as e:
 

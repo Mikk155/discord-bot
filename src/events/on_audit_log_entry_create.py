@@ -5,7 +5,7 @@ async def on_audit_log_entry_create( entry: discord.audit_logs.AuditLogEntry ):
 
     try:
 
-        await g_PluginManager.CallFunction( "OnAuditLog", entry, GuildID=entry.guild );
+        await g_PluginManager.CallFunction( "OnAuditLog", entry, Guild=entry.guild );
 
     except Exception as e:
 

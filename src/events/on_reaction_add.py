@@ -30,7 +30,7 @@ async def on_reaction_add( reaction: discord.Reaction, user : discord.User ):
 
     try:
 
-        await g_PluginManager.CallFunction( "OnReaction", reaction, ReactionState.Added, user, GuildID=reaction.guild.id );
+        await g_PluginManager.CallFunction( "OnReaction", reaction, ReactionState.Added, user, Guild=reaction.guild );
 
     except Exception as e:
 

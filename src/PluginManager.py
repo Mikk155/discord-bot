@@ -232,14 +232,28 @@ class PluginManager():
 
             self.Plugins.append( plugin );
 
-    async def CallFunction( self, fnName: str, *args, GuildID = None ) -> None:
+    @property
+    def GetCurrentPlugin( self ) -> Plugin:
+
+        from inspect import stack;
+        from os.path import splitext, basename;
+
+        Frame = stack()[1];
+
+        Caller = splitext( basename( Frame.filename ) )[0];
+
+        Any = [ plugin for plugin in self.Plugins if plugin.__class__.__name__ == Caller ];
+
+        return Any[0] if len(Any) > 0 else None;
+
+    async def CallFunction( self, fnName: str, *args, Guild = -1 ) -> None:
 
         for p in self.Plugins:
 
             if p.disabled is True:
                 continue;
 
-            if len( p.guilds ) > 0 and GuildID is not None and not GuildID in p.guilds:
+            if len( p.guilds ) > 0 and Guild != -1 and ( Guild is None or Guild.id in p.guilds ):
                 continue; # This plugin doesn't want to work on this guild.
 
             try:

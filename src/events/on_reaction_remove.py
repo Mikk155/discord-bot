@@ -30,7 +30,7 @@ async def on_reaction_remove( reaction: discord.Reaction, user : discord.User ):
 
     try:
 
-        await g_PluginManager.CallFunction( "OnReaction", reaction, ReactionState.Removed, user, GuildID=reaction.guild.id );
+        await g_PluginManager.CallFunction( "OnReaction", reaction, ReactionState.Removed, user, Guild=reaction.guild );
 
     except Exception as e:
 

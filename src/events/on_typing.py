@@ -31,7 +31,7 @@ async def on_typing( channel: discord.TextChannel | discord.GroupChannel | disco
 
     try:
 
-        await g_PluginManager.CallFunction( "OnTyping", channel, user, when, GuildID=channel.guild.id );
+        await g_PluginManager.CallFunction( "OnTyping", channel, user, when, Guild=channel.guild );
 
     except Exception as e:
 

@@ -29,7 +29,7 @@ async def on_member_join( member : discord.Member ):
 
     try:
 
-        await g_PluginManager.CallFunction( "OnMemberJoin", member, GuildID=member.guild.id );
+        await g_PluginManager.CallFunction( "OnMemberJoin", member, Guild=member.guild );
 
     except Exception as e:
 

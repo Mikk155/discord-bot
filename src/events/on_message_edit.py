@@ -29,7 +29,7 @@ async def on_message_edit( before: discord.Message, after: discord.Message ):
 
     try:
 
-        await g_PluginManager.CallFunction( "OnMessageEdited", before, after, GuildID=after.guild.id );
+        await g_PluginManager.CallFunction( "OnMessageEdited", before, after, Guild=after.guild );
 
     except Exception as e:
 
