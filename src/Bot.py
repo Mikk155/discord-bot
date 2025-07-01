@@ -123,6 +123,28 @@ class Bot( discord.Client ):
 
         return self.AddEmbedFields( embed, EmbedFields );
 
+    async def UserReacted( self,
+        user: Union[discord.Member, discord.User],
+        message: discord.Message,
+        emoji: Optional[str] = None
+    ) -> bool:
+
+        if not message or not user:
+
+            return False;
+
+        for r in message.reactions:
+
+            if emoji is None or str( r.emoji ) == emoji:
+
+                async for reactor in r.users():
+
+                    if reactor.id == user.id:
+
+                        return True
+
+        return False;
+
     async def webhook( self, channel: discord.TextChannel ) -> discord.Webhook:
 
         webhooks: list[discord.Webhook] = await channel.webhooks();
