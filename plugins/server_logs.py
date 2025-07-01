@@ -198,10 +198,19 @@ class server_logs( Plugin ):
         if not channel or channel is None:
             return;
 
+        AuthorMSG = message.author.mention;
+
+        if message.webhook_id is not None:
+
+            WebHookAt = [ w for w in await message.channel.webhooks() if w.id == message.webhook_id ];
+
+            if len(WebHookAt) > 0:
+                AuthorMSG = f'{AuthorMSG} (Webhook ``{WebHookAt[0].name}``)';
+
         embed = discord.Embed(
             color = RGB(255,0,0).hex,
             title=g_Sentences.get( "server_logs_cfg_OnMessageDelete", Guild=GuildID ),
-            description=g_Sentences.get( "server_logs_message_deleted_info", message.author.mention, message.channel.jump_url, Guild=GuildID )
+            description=g_Sentences.get( "server_logs_message_deleted_info", AuthorMSG, message.channel.jump_url, Guild=GuildID )
         );
 
         try:
