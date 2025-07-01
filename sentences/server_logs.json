@@ -1,0 +1,50 @@
+{
+    "server_logs_cfg_OnMessageDelete":
+    {
+        "english": "Message deleted"
+    },
+    "server_logs_message_deleted_info":
+    {
+        "english": "Message sent by {} deleted in {}"
+    },
+    "server_logs_message_deleted_replied":
+    {
+        "english": "The message was a replied to {}"
+    },
+    "server_logs_message_deleted_by":
+    {
+        "english": "Message deleted by"
+    },
+    "server_logs_message_deleted_content":
+    {
+        "english": "Content split part {}"
+    },
+    "server_logs_cfg_select":
+    {
+        "english": "Select a channel for each log type"
+    },
+    "server_logs_cfg_OnMessageEdited":
+    {
+        "english": "Message edited"
+    },
+    "server_logs_cfg_OnMessageEdited_info":
+    {
+        "english": "Message sent by {} edited in {}"
+    },
+    "server_logs_cfg_OnMessageEdited_BeforePart":
+    {
+        "english": "Before part {}"
+    },
+    "server_logs_cfg_OnMessageEdited_Before":
+    {
+        "english": "Before"
+    },
+    "server_logs_cfg_OnMessageEdited_NewPart":
+    {
+        "english": "New part {}"
+    },
+    "server_logs_cfg_OnMessageEdited_New":
+    {
+        "english": "New"
+    }
+}

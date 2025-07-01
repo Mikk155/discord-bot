@@ -103,5 +103,9 @@
     "fail_to_download":
     {
         "english": "Failed to download"
+    },
+    "content":
+    {
+        "english": "Content"
     }
 }
