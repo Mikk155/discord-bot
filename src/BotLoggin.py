@@ -26,6 +26,7 @@ from discord import Embed;
 from src.constants import HexColor, BotLogMode
 from src.main import g_Logger;
 from typing import *
+from utils.Logger import LoggerLevel;
 
 class BotLoggin():
 
@@ -65,7 +66,7 @@ class BotLoggin():
 
                 await channel.send( content=MessageToSend, embed=EmbedToSend, silent=True, allowed_mentions=False, mention_author=False );
 
-    def log( self, message: str, *args,
+    def log( self, logger: LoggerLevel, message: str, *args,
         name: Optional[str] = None,
         send: Optional[BotLogMode] = ( BotLogMode.ConsoleTerminal | BotLogMode.DeveloperChannel ),
         emoji: Optional[str] = ...,
@@ -105,7 +106,11 @@ class BotLoggin():
 
         if send & BotLogMode.DeveloperChannel:
 
-            self.Messages.append( embed );
+            from src.ConfigContext import g_ConfigContext;
+
+            if g_ConfigContext.log.LogLevels & logger:
+
+                self.Messages.append( embed );
 
         return embed;
 
@@ -116,7 +121,7 @@ class BotLoggin():
     ) -> Embed:
         if send & BotLogMode.ConsoleTerminal:
             g_Logger.debug( message, *args, name=name );
-        return self.log( message, *args, level="Debug", emoji="📝", color=HexColor.CYAN,
+        return self.log( LoggerLevel.Debug, message, *args, level="Debug", emoji="📝", color=HexColor.CYAN,
             name=name, send=send, items=items );
 
     def warn( self, message: str, *args,
@@ -126,7 +131,7 @@ class BotLoggin():
     ) -> Embed:
         if send & BotLogMode.ConsoleTerminal:
             g_Logger.debug( message, *args, name=name );
-        return self.log( message, *args, level="Warning", emoji="⚠️", color=HexColor.YELLOW,
+        return self.log( LoggerLevel.Warning, message, *args, level="Warning", emoji="⚠️", color=HexColor.YELLOW,
             name=name, send=send, items=items );
 
     def error( self, message: str, *args,
@@ -140,7 +145,7 @@ class BotLoggin():
         if Exit is True:
             print( message.format( *args ) );
             exit(0);
-        return self.log( message, *args, level="Error", emoji="‼️", color=HexColor.RED,
+        return self.log( LoggerLevel.Error, message, *args, level="Error", emoji="‼️", color=HexColor.RED,
             name=name, send=send, items=items );
 
     def info( self, message: str, *args,
@@ -150,7 +155,7 @@ class BotLoggin():
     ) -> Embed:
         if send & BotLogMode.ConsoleTerminal:
             g_Logger.debug( message, *args, name=name );
-        return self.log( message, *args, level="Info", emoji="❕", color=HexColor.GREEN,
+        return self.log( LoggerLevel.Information, message, *args, level="Info", emoji="❕", color=HexColor.GREEN,
             name=name, send=send, items=items );
 
     def critical( self, message: str, *args,
@@ -164,7 +169,7 @@ class BotLoggin():
         if Exit is True:
             print( message.format( *args ) );
             exit(0);
-        return self.log( message, *args, level="Critical", emoji="⛔", color=HexColor.RED,
+        return self.log( LoggerLevel.Critical, message, *args, level="Critical", emoji="⛔", color=HexColor.RED,
             name=name, send=send, items=items );
 
     def trace( self, message: str, *args,
@@ -174,7 +179,7 @@ class BotLoggin():
     ) -> Embed:
         if send & BotLogMode.ConsoleTerminal:
             g_Logger.debug( message, *args, name=name );
-        return self.log( message, *args, level="Trace", emoji="➡", color=HexColor.BLUE,
+        return self.log( LoggerLevel.Trace, message, *args, level="Trace", emoji="➡", color=HexColor.BLUE,
             name=name, send=send, items=items );
 
 global g_BotLogger;
