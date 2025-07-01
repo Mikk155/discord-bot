@@ -67,6 +67,7 @@ from src.events.on_ready import on_ready;
 from asyncio import run as AsyncRun;
 from src.PluginManager import g_PluginManager;
 AsyncRun( g_PluginManager.CallFunction( "OnInitialize" ) );
+from src.Logger import g_DiscordLogger
 
 try:
 

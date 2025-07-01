@@ -36,6 +36,16 @@ class DiscordLogger():
 
     __Messages: list[ Union[ Embed, str ] ];
 
+    colors = {
+        "r": RGB(255,0,0),
+        "g": RGB(0,255,0),
+        "b": RGB(0,0,255),
+        "y": RGB(255,255,0),
+        "m": RGB(255,0,255),
+        "c": RGB(0,255,255),
+        "g": RGB(100,100,100),
+    };
+
     def __init__( self ):
 
         self.__Messages = [];
@@ -83,9 +93,10 @@ class DiscordLogger():
         emoji: str,
         level_name: str,
         level: LoggerLevel,
-        name: Optional[str],
-        items: Optional[ tuple[ str, str, bool ] ],
+        name: str,
+        items: tuple[ str, str, bool ],
         flags: LoggerFlags = ( LoggerFlags.PrintTerminal | LoggerFlags.PrintDiscord ),
+        colors: dict[ str, RGB ] = None,
         *args
         ) -> Embed:
 
@@ -105,6 +116,13 @@ class DiscordLogger():
 
         from src.ConfigContext import g_ConfigContext;
 
+        terminal_message = message;
+        discord_message = message;
+
+        for c, rgb in colors.items() if colors is not None else self.colors.items():
+            terminal_message = terminal_message.replace( f'<{c}>', f"\033[38;2;{rgb.R};{rgb.G};{rgb.B}m" ).replace( "<>", "\033[0m" );
+            discord_message = discord_message.replace( f'<{c}>', "``" ).replace( "<>", "``" );
+
         if flags & LoggerFlags.PrintTerminal:
 
             print( '[{}:{}:{}] [{}] [{}] {}'.format(
@@ -113,10 +131,10 @@ class DiscordLogger():
                 RGB(255,255,0).cmd( now.second ),
                 color.cmd( level_name ),
                 RGB(0,200,255).cmd( name ),
-                message
+                terminal_message
             ) );
 
-        embed = Embed( color = color.hex, title = f'{emoji}{level_name} {name}', description=message, timestamp=now );
+        embed = Embed( color = color.hex, title = f'{emoji}{level_name} {name}', description=discord_message, timestamp=now );
 
         if items is not None and len(items) > 0:
 
@@ -160,7 +178,8 @@ class DiscordLogger():
 
     def debug( self, message: str, *args, name: str = None,
         items: Union[ str, Optional[ tuple[ str, str, Optional[bool] ] ] ] = None,
-        flags: LoggerFlags = ( LoggerFlags.PrintTerminal | LoggerFlags.PrintDiscord )
+        flags: LoggerFlags = ( LoggerFlags.PrintTerminal | LoggerFlags.PrintDiscord ),
+        colors: Optional[ dict[ str, RGB ] ] = None
     ) -> Embed:
         '''
             ``message``: Message to send
@@ -175,11 +194,12 @@ class DiscordLogger():
 
             Returns a discord.Embed
         '''
-        return self.LogCore(message, RGB(100,100,200), "📝", "Debug", LoggerLevel.Debug, name, items, flags, *args );
+        return self.LogCore(message, RGB(100,100,200), "📝", "Debug", LoggerLevel.Debug, name, items, flags, colors, *args );
 
     def trace( self, message: str, *args, name: str = None,
         items: Union[ str, Optional[ tuple[ str, str, Optional[bool] ] ] ] = None,
-        flags: LoggerFlags = ( LoggerFlags.PrintTerminal | LoggerFlags.PrintDiscord )
+        flags: LoggerFlags = ( LoggerFlags.PrintTerminal | LoggerFlags.PrintDiscord ),
+        colors: Optional[ dict[ str, RGB ] ] = None
     ) -> Embed:
         '''
             ``message``: Message to send
@@ -194,11 +214,12 @@ class DiscordLogger():
 
             Returns a discord.Embed
         '''
-        return self.LogCore(message, RGB(0,255,255), "➡", "Trace", LoggerLevel.Trace, name, items, flags, *args );
+        return self.LogCore(message, RGB(0,255,255), "➡", "Trace", LoggerLevel.Trace, name, items, flags, colors, *args );
 
     def info( self, message: str, *args, name: str = None,
         items: Union[ str, Optional[ tuple[ str, str, Optional[bool] ] ] ] = None,
-        flags: LoggerFlags = ( LoggerFlags.PrintTerminal | LoggerFlags.PrintDiscord )
+        flags: LoggerFlags = ( LoggerFlags.PrintTerminal | LoggerFlags.PrintDiscord ),
+        colors: Optional[ dict[ str, RGB ] ] = None
     ) -> Embed:
         '''
             ``message``: Message to send
@@ -213,11 +234,12 @@ class DiscordLogger():
 
             Returns a discord.Embed
         '''
-        return self.LogCore(message, RGB(0,255,0), "❕", "Info", LoggerLevel.Information, name, items, flags, *args );
+        return self.LogCore(message, RGB(0,255,0), "❕", "Info", LoggerLevel.Information, name, items, flags, colors, *args );
 
     def warn( self, message: str, *args, name: str = None,
         items: Union[ str, Optional[ tuple[ str, str, Optional[bool] ] ] ] = None,
-        flags: LoggerFlags = ( LoggerFlags.PrintTerminal | LoggerFlags.PrintDiscord )
+        flags: LoggerFlags = ( LoggerFlags.PrintTerminal | LoggerFlags.PrintDiscord ),
+        colors: Optional[ dict[ str, RGB ] ] = None
     ) -> Embed:
         '''
             ``message``: Message to send
@@ -232,11 +254,12 @@ class DiscordLogger():
 
             Returns a discord.Embed
         '''
-        return self.LogCore(message, RGB(255,200,0), "⚠️", "Warning", LoggerLevel.Warning, name, items, flags, *args );
+        return self.LogCore(message, RGB(255,200,0), "⚠️", "Warning", LoggerLevel.Warning, name, items, flags, colors, *args );
 
     def error( self, message: str, *args, Exit:bool = False, name: str = None,
         items: Union[ str, Optional[ tuple[ str, str, Optional[bool] ] ] ] = None,
-        flags: LoggerFlags = ( LoggerFlags.PrintTerminal | LoggerFlags.PrintDiscord )
+        flags: LoggerFlags = ( LoggerFlags.PrintTerminal | LoggerFlags.PrintDiscord ),
+        colors: Optional[ dict[ str, RGB ] ] = None
     ) -> Embed:
         '''
             ``message``: Message to send
@@ -253,11 +276,12 @@ class DiscordLogger():
 
             Returns a discord.Embed
         '''
-        return self.__ShouldQuit__( self.LogCore(message, RGB(255,80,0), "‼️", "Error", LoggerLevel.Error, name, items, flags, *args ), Exit );
+        return self.__ShouldQuit__( self.LogCore(message, RGB(255,80,0), "‼️", "Error", LoggerLevel.Error, name, items, flags, colors, *args ), Exit );
 
     def critical( self, message: str, *args, Exit:bool = False, name: str = None,
         items: Union[ str, Optional[ tuple[ str, str, Optional[bool] ] ] ] = None,
-        flags: LoggerFlags = ( LoggerFlags.PrintTerminal | LoggerFlags.PrintDiscord )
+        flags: LoggerFlags = ( LoggerFlags.PrintTerminal | LoggerFlags.PrintDiscord ),
+        colors: Optional[ dict[ str, RGB ] ] = None
     ) -> Embed:
         '''
             ``message``: Message to send
@@ -274,7 +298,7 @@ class DiscordLogger():
 
             Returns a discord.Embed
         '''
-        return self.__ShouldQuit__( self.LogCore(message, RGB(255,0,0), "⛔", "Critical", LoggerLevel.Critical, name, items, flags, *args ), Exit );
+        return self.__ShouldQuit__( self.LogCore(message, RGB(255,0,0), "⛔", "Critical", LoggerLevel.Critical, name, items, flags, colors, *args ), Exit );
 
     def __ShouldQuit__( self, Embed, Exit ) -> Embed:
         if Exit is True:
