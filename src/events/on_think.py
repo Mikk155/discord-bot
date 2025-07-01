@@ -36,7 +36,7 @@ async def on_think():
 
         if g_ConfigContext.log.IsActive:
 
-            await g_BotLogger.SendAllMessages();
+            await g_DiscordLogger.SendAllMessages();
 
         from datetime import datetime;
 

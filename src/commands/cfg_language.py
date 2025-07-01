@@ -15,7 +15,7 @@ async def cfg_language( interaction: discord.Interaction, language: app_commands
 
         cache[ str( interaction.guild_id ) ] = language.name;
 
-        embed = g_BotLogger.info( g_Sentences.get( "language_updated_to", language.name, Guild=interaction.guild_id ), send=BotLogMode.Nothing );
+        embed = g_DiscordLogger.info( g_Sentences.get( "language_updated_to", language.name, Guild=interaction.guild_id ), flags=LoggerFlags.Nothing );
 
         await interaction.response.send_message( embed=embed );
 

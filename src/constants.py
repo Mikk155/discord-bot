@@ -101,14 +101,6 @@ class ServerBoostState:
     TierTwo: Literal[2] = 2;
     TierThree: Literal[3] = 3;
 
-class BotLogMode:
-    Nothing: Literal[0] = 0;
-    '''Literal 0 to not print anywhere and just build a embed'''
-    DeveloperChannel: Literal[1] = ( 1 << 0 );
-    '''Print to the developer guild log channel'''
-    ConsoleTerminal: Literal[2] = ( 1 << 1 );
-    '''Print to the console terminal'''
-
 class TemporalCache:
     NoExists: Literal[0] = 0;
     '''Temporal variable exists: ( NoExists, None, None )'''

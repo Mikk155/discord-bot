@@ -12,7 +12,7 @@ async def plugin_info( interaction: discord.Interaction, plugin: str ):
 
         if len( plugins ) == 0:
 
-            embed = g_BotLogger.error( g_Sentences.get( "plugin_not_found", plugin, Guild=interaction.guild_id ), send=BotLogMode.Nothing );
+            embed = g_DiscordLogger.error( g_Sentences.get( "plugin_not_found", plugin, Guild=interaction.guild_id ), flags=LoggerFlags.Nothing );
 
             await interaction.response.send_message( embed=embed );
 

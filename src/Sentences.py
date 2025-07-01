@@ -58,18 +58,14 @@ class Sentences( dict ):
 
             else:
 
-                from src.BotLoggin import g_BotLogger;
-
-                g_BotLogger.warn( self.get( "sentence_already_exists", s ), name=self.GetName );
+                g_DiscordLogger.warn( self.get( "sentence_already_exists", s ), name=self.GetName );
 
     def get( self, name: str, *args, Guild: Guild | int = None ) -> str:
 
         if not name in self:
 
-            from src.BotLoggin import g_BotLogger;
-
             # Prevent recursion. check if exists
-            g_BotLogger.warn( self.get( "sentence_no_exists", name ) if "sentence_no_exists" in self else '', name=self.GetName );
+            g_DiscordLogger.warn( self.get( "sentence_no_exists", name ) if "sentence_no_exists" in self else '', name=self.GetName );
 
             return name;
 
@@ -101,9 +97,7 @@ class Sentences( dict ):
 
             else:
 
-                from src.BotLoggin import g_BotLogger;
-
-                g_BotLogger.error( self.get( "sentence_no_label", DefaultLanguage, name ), name=self.GetName );
+                g_DiscordLogger.error( self.get( "sentence_no_label", DefaultLanguage, name ), name=self.GetName );
 
                 return SentenceGroup.get( "english", "" );
 

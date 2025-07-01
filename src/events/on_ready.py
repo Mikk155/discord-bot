@@ -37,12 +37,12 @@ async def on_ready():
 
             bot.__on_start_called__ = True;
 
-            g_BotLogger.info( g_Sentences.get( "on_bot_start", bot.user.name, bot.user.discriminator ) );
+            g_DiscordLogger.info( g_Sentences.get( "on_bot_start", bot.user.name, bot.user.discriminator ) );
 
         else:
 
             # -TODO Add timedelta?
-            g_BotLogger.info( g_Sentences.get( "on_bot_reconnect" ) );
+            g_DiscordLogger.info( g_Sentences.get( "on_bot_reconnect" ) );
 
             await g_PluginManager.CallFunction( "OnReconnect" );
 

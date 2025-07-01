@@ -29,9 +29,7 @@ import discord;
 from datetime import datetime, timedelta;
 from discord import app_commands;
 
-from utils.Logger import Logger;
-global g_Logger;
-g_Logger: Logger = Logger( "Global" );
+from src.Logger import g_DiscordLogger, LoggerFlags, ToLoggerLevel, LoggerLevel;
 
 from utils.fmt import fmt;
 from utils.RGB import RGB;
@@ -40,6 +38,5 @@ from src.constants import *
 from src.Sentences import g_Sentences;
 from src.CacheManager import g_Cache;
 from src.ConfigContext import g_ConfigContext;
-from src.BotLoggin import g_BotLogger;
 from src.Bot import bot
 from src.PluginManager import g_PluginManager;

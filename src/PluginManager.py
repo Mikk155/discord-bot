@@ -23,6 +23,7 @@ SOFTWARE
 '''
 
 from src.Sentences import g_Sentences;
+from src.Logger import g_DiscordLogger;
 from datetime import datetime;
 from discord import Member, GroupChannel, TextChannel, DMChannel, User, Message, Reaction, Attachment, audit_logs;
 from src.constants import ReactionState, ServerBoostState;
@@ -169,7 +170,6 @@ class PluginManager():
         from utils.jsonc import jsonc;
         from pathlib import Path as PathLib;
         from subprocess import check_call;
-        from src.BotLoggin import g_BotLogger;
         from src.ConfigContext import g_ConfigContext;
         from importlib.util import spec_from_file_location, module_from_spec;
 
@@ -179,7 +179,7 @@ class PluginManager():
 
         for PluginName, PluginData in PluginsContext.items():
 
-            g_BotLogger.trace( g_Sentences.get( "registering_plugin", PluginName ), name=self.GetName );
+            g_DiscordLogger.trace( g_Sentences.get( "registering_plugin", PluginName ), name=self.GetName );
 
             if not g_ConfigContext.bot.IsDeveloper and "requirements" in PluginData:
 
@@ -195,7 +195,7 @@ class PluginManager():
 
                     else:
 
-                        g_BotLogger.warn( g_Sentences.get( "invalid_requirements", PluginName ), name=self.GetName );
+                        g_DiscordLogger.warn( g_Sentences.get( "invalid_requirements", PluginName ), name=self.GetName );
                         continue;
 
             script_path = PathLib( Path.enter( "plugins", f'{PluginName}.py' ) );
@@ -210,7 +210,7 @@ class PluginManager():
 
             if not hasattr( module, module_name ):
 
-                g_BotLogger.error( g_Sentences.get( "fail_plugin_class", module_name, module_name, script_path ), name=self.GetName );
+                g_DiscordLogger.error( g_Sentences.get( "fail_plugin_class", module_name, module_name, script_path ), name=self.GetName );
 
                 continue;
 
@@ -224,7 +224,7 @@ class PluginManager():
 
             if plugin.disabled is True:
 
-                g_BotLogger.debug( g_Sentences.get( "plugin_disabled", PluginName ), name=self.GetName );
+                g_DiscordLogger.debug( g_Sentences.get( "plugin_disabled", PluginName ), name=self.GetName );
 
             else:
 

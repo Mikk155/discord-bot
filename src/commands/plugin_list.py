@@ -58,7 +58,7 @@ async def plugin_list( interaction: discord.Interaction ):
 
         if len( g_PluginManager.Plugins ) == 0:
 
-            embed = g_BotLogger.info( g_Sentences.get( "no_plugins_running", Guild=interaction.guild_id ), send=BotLogMode.Nothing );
+            embed = g_DiscordLogger.info( g_Sentences.get( "no_plugins_running", Guild=interaction.guild_id ), flags=LoggerFlags.Nothing );
 
             await interaction.response.send_message( embed=embed );
 

@@ -48,12 +48,10 @@ class CCacheDictionary( dict ):
 
         return dumps( super().__repr__(), indent=4 );
 
-from utils.Logger import Logger;
+from src.Logger import g_DiscordLogger, LoggerFlags;
 from datetime import timedelta, datetime;
 
 class CacheManager:
-
-    m_Logger = Logger( "Cache System" );
 
     __cache__: CCacheDictionary = {};
     '''The whole cache (Do NOT modify directly! use g_Cache.Get())'''
@@ -82,7 +80,7 @@ class CacheManager:
 
         except Exception as e:
 
-            self.m_Logger.warn( "Failed to store the cache: <r>{}<>", e );
+            g_DiscordLogger.warn( "Failed to store the cache: <r>{}<>", e, flags=LoggerFlags.PrintTerminal );
 
     def Get( self, label: str = None ) -> CCacheDictionary:
 

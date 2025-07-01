@@ -38,7 +38,7 @@ class member_say( Plugin ):
 
         else:
 
-            embed = g_BotLogger.error( g_Sentences.get( "member_say_no_quotation", Guild=message.guild ), send=BotLogMode.Nothing );
+            embed = g_DiscordLogger.error( g_Sentences.get( "member_say_no_quotation", Guild=message.guild ), flags=LoggerFlags.Nothing );
 
             await message.reply( embed=embed, mention_author=False, silent=True, allowed_mentions=False );
 

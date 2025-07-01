@@ -63,7 +63,7 @@ class ping_counter( Plugin ):
 
         if target is None:
 
-            embed = g_BotLogger.error( g_Sentences.get( "failed_to_find_user", args[0], Guild=message.guild ), send=BotLogMode.Nothing );
+            embed = g_DiscordLogger.error( g_Sentences.get( "failed_to_find_user", args[0], Guild=message.guild ), flags=LoggerFlags.Nothing );
 
             await message.reply( embed=embed, mention_author=False, silent=True, allowed_mentions=False );
 

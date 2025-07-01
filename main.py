@@ -46,7 +46,7 @@ if not g_ConfigContext.bot.IsDeveloper:
     check_call( [ executable, "-m", "pip", "install", "-r", Path.enter( "requirements.txt" ) ] );
     check_call( [ executable, "-m", "pip", "install", "-r", Path.enter( "utils", "requirements.txt" ) ] );
 
-from src.main import g_Logger;
+from src.Logger import g_DiscordLogger, LoggerFlags;
 from src.main import bot;
 
 from src.commands.plugin_list import plugin_list;
@@ -76,7 +76,7 @@ try:
 
     if not exists( TokenPath ):
 
-        g_Logger.critical( "File <g>{}<> Doesn't exists!", TokenPath, Exit=True );
+        g_DiscordLogger.critical( "File {} doesn't exists!", TokenPath, Exit=True, flags=LoggerFlags.PrintTerminal );
 
     Token = open( TokenPath, "r" ).read();
 
@@ -84,4 +84,4 @@ try:
 
 except Exception as e:
 
-    g_Logger.critical( "Exception: <r>{}<>", e, Exit=True );
+    g_DiscordLogger.critical( "Exception: <r>{}<>", e, Exit=True, flags=LoggerFlags.PrintTerminal );

@@ -23,6 +23,7 @@ SOFTWARE
 '''
 
 from src.Sentences import g_Sentences;
+from src.Logger import g_DiscordLogger, LoggerFlags;
 from typing import *;
 import discord
 from discord import app_commands
@@ -181,12 +182,9 @@ class Bot( discord.Client ):
         data = None
         embed = None
 
-        from src.BotLoggin import g_BotLogger;
-        from src.constants import BotLogMode;
-
         if not JsonFile.filename.endswith( '.json' ):
 
-            embed = g_BotLogger.error( g_Sentences.get( "only_json_file_support", Guild=Guild ), send=BotLogMode.Nothing );
+            embed = g_DiscordLogger.error( g_Sentences.get( "only_json_file_support", Guild=Guild ), flags=LoggerFlags.Nothing );
 
         else:
 
@@ -207,15 +205,15 @@ class Bot( discord.Client ):
 
                         except Exception as e:
 
-                            embed = g_BotLogger.error( g_Sentences.get( "invalid_json_object", e, Guild=Guild ), send=BotLogMode.Nothing );
+                            embed = g_DiscordLogger.error( g_Sentences.get( "invalid_json_object", e, Guild=Guild ), flags=LoggerFlags.Nothing );
 
                             return ( None, embed );
 
-                        embed = g_BotLogger.info( g_Sentences.get( "updated", Guild=Guild ), send=BotLogMode.Nothing );
+                        embed = g_DiscordLogger.info( g_Sentences.get( "updated", Guild=Guild ), flags=LoggerFlags.Nothing );
 
                     else:
 
-                        embed = g_BotLogger.error( g_Sentences.get( "fail_to_download", Guild=Guild ), send=BotLogMode.Nothing );
+                        embed = g_DiscordLogger.error( g_Sentences.get( "fail_to_download", Guild=Guild ), flags=LoggerFlags.Nothing );
 
                         return ( None, embed );
 
@@ -333,9 +331,7 @@ class Bot( discord.Client ):
 
             if fields > 25:
 
-                from src.BotLoggin import g_BotLogger;
-
-                g_BotLogger.warn( "Can not add all fields to the message \"<c>{}<>\" it's above discord's max capacity of 24 fields!", embed.title );
+                g_DiscordLogger.warn( "Can not add all fields to the message \"<c>{}<>\" it's above discord's max capacity of 24 fields!", embed.title );
 
                 break;
 
@@ -385,16 +381,13 @@ class Bot( discord.Client ):
             data: dictionary of anything that could be useful to print on the developer server.
         '''
 
-        from src.BotLoggin import g_BotLogger;
-        from src.constants import BotLogMode;
-        embed = g_BotLogger.error( '' if message is None else message, *args, send=BotLogMode.Nothing, name="Exception" );
-        embed = self.AddEmbedFields( embed, [ ( "Exception", str(exception), False ) ] );
+        embed = g_DiscordLogger.error( '' if message is None else message, *args, flags=LoggerFlags.Nothing, name="Exception", items=[ ( "Exception", str(exception), False ) ] );
 
         if SendToDevs is True:
 
-            g_BotLogger.Messages.append( embed );
+            g_DiscordLogger.push_back( embed );
 
-            g_BotLogger.Messages.append(
+            g_DiscordLogger.push_back(
                 self.GetCallTraceEmbeds(
                     self.CreateEmbed(
                         "Callback traces",
@@ -430,7 +423,7 @@ class Bot( discord.Client ):
                         data[ k ] = f'User: {fmt.DiscordUserMention(v.user)}';
 
                 from json import dumps;
-                g_BotLogger.Messages.append( g_Sentences.get( "except_data" ) + "\n```json\n{}\n```".format( dumps(data, indent=1) ) );
+                g_DiscordLogger.push_back( g_Sentences.get( "except_data" ) + "\n```json\n{}\n```".format( dumps(data, indent=1) ) );
 
         return embed;
 
