@@ -26,6 +26,9 @@ class fix_embeds( Plugin ):
 
     async def OnLink( self, message, urls ):
 
+        if message.author.id == bot.user.id:
+            return True;
+
         Links = [ l for l in self.SupportedEmbeds if any( a for a in urls if l[0] in a ) ];
 
         if len(Links) == 0:

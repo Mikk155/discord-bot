@@ -9,6 +9,9 @@ class marry_sara( Plugin ):
 
     async def OnMessage(self, message):
 
+        if message.author.id == bot.user.id:
+            return True;
+
         if message.author.id == 744768007892500481:
 
             content = message.content.lower();

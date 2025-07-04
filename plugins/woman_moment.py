@@ -24,6 +24,9 @@ class woman_moment( Plugin ):
 
     async def OnMessage( self, message ):
 
+        if message.author.id == bot.user.id:
+            return True;
+
         if 'woman moment' in message.content.lower():
 
             await self.WomanMoment( message.guild );

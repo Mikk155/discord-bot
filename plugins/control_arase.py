@@ -28,6 +28,9 @@ class control_arase( Plugin ):
 
     async def OnMessage(self, message):
 
+        if message.author.id == bot.user.id:
+            return True;
+
         if message.author.id in [ 768337526888726548, 1312014737449549826 ]:
         
             if g_Cache.GetTemporal( "control_arase_mimido" )[0] != TemporalCache.Exists:
