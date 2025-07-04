@@ -107,5 +107,17 @@
     "content":
     {
         "english": "Content"
+    },
+    "name":
+    {
+        "english": "Name"
+    },
+    "interaction_expired":
+    {
+        "english": "This interaction has expired."
+    },
+    "message_deleted":
+    {
+        "english": "Message deleted.."
     }
 }

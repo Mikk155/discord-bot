@@ -1,0 +1,46 @@
+{
+    "role_menu_removed_role":
+    {
+        "english": "Removed role {}"
+    },
+    "role_menu_added_role":
+    {
+        "english": "Added role {}"
+    },
+    "role_menu_embed_title":
+    {
+        "english": "Title of the menu embed"
+    },
+    "role_menu_embed_description":
+    {
+        "english": "Body of the menu embed"
+    },
+    "role_menu_selection_description":
+    {
+        "english": "Description on the view menu"
+    },
+    "role_menu_selection_title":
+    {
+        "english": "Button title"
+    },
+    "role_menu_starting":
+    {
+        "english": "We're configuring roles now. Input roles using the slash command, this will timeout in {} seconds. The menu ID` is ``{}``"
+    },
+    "role_menu_failed_find":
+    {
+        "english": "Failed to find message with id ``{}`` in channel {}"
+    },
+    "role_menu_no_cache":
+    {
+        "english": "Message ID {} was not found in the cache."
+    },
+    "role_menu_bad_hierarchy":
+    {
+        "english": "The role {} can not be asigned by the bot. update the bot role in the roles hierarchy."
+    },
+    "role_menu_menus_limit":
+    {
+        "english": "This guild hit the limit of {} menus. Your menus:"
+    }
+}
