@@ -49,9 +49,10 @@ if not g_ConfigContext.bot.IsDeveloper:
 from src.Logger import g_DiscordLogger, LoggerFlags;
 from src.main import bot;
 
-from src.commands.plugin_list import plugin_list;
-from src.commands.plugin_info import plugin_info;
 from src.commands.cfg_language import cfg_language;
+from src.commands.dev_cache import dev_cache;
+from src.commands.plugin_info import plugin_info;
+from src.commands.plugin_list import plugin_list;
 
 # -TODO Lazy shit, maybe importlib events/*?
 from src.events.on_audit_log_entry_create import on_audit_log_entry_create;

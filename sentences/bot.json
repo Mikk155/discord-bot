@@ -119,5 +119,9 @@
     "message_deleted":
     {
         "english": "Message deleted.."
+    },
+    "bot_owner_only":
+    {
+        "english": "This is reserved for the bot's owner only."
     }
 }
