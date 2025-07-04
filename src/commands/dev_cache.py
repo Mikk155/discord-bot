@@ -1,10 +1,10 @@
 from src.main import *
 
 @bot.tree.command( guild=bot.get_guild( g_ConfigContext.bot.TargetGuildCommands ) )
-@app_commands.describe( json='json object containing the cache to upload.' )
+@app_commands.describe( json='json object containing the cache to upload.', obj='Label object to target if None is the whole cache' )
 @app_commands.guild_only()
 @app_commands.default_permissions( administrator=True )
-async def dev_cache( interaction: discord.Interaction, json: Optional[ discord.Attachment ] = None ):
+async def dev_cache( interaction: discord.Interaction, json: Optional[ discord.Attachment ] = None, obj: Optional[ str ] = None ):
 
     """Get or update the bot cache"""
 
@@ -28,13 +28,27 @@ async def dev_cache( interaction: discord.Interaction, json: Optional[ discord.A
                 if session[0] is None:
                     return;
     
-                g_Cache.__cache__ = session[0];
+                if obj is None:
+
+                    g_Cache.__cache__ = session[0];
+
+                else:
+
+                    g_Cache.Set( obj, session[0] );
 
         else:
-                
-            with open( g_Cache.GetCacheDir, "rb") as file:
 
-                await interaction.followup.send( "cache", file=discord.File( file, "data.json" ) );
+            if obj is None:
+
+                with open( g_Cache.GetCacheDir, "rb") as file:
+
+                    await interaction.followup.send( "cache", file=discord.File( file, "data.json" ) );
+
+            else:
+
+                cache = g_Cache.Get( obj );
+    
+                await interaction.followup.send( "cache", file=discord.File( cache, "data.json" ) );
 
     except Exception as e:
 
