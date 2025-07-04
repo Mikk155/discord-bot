@@ -23,6 +23,7 @@ SOFTWARE
 '''
 
 import pytz;
+import emoji;
 import random;
 from typing import *;
 import discord;

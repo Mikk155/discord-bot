@@ -91,9 +91,25 @@ def RegexMessageReference() -> Pattern[str]:
         __RegexMessageReference__ = re.compile( r"https:\/\/(?:canary\.|ptb\.)?discord(?:app)?\.com\/channels\/(\d+)\/(\d+)\/(\d+)" );
     return __RegexMessageReference__;
 
+global __RegexCustomEmoji__;
+__RegexCustomEmoji__ = None;
+
+def RegexCustomEmoji() -> Pattern[str]:
+    global __RegexCustomEmoji__;
+    if __RegexCustomEmoji__ is None:
+        import re;
+        __RegexCustomEmoji__ = re.compile( r'<a?:\w+:(\d+)>' );
+    return __RegexCustomEmoji__;
+
 class ReactionState:
     Added: Literal[1] = 1;
     Removed: Literal[2] = 0;
+
+class EmojiFlags:
+    Unicode: int = ( 1 << 0 );
+    ServerCustom: int = ( 1 << 1 );
+    BotCanUse: int = ( 1 << 2 );
+    '''Is a custom emoji from a server the bot is in and have access to'''
 
 class ServerBoostState:
     Suscription: Literal[0] = 0;

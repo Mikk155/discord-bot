@@ -26,7 +26,7 @@ from src.Sentences import g_Sentences;
 from src.Logger import g_DiscordLogger;
 from datetime import datetime;
 from discord import Member, GroupChannel, TextChannel, DMChannel, User, Message, Reaction, Attachment, audit_logs;
-from src.constants import ReactionState, ServerBoostState;
+from src.constants import ReactionState, ServerBoostState, EmojiFlags;
 
 class Plugin():
 
@@ -152,6 +152,10 @@ class Plugin():
 
     async def OnAuditLog( self, entry: audit_logs.AuditLogEntry  ) -> bool:
         '''Called when a new entry to the audit log is made'''
+        return True;
+
+    async def OnEmoji( self, message: Message, emojis: list[ tuple[str, EmojiFlags] ] ):
+        '''Called when a message contains emojis'''
         return True;
 
 class PluginManager():

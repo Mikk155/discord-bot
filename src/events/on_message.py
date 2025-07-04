@@ -83,6 +83,29 @@ async def on_message( message: discord.Message ):
 
             await g_PluginManager.CallFunction( "OnAttachment", message, message.attachments, Guild=message.guild );
 
+        Emojis: list[ tuple[ str, EmojiFlags ] ] = [];
+
+        Emojis += [ ( e, EmojiFlags.Unicode ) for e in emoji.EMOJI_DATA if e in message.content ];
+
+        for match in RegexCustomEmoji().finditer( message.content ):
+
+            EmojiString = match.group(0);
+            EmojiID = int( match.group(1) );
+
+            flags = EmojiFlags.ServerCustom
+
+            CustomEmoji = discord.utils.get( message.guild.emojis, id=EmojiID );
+
+            if CustomEmoji and CustomEmoji.is_usable():
+
+                flags |= EmojiFlags.BotCanUse
+
+            Emojis.append( ( EmojiString, flags ) );
+
+        if len( Emojis ) > 0:
+
+            await g_PluginManager.CallFunction( "OnEmoji", message, Emojis, Guild=message.guild );
+
         BoostServerMessages = (
             discord.MessageType.premium_guild_subscription,
             discord.MessageType.premium_guild_tier_1,
