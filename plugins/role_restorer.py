@@ -47,6 +47,9 @@ class role_restorer( Plugin ):
 
         Roles = [ Role for Role in user.guild.roles if Role.id in RolesID ];
 
+        if len( Roles ) == 0: # No roles? Then is a new member.
+            Roles.append( user.guild.get_role( 1316214066384994324 ) );
+
         for Role in Roles:
 
             try: # One by one iteration due in case of one failing mid-way
