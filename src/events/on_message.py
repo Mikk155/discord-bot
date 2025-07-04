@@ -94,6 +94,7 @@ async def on_message( message: discord.Message ):
 
             flags = EmojiFlags.ServerCustom
 
+            # -TODO Could be any guild. should the bot store all emoji indexes in a tuple on startup?
             CustomEmoji = discord.utils.get( message.guild.emojis, id=EmojiID );
 
             if CustomEmoji and CustomEmoji.is_usable():
