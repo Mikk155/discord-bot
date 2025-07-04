@@ -24,19 +24,46 @@ SOFTWARE
 
 # Fix relative library importing by appending the directory of *this* file in the sys path.
 import sys
-from os.path import abspath, dirname, exists;
+from os.path import abspath, dirname, exists, join;
 MyWorkspace: str = abspath( dirname( __file__ ) );
 
 sys.path.append( MyWorkspace );
 
+# Make sure everything is ok
+if not "-dev" in sys.argv:
+
+    from git import Repo;
+
+    Repository = Repo( MyWorkspace );
+
+    Repository.git.submodule( "init" );
+    Repository.git.submodule( "sync" );
+
+    for submodule in Repository.submodules:
+
+        SubPath = submodule.abspath;
+        SubRepository = Repo( SubPath );
+
+        SubRepository.git.reset( '--hard' );
+        SubRepository.git.clean( '-fdx' );
+
+        SubRepository.remote().fetch();
+
+        SubRepository.git.checkout( 'main' );
+        SubRepository.git.reset( '--hard', 'origin/main' );
+
 from utils.Path import Path;
 Path.SetWorkspace( MyWorkspace );
 
+exit(0);
+
+# Set licence headers
 if "-licence" in sys.argv:
     from utils.fmt import fmt;
     fmt.FormatSourcesWithLicence( Path.enter( "LICENCE.txt" ), sources_folder=Path.enter( "src" ) );
     fmt.FormatSourcesWithLicence( Path.enter( "LICENCE.txt" ), sources_folder=Path.enter( "utils" ) );
     exit(0);
+
 from src.ConfigContext import g_ConfigContext;
 
 if not g_ConfigContext.bot.IsDeveloper:

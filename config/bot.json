@@ -12,8 +12,6 @@
     // Config in here overrides globals if "active" is true.
     "developer":
     {
-        "active": true,
-
         "bot":
         {
             "token": "token.txt"

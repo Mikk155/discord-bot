@@ -127,7 +127,9 @@ class ConfigContext():
 
         DataBot: dict = data[ "bot" ];
 
-        if DataDeveloper.pop( "active", False ) is False:
+        from sys import argv;
+
+        if "-dev" in argv:
             self.bot = ContextBot( DataBot )
         else:
             DataBot.update( DataDeveloper.get( "bot", {} ) );
