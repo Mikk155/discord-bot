@@ -17,6 +17,10 @@ class member_say( Plugin ):
 
         g_Sentences.push_back( "member_say" );
 
+    def OnPluginDeactivate(self):
+
+        bot.tree.remove_command( "say" );
+
     @property
     def GetName(self):
         return "User say";

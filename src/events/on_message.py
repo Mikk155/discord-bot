@@ -85,7 +85,7 @@ async def on_message( message: discord.Message ):
 
         Emojis: list[ tuple[ str, EmojiFlags ] ] = [];
 
-        Emojis += [ ( e, EmojiFlags.Unicode ) for e in emoji.EMOJI_DATA if e in message.content ];
+        Emojis += [ ( e, EmojiFlags.Unicode ) for e in EMOJI.EMOJI_DATA if e in message.content ];
 
         for match in RegexCustomEmoji().finditer( message.content ):
 
