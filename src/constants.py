@@ -1,6 +1,7 @@
 from typing import *
+from enum import IntEnum
 
-class HexColor:
+class HexColor(IntEnum):
     RED = 0xFF0000
     GREEN = 0x00FF00
     YELLOW = 0xFFFF00
@@ -43,84 +44,41 @@ def CommonTimezones() -> tuple[str]:
         "Europe/Istanbul"
     );
 
-class Days:
-    MONDAY = 1;
-    TUESDAY = 2;
-    WEDNESDAY = 3;
-    THURSDAY = 4;
-    FRIDAY = 5;
-    SATURDAY = 6;
-    SUNDAY = 7;
+class ReactionState(IntEnum):
+    Added: int = 1;
+    Removed: int = 0;
 
-    Map: dict[ str, int ] = {
-        'MONDAY': 1,
-        'TUESDAY': 2,
-        'WEDNESDAY': 3,
-        'THURSDAY': 4,
-        'FRIDAY': 5,
-        'SATURDAY': 6,
-        'SUNDAY': 7,
-    };
-
-    Array: list[ str ] = [
-        'MONDAY',
-        'TUESDAY',
-        'WEDNESDAY',
-        'THURSDAY',
-        'FRIDAY',
-        'SATURDAY',
-        'SUNDAY',
-    ];
-
-    @staticmethod
-    def FromString( day: str ) -> int:
-        return Days.Map.get( day.upper(), None );
-
-    @staticmethod
-    def FromInt( day: int ) -> int:
-        return Days.Array[ day - 1 ] if day <= len(Days.Array) else None;
-
-global __RegexMessageReference__;
-__RegexMessageReference__ = None;
-
-from re import Pattern;
-def RegexMessageReference() -> Pattern[str]:
-    global __RegexMessageReference__;
-    if __RegexMessageReference__ is None:
-        import re;
-        __RegexMessageReference__ = re.compile( r"https:\/\/(?:canary\.|ptb\.)?discord(?:app)?\.com\/channels\/(\d+)\/(\d+)\/(\d+)" );
-    return __RegexMessageReference__;
-
-global __RegexCustomEmoji__;
-__RegexCustomEmoji__ = None;
-
-def RegexCustomEmoji() -> Pattern[str]:
-    global __RegexCustomEmoji__;
-    if __RegexCustomEmoji__ is None:
-        import re;
-        __RegexCustomEmoji__ = re.compile( r'<a?:\w+:(\d+)>' );
-    return __RegexCustomEmoji__;
-
-class ReactionState:
-    Added: Literal[1] = 1;
-    Removed: Literal[2] = 0;
-
-class EmojiFlags:
+class EmojiFlags(IntEnum):
     Unicode: int = ( 1 << 0 );
     ServerCustom: int = ( 1 << 1 );
     BotCanUse: int = ( 1 << 2 );
     '''Is a custom emoji from a server the bot is in and have access to'''
 
-class ServerBoostState:
-    Suscription: Literal[0] = 0;
-    TierOne: Literal[1] = 1;
-    TierTwo: Literal[2] = 2;
-    TierThree: Literal[3] = 3;
+class ServerBoostState(IntEnum):
+    Suscription: int = 0;
+    TierOne: int = 1;
+    TierTwo: int = 2;
+    TierThree: int = 3;
 
-class TemporalCache:
-    NoExists: Literal[0] = 0;
+class TemporalCache(IntEnum):
+    NoExists: int = 0;
     '''Temporal variable exists: ( NoExists, None, None )'''
-    Expired: Literal[1] = 1;
+    Expired: int = 1;
     '''Temporal variable exists but it has expired and has just been removed from the cache: ( Expired, datetime, data? )'''
-    Exists: Literal[2] = 2;
+    Exists: int = 2;
     '''Temporal variable exists and still has a time ahead to expire: ( Exists, datetime, data? )'''
+
+class LoggerLevel(IntEnum):
+
+    AllLoggers: int = -1;
+    Critical: int = ( 1 << 0 ); # critical is ignored and will always being enable
+    Error: int = ( 1 << 1 ); # The same goes for error
+    Warning: int = ( 1 << 2 );
+    Information: int = ( 1 << 3 );
+    Debug: int = ( 1 << 4 );
+    Trace: int = ( 1 << 5 );
+
+class LoggerFlags(IntEnum):
+    Nothing: int = 0;
+    PrintTerminal: int = ( 1 << 0 );
+    PrintDiscord: int = ( 1 << 1 );
