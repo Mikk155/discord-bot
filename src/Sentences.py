@@ -92,26 +92,10 @@ class Sentences( dict ):
             #
                 Sentence = SentenceGroup.get( cache[ GuildID ], None );
             #
-
-        from src.ConfigContext import g_ConfigContext;
-
-        DefaultLanguage: str = g_ConfigContext.Language;
-
+        #
         if Sentence is None:
         #
-            if DefaultLanguage in SentenceGroup:
-            #
-                Sentence = SentenceGroup[ DefaultLanguage ];
-            #
-            else:
-            #
-                if 'sentence_no_label' in self:
-                #
-                    from src.Logger import g_DiscordLogger;
-                    g_DiscordLogger.error( self.get( "sentence_no_label", DefaultLanguage, name ), name=self.GetName );
-                #
-                return SentenceGroup.get( "english", "" );
-            #
+            Sentence = SentenceGroup.pop( "english", name );
         #
 
         try:
