@@ -32,17 +32,17 @@ class CacheLabel( Dictionary ):
     def __init__( self, parent=None, key=None ) -> None:
         super().__init__( parent, key );
 
-    @property
-    def ToCodeBlock( self ) -> str:
+    @staticmethod
+    def ToCodeBlock( d: Dictionary ) -> str:
         '''Return a rich code block for discord'''
-        return f'```json\n{self.ToJson}\n``';
+        return f'```json\n{Dictionary.ToJson(d)}\n``';
 
 from src.Logger import g_DiscordLogger, LoggerFlags;
 from datetime import timedelta, datetime;
 
 class CacheManager:
 
-    __cache__: CacheLabel = {};
+    __cache__: CacheLabel;
     '''The whole cache (Do NOT modify directly! use g_Cache.Get())'''
 
     @property
@@ -60,7 +60,7 @@ class CacheManager:
 
         try: # Store cache context
         #
-            obj: str = dumps( self.__cache__.ToDict, indent=4 );
+            obj: str = dumps( CacheLabel.ToDict( self.__cache__ ), indent=4 );
 
             if obj and len(obj) > 1:
             #
