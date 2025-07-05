@@ -1,5 +1,4 @@
-from src.main import *
-from src.PluginManager import Plugin;
+from project import *;
 
 @bot.tree.command()
 async def plugin_info( interaction: discord.Interaction, plugin: str ):

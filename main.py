@@ -22,95 +22,90 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE
 '''
 
-# Fix relative library importing by appending the directory of *this* file in the sys path.
-import sys
-from os.path import abspath, dirname, exists, join;
-MyWorkspace: str = abspath( dirname( __file__ ) );
+# When not :)
+from typing import *;
 
-sys.path.append( MyWorkspace );
+from scripts.FixRelativeImport import SetWorkspace;
 
-# Make sure everything is ok
-if not "-dev" in sys.argv:
+WORKSPACE: str = SetWorkspace(__file__);
 
-    from git import Repo;
+from scripts.InstallRequirements import InstallRequirements;
 
-    Repository = Repo( MyWorkspace );
+if __name__ == "__main__":
 
-    Repository.git.submodule( "init" );
-    Repository.git.submodule( "sync" );
+    import sys;
 
-    for submodule in Repository.submodules:
+    if not '-dev' in sys.argv:
+    #
+        from scripts.UpdateRepository import UpdateRepoSubmodules;
+        UpdateRepoSubmodules( WORKSPACE );
 
-        SubPath = submodule.abspath;
-        SubRepository = Repo( SubPath );
+        from os.path import join;
+        InstallRequirements( join( WORKSPACE, "requirements.txt" ) ); # < These should already be installed by the user.
+        InstallRequirements( join( join( WORKSPACE, "utils" ), "requirements.txt" ) );
+    #
 
-        SubRepository.git.reset( '--hard' );
-        SubRepository.git.clean( '-fdx' );
+    # Set workspace for Path to work propertly
+    from utils.Path import Path;
+    Path.SetWorkspace( WORKSPACE );
 
-        SubRepository.remote().fetch();
+from src.constants import LoggerFlags;
 
-        SubRepository.git.checkout( 'main' );
-        SubRepository.git.reset( '--hard', 'origin/main' );
+global g_DiscordLogger;
+from src.Logger import g_DiscordLogger;
 
-from utils.Path import Path;
-Path.SetWorkspace( MyWorkspace );
-
-exit(0);
-
-# Set licence headers
-if "-licence" in sys.argv:
-    from utils.fmt import fmt;
-    fmt.FormatSourcesWithLicence( Path.enter( "LICENCE.txt" ), sources_folder=Path.enter( "src" ) );
-    fmt.FormatSourcesWithLicence( Path.enter( "LICENCE.txt" ), sources_folder=Path.enter( "utils" ) );
-    exit(0);
-
+global g_ConfigContext;
 from src.ConfigContext import g_ConfigContext;
 
-if not g_ConfigContext.bot.IsDeveloper:
+global bot;
+from src.Bot import bot;
 
-    from sys import executable;
-    from subprocess import check_call;
-    check_call( [ executable, "-m", "pip", "install", "-r", Path.enter( "requirements.txt" ) ] );
-    check_call( [ executable, "-m", "pip", "install", "-r", Path.enter( "utils", "requirements.txt" ) ] );
-
-from src.Logger import g_DiscordLogger, LoggerFlags;
-from src.main import bot;
-
-from src.commands.cfg_language import cfg_language;
-from src.commands.dev_cache import dev_cache;
-from src.commands.plugin_info import plugin_info;
-from src.commands.plugin_list import plugin_list;
-
-# -TODO Lazy shit, maybe importlib events/*?
-from src.events.on_audit_log_entry_create import on_audit_log_entry_create;
-from src.events.on_member_join import on_member_join;
-from src.events.on_member_remove import on_member_remove;
-from src.events.on_message_delete import on_message_delete;
-from src.events.on_message_edit import on_message_edit;
-from src.events.on_message import on_message;
-from src.events.on_reaction_add import on_reaction_add;
-from src.events.on_reaction_remove import on_reaction_remove;
-from src.events.on_ready import on_ready;
-
-from asyncio import run as AsyncRun;
+global g_PluginManager;
 from src.PluginManager import g_PluginManager;
-AsyncRun( g_PluginManager.CallFunction( "OnInitialize" ) );
-from src.Logger import g_DiscordLogger
 
-try:
+if __name__ == "__main__":
 
-    from src.ConfigContext import g_ConfigContext;
+    SourceFolders: tuple[str] = ( "events", "commands" );
 
-    TokenPath = Path.enter( "config", g_ConfigContext.bot.token );
+    from os import walk;
+    from os.path import join;
+    from pathlib import Path as PathLib;
+    from importlib.util import spec_from_file_location, module_from_spec;
+    from importlib.machinery import ModuleSpec;
+    from types import ModuleType;
 
-    if not exists( TokenPath ):
+    SourcesFolder: str = join( WORKSPACE, "src" );
 
-        g_DiscordLogger.critical( "File {} doesn't exists!", TokenPath, Exit=True, flags=LoggerFlags.PrintTerminal );
+    for SourceFolder in SourceFolders:
+    #
+        for root, _, SourceFiles in walk( join( SourcesFolder, SourceFolder ) ):
+        #
+            for SourceFile in SourceFiles:
+            #
+                if SourceFile.endswith( ".py" ):
+                #
+                    SourceFile = PathLib( join( root, SourceFile ) );
+                    spec: ModuleSpec = spec_from_file_location( SourceFile.stem, SourceFile );
 
-    Token = open( TokenPath, "r" ).read();
+                    module: ModuleType = module_from_spec( spec );
 
-    bot.run( token = Token, reconnect = True );
+                    spec.loader.exec_module( module );
+                #
+            #
+        #
+    #
 
-except Exception as e:
+    g_PluginManager.Initialize();
+    from asyncio import run as AsyncRun;
+    AsyncRun( g_PluginManager.CallFunction( "OnInitialize" ) );
 
-    g_DiscordLogger.critical( "Exception: <r>{}<>", e, Exit=True, flags=LoggerFlags.PrintTerminal );
+    try:
+    #
+        from src.ConfigContext import g_ConfigContext;
+        bot.run( token = g_ConfigContext.bot.__token__, reconnect = True );
+        del g_ConfigContext.bot.__token__;
+    #
+    except Exception as e:
+    #
+        g_DiscordLogger.critical( "Exception: <r>{}<>", e, Exit=True, flags=LoggerFlags.PrintTerminal );
+    #

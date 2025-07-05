@@ -47,6 +47,8 @@ class PluginManager():
         from subprocess import check_call;
         from src.ConfigContext import g_ConfigContext;
         from importlib.util import spec_from_file_location, module_from_spec;
+        from importlib.machinery import ModuleSpec;
+        from types import ModuleType;
 
         PluginsContext: list[dict] = jsonc( Path.enter( "config", "plugins.json" ) );
     
@@ -75,11 +77,12 @@ class PluginManager():
 
             script_path = PathLib( Path.enter( "plugins", f'{PluginName}.py' ) );
 
-            module_name = script_path.stem;
+            module_name: str = script_path.stem;
 
-            spec = spec_from_file_location( module_name, script_path );
+            spec: ModuleSpec | None = spec_from_file_location( module_name, script_path );
+            # -TODO Check for spec None and warn
 
-            module = module_from_spec( spec );
+            module: ModuleType = module_from_spec( spec );
 
             spec.loader.exec_module( module );
 

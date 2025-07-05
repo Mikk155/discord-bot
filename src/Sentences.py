@@ -95,7 +95,7 @@ class Sentences( dict ):
         #
         if Sentence is None:
         #
-            Sentence = SentenceGroup.pop( "english", name );
+            Sentence = SentenceGroup.get( "english", name );
         #
 
         try:

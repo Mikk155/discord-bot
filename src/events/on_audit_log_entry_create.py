@@ -1,4 +1,4 @@
-from src.main import *;
+from project import *;
 
 @bot.event
 async def on_audit_log_entry_create( entry: discord.audit_logs.AuditLogEntry ):

@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE
 '''
 
-from src.main import *;
+from project import *;
 
 @bot.event
 async def on_ready():
@@ -31,7 +31,7 @@ async def on_ready():
 
         await bot.wait_until_ready();
 
-        if not bot.__on_start_called__:
+        if not bot.__on_start_called__ or bot.__on_start_called__ is False:
 
             await g_PluginManager.CallFunction( "OnBotStart" );
 

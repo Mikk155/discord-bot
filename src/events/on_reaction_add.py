@@ -22,8 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE
 '''
 
-from src.main import *;
-from src.PluginManager import ReactionState;
+from project import *;
 
 @bot.event
 async def on_reaction_add( reaction: discord.Reaction, user : discord.User ):

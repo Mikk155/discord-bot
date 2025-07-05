@@ -1,5 +1,4 @@
-from src.main import *
-from src.PluginManager import Plugin;
+from project import *
 
 class member_say( Plugin ):
 

@@ -1,4 +1,4 @@
-from src.main import *
+from project import *;
 
 @bot.tree.command( guild=bot.get_guild( g_ConfigContext.bot.TargetGuildCommands ) )
 @app_commands.describe( json='json object containing the cache to upload.', obj='Label object to target if None is the whole cache' )

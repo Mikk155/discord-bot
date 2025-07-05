@@ -1,4 +1,4 @@
-from src.main import *
+from project import *;
 
 @bot.tree.command()
 @app_commands.describe( language='Language' )

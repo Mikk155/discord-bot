@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE
 '''
 
-from src.main import *;
+from project import *;
 
 from discord.ext.tasks import loop as Loop
 @Loop( seconds = 1.0, reconnect=True, name="on_think" )
