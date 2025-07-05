@@ -22,42 +22,54 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE
 '''
 
-from src.Sentences import g_Sentences;
-from src.Logger import g_DiscordLogger, LoggerFlags;
+from inspect import FrameInfo
+from traceback import StackSummary
 from typing import *;
+from src.Sentences import g_Sentences;
+from src.constants import LoggerFlags;
+from src.Logger import g_DiscordLogger;
 import discord
 from discord import app_commands
 
 class Bot( discord.Client ):
 
-    __on_start_called__: bool = False
+    __on_start_called__: bool = False;
 
-    def __init__( self ):
-
+    def __init__( self ) -> None:
         super().__init__( intents = discord.Intents.all() );
+        self.tree: app_commands.CommandTree = app_commands.CommandTree( self );
 
-        self.tree = app_commands.CommandTree( self );
-
-    async def setup_hook( self ):
+    async def setup_hook( self ) -> None:
 
         from src.ConfigContext import g_ConfigContext;
 
-        if g_ConfigContext.bot.IsDeveloper is True and g_ConfigContext.bot.TargetGuildCommands is not None:
+        if g_ConfigContext.IsDeveloper is True:
+        #
+            if g_ConfigContext.bot.TargetGuildCommands is not None:
+            #
+                TargetGuild = discord.Object( id = g_ConfigContext.bot.TargetGuildCommands, type = discord.Guild );
 
-            TargetGuild = discord.Object( id = g_ConfigContext.bot.TargetGuildCommands );
+                if TargetGuild:
+                #
+                    self.tree.clear_commands( guild=TargetGuild );
+                    self.tree.copy_global_to( guild=TargetGuild );
+                    await self.tree.sync( guild=TargetGuild );
+                #
+                else:
+                #
+                    from src.Logger import g_DiscordLogger;
+                    g_DiscordLogger.warn( "Failed to get guild with id {}. app_commands will not be sync.", g_ConfigContext.bot.TargetGuildCommands );
+                #
+            #
+            else:
+            #
+                from src.Logger import g_DiscordLogger;
+                g_DiscordLogger.warn( "No guild ID set on config context. app_commands will not be sync." );
+            #
+            return;
+        #
 
-            if TargetGuild:
-
-                self.tree.clear_commands( guild=TargetGuild );
-
-                self.tree.copy_global_to( guild=TargetGuild );
-
-                await self.tree.sync( guild=TargetGuild );
-
-                return;
-
-        self.tree.clear_commands();
-
+        self.tree.clear_commands( guild=None );
         await self.tree.sync();
 
     def GetCallTraceEmbeds( self, embed: discord.Embed, PythonLibraries = False ) -> discord.Embed:
@@ -65,13 +77,14 @@ class Bot( discord.Client ):
         from utils.Path import Path;
         from sys import exc_info;
         from traceback import extract_tb;
+
         exc_type, exc_value, exc_traceback = exc_info();
-        traceback_list = extract_tb( exc_traceback );
+        traceback_list: StackSummary = extract_tb( exc_traceback );
 
         EmbedFields = [];
         
         for frame in traceback_list:
-
+        #
             if PythonLibraries is False and frame.filename.find( "Python" ) != -1:
                 continue;
 
@@ -87,7 +100,7 @@ class Bot( discord.Client ):
                     False
                 )
             );
-
+        #
         return self.AddEmbedFields( embed, EmbedFields );
 
     from inspect import FrameInfo;
@@ -97,14 +110,14 @@ class Bot( discord.Client ):
 
     def GetCallChainEmbeds( self, embed: discord.Embed, PythonLibraries = False, overloads: int = 2 ) -> discord.Embed:
 
-        callbacks = self.GetCallChain(overloads);
+        callbacks: list[FrameInfo] = self.GetCallChain(overloads);
 
         from utils.Path import Path;
 
         EmbedFields = [];
         
         for call in callbacks:
-
+        #
             if PythonLibraries is False and call.filename.find( "Python" ) != -1:
                 continue;
 
@@ -121,7 +134,7 @@ class Bot( discord.Client ):
                     False
                 )
             );
-
+        #
         return self.AddEmbedFields( embed, EmbedFields );
 
     async def UserReacted( self,
@@ -131,18 +144,21 @@ class Bot( discord.Client ):
     ) -> bool:
 
         if not message or not user:
-
             return False;
 
         for r in message.reactions:
-
+        #
             if emoji is None or str( r.emoji ) == emoji:
-
+            #
                 async for reactor in r.users():
-
+                #
                     if reactor.id == user.id:
-
+                    #
                         return True
+                    #
+                #
+            #
+        #
 
         return False;
 
@@ -151,11 +167,12 @@ class Bot( discord.Client ):
         webhooks: list[discord.Webhook] = await channel.webhooks();
 
         for webhook in webhooks:
-
+        #
             if webhook and webhook.name == "walter":
-
+            #
                 return webhook;
-
+            #
+        #
         return await channel.create_webhook( name="walter" );
 
     def JsonToFile( self, JsonObject: dict ) -> discord.File:
@@ -163,7 +180,7 @@ class Bot( discord.Client ):
         from io import BytesIO;
         from json import dumps;
 
-        JsonSerialized = dumps( JsonObject, indent=2 );
+        JsonSerialized: str = dumps( JsonObject, indent=2 );
 
         Buffer = BytesIO( JsonSerialized.encode( 'utf-8' ) );
 
@@ -183,60 +200,70 @@ class Bot( discord.Client ):
         embed = None
 
         if not JsonFile.filename.endswith( '.json' ):
-
-            embed = g_DiscordLogger.error( g_Sentences.get( "only_json_file_support", Guild=Guild ), flags=LoggerFlags.Nothing );
-
+        #
+            embed: discord.Embed = g_DiscordLogger.error( g_Sentences.get( "only_json_file_support", Guild=Guild ), flags=LoggerFlags.Nothing );
+        #
         else:
+        #
 
             from aiohttp import ClientSession;
             from json import loads;
 
             async with ClientSession() as session:
-
+            #
                 async with session.get( JsonFile.url ) as response:
-
+                #
                     if response.status == 200:
-
-                        data_bytes = await response.read();
+                    #
+                        data_bytes: bytes = await response.read();
 
                         try:
-
+                        #
                             data = loads( data_bytes );
-
+                        #
                         except Exception as e:
-
+                        #
                             embed = g_DiscordLogger.error( g_Sentences.get( "invalid_json_object", e, Guild=Guild ), flags=LoggerFlags.Nothing );
-
                             return ( None, embed );
+                        #
 
                         embed = g_DiscordLogger.info( g_Sentences.get( "updated", Guild=Guild ), flags=LoggerFlags.Nothing );
-
+                    #
                     else:
-
+                    #
                         embed = g_DiscordLogger.error( g_Sentences.get( "fail_to_download", Guild=Guild ), flags=LoggerFlags.Nothing );
-
                         return ( None, embed );
-
+                    #
+                #
+            #
+        #
         return ( data, embed );
 
     async def FindMemberByName( self, name: str, guild: discord.Guild | int ) -> None | discord.Member:
 
         if isinstance( guild, int ):
-
+        #
             guild = discord.Object( id = guild );
+        #
 
         for member in guild.members:
-
+        #
             ListNames = [ MemberName.lower() for MemberName in ( member.name, member.display_name, member.name ) if MemberName is not None ];
 
             if name.lower() in ListNames:
+            #
                 return member;
+            #
 
             # Maybe it was a partial name?
             for n in ListNames:
+            #
                 if n.startswith( name ):
+                #
                     return member;
-
+                #
+            #
+        #
         return None;
 
     #================================================
@@ -296,57 +323,66 @@ class Bot( discord.Client ):
         '''
 
         if isinstance( target, discord.Message ):
+        #
             return await target.reply( content, tts=tts, embed=embed, embeds=embeds, file=file, stickers=stickers,
                 delete_after=delete_after, nonce=nonce, silent=silent, mention_author=mention_author,
                 allowed_mentions=allowed_mentions, suppress_embeds=suppress_embeds, view=view, poll=poll
             );
-
+        #
         elif isinstance( target, discord.Interaction ):
-
+        #
             if target.response.is_done():
-
+            #
                 return await target.followup.send( content, tts=tts, embed=embed, embeds=embeds, file=file,
                     silent=silent, allowed_mentions=allowed_mentions, suppress_embeds=suppress_embeds, view=view, poll=poll
                 );
-
+            #
             else:
-
+            #
                 return await target.response.send_message( content, tts=tts, embed=embed, embeds=embeds, file=file,
                     silent=silent, allowed_mentions=allowed_mentions, suppress_embeds=suppress_embeds, view=view, poll=poll
                 );
-
+            #
         else:
+        #
             return await target.send( content, tts=tts, embed=embed, embeds=embeds, file=file, stickers=stickers,
                 delete_after=delete_after, nonce=nonce, silent=silent, mention_author=mention_author,
                 allowed_mentions=allowed_mentions, suppress_embeds=suppress_embeds, view=view, poll=poll
             );
+        #
 
     def AddEmbedFields( self, embed: discord.Embed, items: tuple[ str, str, bool ] ) -> discord.Embed:
 
         fields = 0;
 
         for item in items:
-
+        #
             fields += 1;
 
             if fields > 25:
-
+            #
                 g_DiscordLogger.warn( "Can not add all fields to the message \"<c>{}<>\" it's above discord's max capacity of 24 fields!", embed.title );
-
                 break;
+            #
 
             field_title = item[0];
+
             if len( field_title ) > 256:
-                    field_title = field_title[ : 256 ];
+            #
+                field_title = field_title[ : 256 ];
+            #
 
             field_description = item[1];
+
             if len( field_description ) > 1024:
-                    field_description = field_description[ : 1024 ];
+            #
+                field_description = field_description[ : 1024 ];
+            #
 
             field_inline = item[2] if len(item) > 2 else True;
 
             embed.add_field( name=field_title, value=field_description, inline =field_inline );
-
+        #
         return embed;
 
     from datetime import datetime;
@@ -360,7 +396,9 @@ class Bot( discord.Client ):
         embed = discord.Embed( color = color, title=title, description=description, timestamp=time );
 
         if items is not None and isinstance( items, ( tuple | list ) ):
+        #
             embed = self.AddEmbedFields( embed, items );
+        #
 
         return embed;
 
@@ -381,9 +419,10 @@ class Bot( discord.Client ):
             data: dictionary of anything that could be useful to print on the developer server.
         '''
 
-        embed = g_DiscordLogger.error( '' if message is None else message, *args, flags=LoggerFlags.Nothing, name="Exception", items=[ ( "Exception", str(exception), False ) ] );
+        embed: discord.Embed = g_DiscordLogger.error( '' if message is None else message, *args, flags=LoggerFlags.Nothing, name="Exception", items=[ ( "Exception", str(exception), False ) ] );
 
         if SendToDevs is True:
+        #
 
             g_DiscordLogger.push_back( embed );
 
@@ -399,32 +438,44 @@ class Bot( discord.Client ):
             );
 
             if data is not None and len(data) > 0:
-
+            #
                 from utils.fmt import fmt;
 
                 for k, v in data.copy().items():
-
+                #
                     if isinstance( v, str ):
+                    #
                         continue;
-
-                    if isinstance( v, ( float | int | bool ) ):
+                    #
+                    elif isinstance( v, ( float | int | bool ) ):
+                    #
                         data[ k ] = str(v);
+                    #
                     elif isinstance( v, ( discord.User | discord.Member ) ):
+                    #
                         data[ k ] = f'User: {fmt.DiscordUserMention(v)}';
                         data[ k ] = f'Guild: {v.guild} {v.guild.id if v.guild else ""}';
+                    #
                     elif isinstance( v, discord.Message ):
+                    #
                         data[ k ] = f'Message: {v.jump_url} {v.content}';
                         data[ k ] = f'Guild: {v.channel.guild if v.channel else ""} {v.channel.guild.id if v.channel.guild else ""}';
                         data[ k ] = f'User: {fmt.DiscordUserMention(v.author)}';
+                    #
                     elif isinstance( v, discord.TextChannel ):
+                    #
                         data[ k ] = f'Guild: {v.guild} {v.guild.id if v.guild else ""}';
+                    #
                     elif isinstance( v, discord.Interaction ):
+                    #
                         data[ k ] = f'Guild: {v.guild} {v.guild_id}';
                         data[ k ] = f'User: {fmt.DiscordUserMention(v.user)}';
-
+                    #
+                #
                 from json import dumps;
                 g_DiscordLogger.push_back( g_Sentences.get( "except_data" ) + "\n```json\n{}\n```".format( dumps(data, indent=1) ) );
-
+            #
+        #
         return embed;
 
 global bot;
