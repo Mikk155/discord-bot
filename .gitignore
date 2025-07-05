@@ -8,5 +8,4 @@ __pycache__
 config/cache.json
 
 # Work in progress
-*.bat
 wip/*
