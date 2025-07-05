@@ -1,20 +1,11 @@
-from typing import *;
-from discord import Embed;
+from typing import *
+from src.constants import LoggerLevel, LoggerFlags;
+from discord import Embed, TextChannel;
 from utils.RGB import RGB;
 from datetime import datetime;
 
-class LoggerLevel:
-
-    AllLoggers = -1;
-    Critical: int = ( 1 << 0 ); # critical is ignored and will always being enable
-    Error: int = ( 1 << 1 ); # The same goes for error
-    Warning: int = ( 1 << 2 );
-    Information: int = ( 1 << 3 );
-    Debug: int = ( 1 << 4 );
-    Trace: int = ( 1 << 5 );
-
 def ToLoggerLevel( level: str ) -> int:
-    _Levels = {
+    _Levels: dict[str, int] = {
         'critical': LoggerLevel.Critical,
         'error': LoggerLevel.Error,
         'warning': LoggerLevel.Warning,
@@ -25,18 +16,13 @@ def ToLoggerLevel( level: str ) -> int:
     };
     return _Levels.get( level, 0 );
 
-class LoggerFlags:
-    Nothing: int = 0;
-    PrintTerminal: int = ( 1 << 0 );
-    PrintDiscord: int = ( 1 << 1 );
-
 class DiscordLogger():
 
     name: str = "Bot";
 
     __Messages: list[ Union[ Embed, str ] ];
 
-    colors = {
+    colors: dict[str, RGB] = {
         "r": RGB(255,0,0),
         "g": RGB(0,255,0),
         "b": RGB(0,0,255),
@@ -46,32 +32,32 @@ class DiscordLogger():
         "g": RGB(100,100,100),
     };
 
-    def __init__( self ):
+    def __init__( self ) -> None:
 
         self.__Messages = [];
 
-    def push_back( self, message: Union[ Embed, str ] ):
+    def push_back( self, message: Union[ Embed, str ] ) -> None:
         self.__Messages.append( message );
 
     async def SendAllMessages( self ) -> None:
 
         from src.ConfigContext import g_ConfigContext;
 
-        SentMessages = g_ConfigContext.log.MaxMessages
+        SentMessages: int = g_ConfigContext.log.MaxMessages
 
         while len(self.__Messages) > 0 and SentMessages > 0:
 
             SentMessages -= 1;
 
-            MessageSend = self.__Messages.pop(0);
+            MessageSend: Embed | str = self.__Messages.pop(0);
 
             MessageToSend = None;
             EmbedToSend = None;
 
             if isinstance( MessageSend, Embed ):
-                EmbedToSend = MessageSend;
+                EmbedToSend: Embed = MessageSend;
             elif isinstance( MessageSend, str ):
-                MessageToSend = MessageSend;
+                MessageToSend: str = MessageSend;
             elif isinstance( MessageSend, tuple ):
                 for i in MessageSend:
                     if isinstance( i, Embed ):
@@ -81,7 +67,7 @@ class DiscordLogger():
 
             from src.Bot import bot;
 
-            channel = bot.get_channel( g_ConfigContext.log.Channel );
+            channel: TextChannel = bot.get_channel( g_ConfigContext.log.Channel );
 
             if channel and ( MessageToSend is not None or EmbedToSend is not None ):
 
@@ -112,16 +98,16 @@ class DiscordLogger():
 
         name = name if name is not None else self.name;
 
-        now = datetime.now();
+        now: datetime = datetime.now();
 
         from src.ConfigContext import g_ConfigContext;
 
-        terminal_message = message;
+        terminal_message: str = message;
         discord_message = message;
 
         for c, rgb in colors.items() if colors is not None else self.colors.items():
             terminal_message = terminal_message.replace( f'<{c}>', f"\033[38;2;{rgb.R};{rgb.G};{rgb.B}m" ).replace( "<>", "\033[0m" );
-            discord_message = discord_message.replace( f'<{c}>', "``" ).replace( "<>", "``" );
+            discord_message: str = discord_message.replace( f'<{c}>', "``" ).replace( "<>", "``" );
 
         if flags & LoggerFlags.PrintTerminal:
 
@@ -152,17 +138,17 @@ class DiscordLogger():
 
                 if isinstance( item, tuple ):
 
-                    field_title = item[0];
+                    field_title: str = item[0];
                     if field_title is not None and len( field_title ) > 256:
                             field_title = field_title[ : 256 ];
 
-                    field_description = item[1];
+                    field_description: str = item[1];
                     if field_description is not None and len( field_description ) > 1024:
                             field_description = field_description[ : 1024 ];
 
-                    field_inline = item[2] if len(item) > 2 else True;
+                    field_inline: bool = item[2] if len(item) > 2 else True;
 
-                    embed.add_field( name=field_title, value=field_description, inline =field_inline );
+                    embed.add_field( name=field_title, value=field_description, inline=field_inline );
 
                 else:
 
