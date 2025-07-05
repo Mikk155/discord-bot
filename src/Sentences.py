@@ -22,9 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE
 '''
 
+from src.CacheManager import CacheLabel
 from utils.Path import Path;
 from utils.jsonc import jsonc;
-from discord import Guild
+from discord import Guild;
 
 class Sentences( dict ):
 
@@ -32,8 +33,7 @@ class Sentences( dict ):
     def GetName( self ) -> str:
         return "Sentences";
 
-    def __init__( self ):
-
+    def __init__( self ) -> None:
         super().__init__( jsonc( Path.enter( "sentences", "bot.json" ), exists_ok=True ) );
 
     def push_back( self, filename: str ) -> None:
@@ -51,25 +51,30 @@ class Sentences( dict ):
         NewSentences = jsonc( Path.enter( "sentences", filename + ".json" ), exists_ok=True );
 
         for s, o in NewSentences.items():
-
+        #
             if not s in self:
-    
+            #
                 self[ s ] = o;
-
+            #
             else:
-
+            #
                 from src.Logger import g_DiscordLogger;
                 g_DiscordLogger.warn( self.get( "sentence_already_exists", s ), name=self.GetName );
+            #
+        #
 
     def get( self, name: str, *args, Guild: Guild | int = None ) -> str:
 
         if not name in self:
-
-            from src.Logger import g_DiscordLogger;
-            # Prevent recursion. check if exists
-            g_DiscordLogger.warn( self.get( "sentence_no_exists", name ) if "sentence_no_exists" in self else '', name=self.GetName );
-
+        #
+            # Prevent recursion. check if exists.
+            if "sentence_no_exists" in self:
+            #
+                from src.Logger import g_DiscordLogger;
+                g_DiscordLogger.warn( self.get( "sentence_no_exists", name ), name=self.GetName );
+            #
             return name;
+        #
 
         SentenceGroup: dict = super().__getitem__( name );
 
@@ -77,38 +82,47 @@ class Sentences( dict ):
 
         from src.CacheManager import g_Cache;
 
-        cache = g_Cache.Get( "language" );
+        cache: CacheLabel = g_Cache.Get( "language" );
 
         if Guild is not None:
-
+        #
             GuildID = str( Guild if isinstance( Guild, int ) else Guild.id );
 
             if GuildID in cache:
-
+            #
                 Sentence = SentenceGroup.get( cache[ GuildID ], None );
+            #
 
         from src.ConfigContext import g_ConfigContext;
 
-        DefaultLanguage = g_ConfigContext.Language;
+        DefaultLanguage: str = g_ConfigContext.Language;
 
         if Sentence is None:
-
+        #
             if DefaultLanguage in SentenceGroup:
-
+            #
                 Sentence = SentenceGroup[ DefaultLanguage ];
-
+            #
             else:
-
-                from src.Logger import g_DiscordLogger;
-                g_DiscordLogger.error( self.get( "sentence_no_label", DefaultLanguage, name ), name=self.GetName );
-
+            #
+                if 'sentence_no_label' in self:
+                #
+                    from src.Logger import g_DiscordLogger;
+                    g_DiscordLogger.error( self.get( "sentence_no_label", DefaultLanguage, name ), name=self.GetName );
+                #
                 return SentenceGroup.get( "english", "" );
+            #
+        #
 
         try:
+        #
             Sentence = Sentence.format( *args );
+        #
         except Exception as e:
+        #
             from src.Bot import bot;
             bot.HandleException( e, SendToDevs=True );
+        #
 
         return Sentence;
 
