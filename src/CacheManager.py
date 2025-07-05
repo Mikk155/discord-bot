@@ -22,38 +22,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE
 '''
 
+from inspect import FrameInfo
+from io import TextIOWrapper
 from src.constants import TemporalCache;
+from utils.Dictionary import Dictionary;
 
-class CCacheDictionary( dict ):
+class CacheLabel( Dictionary ):
 
-    def __getitem__( self, key ):
+    def __init__( self, parent=None, key=None ) -> None:
+        super().__init__( parent, key );
 
-        if key not in self:
-
-            self[ key ] = CCacheDictionary();
-
-        return super().__getitem__( key );
-
-    def __setitem__( self, key, value ):
-
-        if isinstance( value, dict ):
-
-            value = CCacheDictionary( value );
-
-        super().__setitem__( key, value );
-
-    def __repr__( self ):
-
-        from json import dumps;
-
-        return dumps( super().__repr__(), indent=4 );
+    @property
+    def ToCodeBlock( self ) -> str:
+        '''Return a rich code block for discord'''
+        return f'```json\n{self.ToJson}\n``';
 
 from src.Logger import g_DiscordLogger, LoggerFlags;
 from datetime import timedelta, datetime;
 
 class CacheManager:
 
-    __cache__: CCacheDictionary = {};
+    __cache__: CacheLabel = {};
     '''The whole cache (Do NOT modify directly! use g_Cache.Get())'''
 
     @property
@@ -61,46 +50,49 @@ class CacheManager:
         from utils.Path import Path;
         return Path.enter( "config", "cache.json", CreateIfNoExists = True, SupressWarning = True )
 
-    def __init__( self ):
-        
+    def __init__( self ) -> None:
         from utils.jsonc import jsonc;
-        self.__cache__ = CCacheDictionary( jsonc( self.GetCacheDir, exists_ok=True ) );
+        self.__cache__ = CacheLabel( jsonc( self.GetCacheDir, exists_ok=True ) );
 
-    def UpdateCache( self ):
+    def UpdateCache( self ) -> None:
 
         from json import dumps;
 
         try: # Store cache context
-
-            obj = dumps( dict(self.__cache__), indent=4 );
+        #
+            obj: str = dumps( self.__cache__.ToDict, indent=4 );
 
             if obj and len(obj) > 1:
-
-                open( self.GetCacheDir, 'w' ).write( obj );
-
+            #
+                file: TextIOWrapper = open( self.GetCacheDir, 'w' );
+                file.write( obj );
+                file.close();
+            #
+        #
         except Exception as e:
-
+        #
             g_DiscordLogger.warn( "Failed to store the cache: <r>{}<>", e, flags=LoggerFlags.PrintTerminal );
+        #
 
-    def Get( self, label: str = None ) -> CCacheDictionary:
+    def Get( self, label: str = None ) -> CacheLabel:
 
         '''
             Return a dict which automatically stores into the cache.json when setting variables to it
         '''
 
         if label is None:
-
+        #
             from inspect import stack;
 
-            frame = stack()[1]; # Get caller plugin name
+            frame: FrameInfo = stack()[1]; # Get caller plugin name
 
             from os.path import basename;
             label = basename( frame.filename );
+        #
 
         return self.__cache__[ label ];
 
     def Set( self, label: str, value ) -> None:
-
         self.__cache__[ label ] = value;
 
     def SetTemporal( self, label: str, delta: timedelta, data: dict = None ) -> None:
@@ -113,9 +105,9 @@ class CacheManager:
             data is for your own usage when accessing through GetTemporal
         '''
 
-        temp_vars = g_Cache.Get( "temp" );
+        temp_vars: CacheLabel = g_Cache.Get( "temp" );
 
-        time_diff = datetime.now() + delta;
+        time_diff: datetime = datetime.now() + delta;
 
         temp_vars[ label ] = [ time_diff.strftime( "%Y-%m-%d %H:%M:%S" ), data ];
 
@@ -128,22 +120,21 @@ class CacheManager:
             The third value may be None or not based on when the variable was stored.
         '''
 
-        temp = self.Get( "temp" );
+        temp: CacheLabel = self.Get( "temp" );
 
         if label in temp:
+        #
+            temp_variable: CacheLabel = temp[ label ];
 
-            temp_variable = temp[ label ];
-
-            time = datetime.strptime( temp_variable[0], "%Y-%m-%d %H:%M:%S" );
+            time: datetime = datetime.strptime( temp_variable[0], "%Y-%m-%d %H:%M:%S" );
 
             if datetime.now() > time:
-
+            #
                 temp.pop( label );
-
                 return ( TemporalCache.Expired, time, temp_variable[1] );
-
+            #
             return ( TemporalCache.Exists, time, temp_variable[1] );
-
+        #
         return ( TemporalCache.NoExists, None, None );
 
 global g_Cache;
