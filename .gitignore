@@ -1,6 +1,9 @@
 # Bot token
 config/token.txt
-config/token_dev.txt
+
+# Config files
+config/bot.json
+config/Loggin.json
 
 # Cache
 __pycache__
