@@ -1,0 +1,19 @@
+{
+    "$schema": "../schemas/Loggin.json",
+
+    "active": true,
+
+    "guild": 1145236064596918304,
+
+    "channel": 1343235842822504481,
+
+    "max_mps": 5,
+
+    "Loggers":
+    {
+        "Trace": true,
+        "Debug": true,
+        "Information": true,
+        "Warning": true
+    }
+}

@@ -1,57 +1,4 @@
 {
-    "$defs":
-    {
-        "Loggers":
-        {
-            "type": "object",
-            "properties":
-            {
-                "Warning":
-                {
-                    "type": "boolean",
-                    "description": "Warning messages, usually used when a not relevant problem happens"
-                },
-                "Information":
-                {
-                    "type": "boolean",
-                    "description": "Information messages."
-                },
-                "Debug":
-                {
-                    "type": "boolean",
-                    "description": "Debug messages. Spamming messages of the program behaviour"
-                },
-                "Trace":
-                {
-                    "type": "boolean",
-                    "description": "Trace messages, Exactly like debug but these are more annoying :)"
-                }
-            },
-            "additionalProperties": false
-        },
-        "bot":
-        {
-            "type": "object",
-            "properties":
-            {
-                "token":
-                {
-                    "type": "string",
-                    "description": "Your discord BOT application token"
-                },
-                "prefix":
-                {
-                    "type": "string",
-                    "description": "bot prefix to use plugins commands via messages"
-                }
-            },
-            "required":
-            [
-                "token"
-            ],
-            "additionalProperties": false
-        }
-    },
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
     "properties":
@@ -60,118 +7,63 @@
         {
             "type": "string"
         },
-        "bot":
+        "token_method":
         {
-            "$ref": "#/$defs/bot"
-        },
-        "developer":
-        {
-            "type": "object",
-            "properties":
-            {
-                "active":
-                {
-                    "type": "boolean",
-                    "description": "Whatever to run on developer or not"
-                },
-                "bot":
-                {
-                    "$ref": "#/$defs/bot"
-                },
-                "guild":
-                {
-                    "type": "integer",
-                    "description": "The ID of your main server for sync app_commands fast"
-                }
-            },
-            "allOf":
+            "type": "string",
+            "enum":
             [
-                {
-                    "if":
-                    {
-                        "properties":
-                        {
-                            "active":
-                            {
-                                "const": true
-                            }
-                        }
-                    },
-                    "then":
-                    {
-                        "required":
-                        [
-                            "bot",
-                            "guild"
-                        ]
-                    }
-                }
+                "env",
+                "file",
+                "argument"
             ],
-            "additionalProperties": false,
-            "description": "Developer context variables"
+            "description": "Type of token getter.\nenv = get the env variable from \"token\"\nfile = read the first line of the file from \"token\" the path is already in config/\nargument = read the value for the argument \"-token\""
+        },
+        "token":
+        {
+            "type": "string",
+            "description": "Your discord BOT application token"
+        },
+        "prefix":
+        {
+            "type": "string",
+            "description": "bot prefix to use plugins commands via messages. if not set then OnCommand hooks won't be called."
+        },
+        "developer_guild":
+        {
+            "type": "integer",
+            "description": "The ID of your main server for sync app_commands fast hen using the -dev argument"
         },
         "owner":
         {
             "type": "integer",
             "description": "The owner ID. This user will have total authority over the bot commands"
         },
-        "Loggin":
-        {
-            "type": "object",
-            "properties":
-            {
-                "terminal":
-                {
-                    "$ref": "#/$defs/Loggers",
-                    "description": "Logger levels to enable for the terminal internal messages"
-                },
-                "bot":
-                {
-                    "$ref": "#/$defs/Loggers",
-                    "description": "These loggers from the terminal will be reflected to the developer's guild test channel"
-                },
-                "channel":
-                {
-                    "type": "integer",
-                    "description": "Channel ID to reflect the \"bot\" log messages"
-                },
-                "max_mps":
-                {
-                    "type": "integer",
-                    "description": "Max messages per second"
-                }
-            },
-            "required":
-            [
-                "terminal"
-            ],
-            "allOf":
-            [
-                {
-                    "if":
-                    {
-                        "required":
-                        [
-                            "bot"
-                        ]
-                    },
-                    "then":
-                    {
-                        "required":
-                        [
-                            "channel"
-                        ]
-                    }
-                }
-            ],
-            "additionalProperties": false,
-            "description": "Logging system, Loggers to display, note \"critical\" and \"error\" will be always shown"
-        },
         "additionalProperties": false
     },
     "additionalProperties": false,
     "required":
     [
-        "token"
-    ]
+        "token_method"
+    ],
+    "if":
+    {
+        "properties":
+        {
+            "token_method":
+            {
+                "enum":
+                [
+                    "env",
+                    "file"
+                ]
+            }
+        }
+    },
+    "then":
+    {
+        "required":
+        [
+            "token"
+        ]
+    }
 }

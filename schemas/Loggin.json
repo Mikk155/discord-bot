@@ -1,0 +1,85 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties":
+    {
+        "$schema":
+        {
+            "type": "string"
+        },
+        "Loggers":
+        {
+            "type": "object",
+            "properties":
+            {
+                "Warning":
+                {
+                    "type": "boolean",
+                    "description": "Warning messages, usually used when a not relevant problem happens"
+                },
+                "Information":
+                {
+                    "type": "boolean",
+                    "description": "Information messages."
+                },
+                "Debug":
+                {
+                    "type": "boolean",
+                    "description": "Debug messages. Spamming messages of the program behaviour"
+                },
+                "Trace":
+                {
+                    "type": "boolean",
+                    "description": "Trace messages, Exactly like debug but these are more annoying :)"
+                }
+            },
+            "description": "Logging system, Loggers to display, note \"critical\" and \"error\" will be always shown",
+            "additionalProperties": false
+        },
+        "guild":
+        {
+            "type": "integer",
+            "description": "The ID of your main server for sending log messages."
+        },
+        "channel":
+        {
+            "type": "integer",
+            "description": "Channel ID to reflect the \"bot\" log messages"
+        },
+        "max_mps":
+        {
+            "type": "integer",
+            "description": "Max messages per second"
+        },
+        "active":
+        {
+            "type": "boolean",
+            "description": "Whatever logs should be delivered to a guild's channel or not."
+        }
+    },
+    "required":
+    [
+        "active"
+    ],
+    "if":
+    {
+        "properties":
+        {
+            "active":
+            {
+                "const": true
+            }
+        }
+    },
+    "then":
+    {
+        "required":
+        [
+            "guild",
+            "channel",
+            "max_mps",
+            "Loggers"
+        ]
+    },
+    "additionalProperties": false
+}

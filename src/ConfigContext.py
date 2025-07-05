@@ -22,11 +22,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE
 '''
 
-class ContextBot():
+from utils.jsonc import jsonc;
+from discord import User, Member;
+from src.constants import LoggerLevel;
 
-    @property
-    def IsDeveloper( self ) -> bool:
-        return False;
+class ContextBot():
 
     @property
     def Prefix( self ) -> None | str:
@@ -35,25 +35,72 @@ class ContextBot():
     @property
     def TargetGuildCommands( self ) -> None | int:
         return self.__guild__;
-    __guild__ = None;
 
-    token: str;
+    __token__: str;
 
-    def __init__( self, label: dict ) -> None:
+    def __init__( self, label: jsonc ) -> None:
 
-        self.token = label.pop( "token", None );
+        self.__guild__: int | None = label.pop( "developer_guild", None );
+        self.__prefix__: str | None = label.pop( "prefix", None );
+        self.__owner__: int | None = label.pop( "owner", None );
 
-        self.__prefix__ = label.pop( "prefix", None );
+        self.__token_method__: int = ( "env", "file", "argument" ).index( label[ "token_method" ] );
 
-class ContextBotDeveloper( ContextBot ):
+        match self.__token_method__:
 
-    @property
-    def IsDeveloper( self ) -> bool:
-        return True;
+            case 0:
+            #
+                from os import getenv;
+                env_name: str = label[ "token" ];
+                TokenEnv: str | None = getenv( env_name );
 
-    def __init__( self, label: dict, guild ) -> None:
-        self.__guild__ = guild;
-        super().__init__( label );
+                if TokenEnv is None:
+                #
+                    print( f"ENV {env_name} doesn't exists!" );
+                    exit(1);
+                #
+                else:
+                #
+                    self.__token__ = TokenEnv;
+                #
+            #
+            case 1:
+            #
+                from os.path import exists;
+                from utils.Path import Path;
+
+                TokenPath = Path.enter( "config", label[ "token" ] );
+
+                if not exists( TokenPath ):
+                #
+                    print( f"File {TokenPath} doesn't exists!" );
+                    exit(1);
+                #
+                else:
+                #
+                    self.__token__ = open( TokenPath, "r" ).read();
+                #
+            #
+            case 2:
+            #
+
+                import sys;
+
+                if not '-token' in sys.argv:
+                #
+                    print( "No -token argument given!" );
+                    exit(1);
+                #
+                elif len(sys.argv) == sys.argv.index( '-token' ) + 1:
+                #
+                    print( "No token given after the -token argument!" );
+                    exit(1);
+                #
+                else:
+                #
+                    self.__token__ = sys.argv[ sys.argv.index( '-token' ) + 1 ];
+                #
+            #
 
 class ContextBotLoggin():
 
@@ -64,29 +111,41 @@ class ContextBotLoggin():
     @property
     def IsActive( self ) -> bool:
         return self.__active__;
-    __active__ = False;
 
     @property
     def Channel( self ) -> int:
         return self.__channel__;
 
-    LogLevels: int = 0;
+    @property
+    def Guild( self ) -> int:
+        return self.__guild__;
 
-    def __init__( self, label: dict ) -> None:
+    LogLevels: LoggerLevel = ( LoggerLevel.Critical | LoggerLevel.Error );
 
-        if "bot" in label and "channel" in label:
+    def __init__( self, label: jsonc ) -> None:
 
-            self.__active__ = True
-            self.__channel__ = label[ "channel" ];
-            self.__max_mps__ = label.get( "max_mps", 5 );
+        self.__active__: bool = label[ "active" ];
 
-            from utils.Logger import ToLoggerLevel;
+        if self.__active__ is False:
+        #
+            return;
+        #
 
-            for k, v in label[ "bot" ].items():
-                if v is True:
-                    self.LogLevels |= ToLoggerLevel(k);
+        self.__max_mps__: int = label[ "max_mps" ];
+        self.__channel__: int = label[ "channel" ];
+        self.__guild__: int = label[ "guild" ];
 
-from discord import User, Member;
+        __LoggerLevels__: dict[ str, bool ] = label[ "Loggers" ];
+
+        from utils.Logger import ToLoggerLevel;
+
+        for k, v in __LoggerLevels__.items():
+        #
+            if v is True:
+            #
+                self.LogLevels |= ToLoggerLevel(k);
+            #
+        #
 
 class ConfigContext():
 
@@ -94,61 +153,50 @@ class ConfigContext():
         Configuration contexts
     '''
 
-    bot: ContextBot | ContextBotDeveloper;
+    bot: ContextBot;
 
     log: ContextBotLoggin;
 
-    def IsOwner( self, user: User | Member | int ) -> bool:
+    @property
+    def IsDeveloper( self ) -> bool:
+        return self.__developer__;
 
+    def IsOwner( self, user: User | Member | int ) -> bool:
         '''
             Returns whatever this user is the owner of this app
         '''
-        if self.__owner__ is None:
+        if self.bot.__owner__ is None:
+        #
             return False;
-        if isinstance( user, int ):
-            return ( self.__owner__ == user );
-        return ( user and self.__owner__ == user.id );
-    __owner__ = None;
-
-    @property
-    def Language( self ) -> str:
-        return self.__language__;
+        #
+        elif isinstance( user, int ):
+        #
+            return ( self.bot.__owner__ == user );
+        #
+        return ( user and self.bot.__owner__ == user.id );
 
     def __init__( self ) -> None:
 
-        from utils.Path import Path;
-        from utils.jsonc import jsonc;
-
-        data = jsonc( Path.enter( "config", "bot.json" ) );
-
-        self.__owner__ = data.pop( "owner", None );
-
-        DataDeveloper = data.pop( "developer", {} );
-
-        DataBot: dict = data[ "bot" ];
-
         from sys import argv;
+        self.__developer__: bool = True if '-dev' in argv or '-developer' in argv else False;
 
-        if "-dev" in argv:
-            self.bot = ContextBot( DataBot )
-        else:
-            DataBot.update( DataDeveloper.get( "bot", {} ) );
-            self.bot = ContextBotDeveloper( DataBot, DataDeveloper[ "guild" ] )
+        from utils.Path import Path;
 
-        self.__language__ = data.pop( "language", "english" );
+        try:
+        #
+            LogginData = jsonc( Path.enter( "config", "Loggin.json" ), schema_validation=Path.enter( "schemas", "Loggin.json" ) );
+            self.log = ContextBotLoggin( LogginData );
+            del LogginData;
 
-        LogginContext: dict[ str, bool ] = data.pop( "Loggin", {} );
-
-        from utils.Logger import LoggerSetLevel, LoggerClearLevel, ToLoggerLevel;
-
-        for k, v in LogginContext[ "terminal" ].items():
-
-            if v is True:
-                LoggerSetLevel( ToLoggerLevel(k) )
-            else:
-                LoggerClearLevel( ToLoggerLevel(k) );
-
-        self.log = ContextBotLoggin( LogginContext );
+            BotData = jsonc( Path.enter( "config", "bot.json" ), schema_validation=Path.enter( "schemas", "bot.json" ) );
+            self.bot = ContextBot( BotData );
+            del BotData;
+        #
+        except Exception as e:
+        #
+            print( f"Critical json validation: {e}" );
+            exit(1);
+        #
 
 global g_ConfigContext;
 g_ConfigContext: ConfigContext = ConfigContext();

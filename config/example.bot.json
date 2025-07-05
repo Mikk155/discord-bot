@@ -1,0 +1,13 @@
+{
+    "$schema": "../schemas/bot.json",
+
+    "developer_guild": 1145236064596918304,
+
+    "owner": 744768007892500481,
+
+    "token_method": "file",
+
+    "token": "token.txt",
+
+    "prefix": "walter "
+}
