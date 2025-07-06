@@ -1,8 +1,8 @@
 {
     "$schema": "../schemas/plugins.json",
 
-    "ping_counter": {},
-     "member_say": {}
+    "ping_counter": {}
+//     "member_say": {}
 //     "server_logs": {},
 //     "role_restorer": {},
 //     "fix_embeds": {},

@@ -64,7 +64,7 @@ class ping_counter( Plugin ):
         #
             if user:
             #
-                UserCache: Dictionary = g_Cache[ "ping_counter.py" ][ str(user.id) ];
+                UserCache: Dictionary = g_Cache.Plugin[ user.id ];
 
                 if UserCache.IsEmpty:
                 #
@@ -95,9 +95,21 @@ class ping_counter( Plugin ):
 
         if target is None:
         #
-            embed = g_DiscordLogger.error( g_Sentences.get( "failed_to_find_user", args[0], Guild=message.guild ), flags=LoggerFlags.Nothing );
+            embed: discord.Embed = g_DiscordLogger.error(
+                g_Sentences.get(
+                    "failed_to_find_user",
+                    args[0],
+                    Guild=message.guild
+                ),
+                flags=LoggerFlags.Nothing
+            );
 
-            await message.reply( embed=embed, mention_author=False, silent=True, allowed_mentions=False );
+            await message.reply(
+                embed=embed,
+                mention_author=False,
+                silent=True,
+                allowed_mentions=False
+            );
 
             return False;
         #
@@ -109,19 +121,36 @@ class ping_counter( Plugin ):
 
     async def GetPingCount( self, target: discord.Member, channel: discord.TextChannel ):
     #
-        cache = g_Cache.Get();
+        UserCache: Dictionary = g_Cache.Plugin[ target.id ];
 
-        mention = fmt.DiscordUserMention( target );
+        mention: str = fmt.DiscordUserMention( target );
 
-        counts = cache.get( mention, [ 0, target.name ] );
-
-        if counts[0] > 0:
+        if UserCache.IsEmpty:
         #
-            await bot.SendMessage( channel, g_Sentences.get( "ping_counter_ping_count", counts[1], counts[0], Guild=channel.guild ), mention_author=False, silent=True, allowed_mentions=False );
+            await bot.SendMessage(
+                channel,
+                g_Sentences.get(
+                    "ping_counter_first_ping",
+                    mention,
+                    Guild=channel.guild
+                ),
+                silent=True
+            );
         #
         else:
         #
-            await bot.SendMessage( channel, g_Sentences.get( "ping_counter_first_ping", mention, Guild=channel.guild ), silent=True );
+            await bot.SendMessage(
+                channel,
+                g_Sentences.get(
+                    "ping_counter_ping_count",
+                    UserCache[ "name" ],
+                    UserCache[ "pings" ],
+                    Guild=channel.guild
+                ),
+                mention_author=False,
+                silent=True,
+                allowed_mentions=False
+            );
         #
     #
 
