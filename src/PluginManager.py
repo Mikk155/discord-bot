@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE
 '''
 
+from inspect import FrameInfo
 from src.Plugin import Plugin;
 from src.Sentences import g_Sentences;
 from src.Logger import g_DiscordLogger;
@@ -30,15 +31,17 @@ class PluginManager():
 
     @property
     def GetName( self ) -> str:
+    #
         return "Plugin Manager";
+    #
 
     Plugins: list[Plugin] = [];
 
     def __init__( self ):
-        print( "Initialized plugin manager")
+        pass;
 
-    def Initialize( self ):
-
+    def Initialize( self ) -> None:
+    #
         from sys import executable;
         from os.path import exists;
         from utils.Path import Path;
@@ -50,30 +53,31 @@ class PluginManager():
         from importlib.machinery import ModuleSpec;
         from types import ModuleType;
 
-        PluginsContext: list[dict] = jsonc( Path.enter( "config", "plugins.json" ) );
-
-        PluginsContext.pop( "$schema", "" );
+        PluginsContext: list[dict] = jsonc( Path.enter( "config", "plugins.json" ), schema_validation=Path.enter( "schemas", "plugins.json" ) );
 
         for PluginName, PluginData in PluginsContext.items():
-
+        #
             g_DiscordLogger.trace( g_Sentences.get( "registering_plugin", PluginName ), name=self.GetName );
 
             if not g_ConfigContext.IsDeveloper and "requirements" in PluginData:
-
-                requirements = PluginData[ "requirements" ];
+            #
+                requirements: str = PluginData[ "requirements" ];
 
                 if requirements and requirements != '':
-
-                    requirements_path = Path.enter( "plugins", f'{requirements}.txt' );
+                #
+                    requirements_path: str = Path.enter( "plugins", f'{requirements}.txt' );
 
                     if exists( requirements_path ):
-
+                    #
                         check_call( [ executable, "-m", "pip", "install", "-r", requirements_path ] );
-
+                    #
                     else:
-
+                    #
                         g_DiscordLogger.warn( g_Sentences.get( "invalid_requirements", PluginName ), name=self.GetName );
                         continue;
+                    #
+                #
+            #
 
             script_path = PathLib( Path.enter( "plugins", f'{PluginName}.py' ) );
 
@@ -87,10 +91,10 @@ class PluginManager():
             spec.loader.exec_module( module );
 
             if not hasattr( module, module_name ):
-
+            #
                 g_DiscordLogger.error( g_Sentences.get( "fail_plugin_class", module_name, module_name, script_path ), name=self.GetName );
-
                 continue;
+            #
 
             plugin: Plugin = getattr( module, module_name )();
 
@@ -101,46 +105,55 @@ class PluginManager():
             plugin.disabled = PluginData.get( "disabled", False );
 
             if plugin.disabled is True:
-
+            #
                 g_DiscordLogger.debug( g_Sentences.get( "plugin_disabled", PluginName ), name=self.GetName );
-
+            #
             else:
-
+            #
                 plugin.OnPluginActivate();
+            #
 
             self.Plugins.append( plugin );
-
-        from src.Bot import bot;
-        from asyncio import run as AsyncRun;
-#        AsyncRun( bot.SyncCommands() );
+        #
+    #
 
     @property
     def GetCurrentPlugin( self ) -> Plugin:
-
+    #
         from inspect import stack;
         from os.path import splitext, basename;
 
-        Frame = stack()[1];
+        Frame: FrameInfo = stack()[1];
 
-        Caller = splitext( basename( Frame.filename ) )[0];
+        Caller: str = splitext( basename( Frame.filename ) )[0];
 
-        Any = [ plugin for plugin in self.Plugins if plugin.__class__.__name__ == Caller ];
+        Any: list[Plugin] = [ plugin for plugin in self.Plugins if plugin.__class__.__name__ == Caller ];
 
         return Any[0] if len(Any) > 0 else None;
+    #
 
-    async def CallFunction( self, fnName: str, *args, Guild = -1 ) -> None:
-
+    async def CallFunction(
+        self,
+        fnName: str,
+        *args,
+        Guild = -1
+    ) -> None:
+    #
         for p in self.Plugins:
-
+        #
             if p.disabled is True:
+            #
                 continue;
+            #
 
             if len( p.guilds ) > 0 and Guild != -1 and ( Guild is None or Guild.id in p.guilds ):
+            #
                 continue; # This plugin doesn't want to work on this guild.
+            #
 
             try:
-
-                fn = getattr( p, fnName );
+            #
+                fn: object = getattr( p, fnName );
 
                 if len(args) > 0:
 
@@ -151,11 +164,14 @@ class PluginManager():
                 elif await fn() is False:
 
                     break;
-
+            #
             except Exception as e:
-
+            #
                 from src.Bot import bot;
-                bot.HandleException( e, SendToDevs=True );
+                bot.HandleException( f'**{type(e).__name__}**: <r>{e}<>', SendToDevs=True );
+            #
+        #
+    #
 
 global g_PluginManager;
 g_PluginManager: PluginManager = PluginManager();

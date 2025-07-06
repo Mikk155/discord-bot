@@ -426,7 +426,6 @@ class Bot( discord.Client ):
 
         if SendToDevs is True:
         #
-
             g_DiscordLogger.push_back( embed );
 
             g_DiscordLogger.push_back(
