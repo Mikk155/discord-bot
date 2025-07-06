@@ -32,8 +32,6 @@ async def on_think():
 
         await bot.wait_until_ready()
 
-        g_Cache.UpdateCache();
-
         if g_ConfigContext.log.IsActive:
 
             await g_DiscordLogger.SendAllMessages();

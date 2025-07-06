@@ -110,6 +110,10 @@ class PluginManager():
 
             self.Plugins.append( plugin );
 
+        from src.Bot import bot;
+        from asyncio import run as AsyncRun;
+#        AsyncRun( bot.SyncCommands() );
+
     @property
     def GetCurrentPlugin( self ) -> Plugin:
 

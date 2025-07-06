@@ -40,6 +40,9 @@ class Bot( discord.Client ):
         self.tree: app_commands.CommandTree = app_commands.CommandTree( self );
 
     async def setup_hook( self ) -> None:
+        await self.SyncCommands();
+
+    async def SyncCommands( self ) -> None:
 
         from src.ConfigContext import g_ConfigContext;
 

@@ -32,6 +32,7 @@ from utils.jsonc import jsonc;
 from utils.RGB import RGB;
 
 # Various libraries used by the main code itself
+import re;
 import pytz;
 import emoji as EMOJI;
 import random;
@@ -50,7 +51,7 @@ global g_Sentences;
 from src.Sentences import g_Sentences;
 
 global g_Cache;
-from src.CacheManager import g_Cache;
+from src.CacheManager import g_Cache, CacheDictionary, Dictionary;
 
 global g_ConfigContext;
 from src.ConfigContext import g_ConfigContext;

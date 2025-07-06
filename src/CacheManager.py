@@ -22,81 +22,40 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE
 '''
 
-from inspect import FrameInfo
-from io import TextIOWrapper
 from src.constants import TemporalCache;
 from utils.Dictionary import Dictionary;
-
-class CacheLabel( Dictionary ):
-
-    def __init__( self, parent=None, key=None ) -> None:
-        super().__init__( parent, key );
-
-    @staticmethod
-    def ToCodeBlock( d: Dictionary ) -> str:
-        '''Return a rich code block for discord'''
-        return f'```json\n{Dictionary.ToJson(d)}\n``';
 
 from src.Logger import g_DiscordLogger, LoggerFlags;
 from datetime import timedelta, datetime;
 
-class CacheManager:
-
-    __cache__: CacheLabel;
-    '''The whole cache (Do NOT modify directly! use g_Cache.Get())'''
+class CacheDictionary( Dictionary ):
 
     @property
-    def GetCacheDir( self ) -> str:
-        from utils.Path import Path;
-        return Path.enter( "config", "cache.json", CreateIfNoExists = True, SupressWarning = True )
+    def ToCodeBlock( self ) -> str:
+        '''Return a rich code block for discord'''
+        return f'```json\n{self.Serialize}\n``';
 
-    def __init__( self ) -> None:
-        from utils.jsonc import jsonc;
-        self.__cache__ = CacheLabel( jsonc( self.GetCacheDir, exists_ok=True ) );
+    @property
+    def PluginName( self ) -> str:
+    #
+        from inspect import stack, FrameInfo;
+        frame: FrameInfo = stack()[1]; # Get caller plugin name
+        from os.path import basename;
+        return basename( frame.filename );
+    #
 
-    def UpdateCache( self ) -> None:
+    @property
+    def Plugin( self ) -> "Dictionary":
+    #
+        from inspect import stack, FrameInfo;
+        frame: FrameInfo = stack()[1]; # Get caller plugin name
+        from os.path import basename;
+        PluginName: str = basename( frame.filename );
+        return self[ PluginName ];
+    #
 
-        from json import dumps;
-
-        try: # Store cache context
-        #
-            obj: str = dumps( CacheLabel.ToDict( self.__cache__ ), indent=4 );
-
-            if obj and len(obj) > 1:
-            #
-                file: TextIOWrapper = open( self.GetCacheDir, 'w' );
-                file.write( obj );
-                file.close();
-            #
-        #
-        except Exception as e:
-        #
-            g_DiscordLogger.warn( "Failed to store the cache: <r>{}<>", e, flags=LoggerFlags.PrintTerminal );
-        #
-
-    def Get( self, label: str = None ) -> CacheLabel:
-
-        '''
-            Return a dict which automatically stores into the cache.json when setting variables to it
-        '''
-
-        if label is None:
-        #
-            from inspect import stack;
-
-            frame: FrameInfo = stack()[1]; # Get caller plugin name
-
-            from os.path import basename;
-            label = basename( frame.filename );
-        #
-
-        return self.__cache__[ label ];
-
-    def Set( self, label: str, value ) -> None:
-        self.__cache__[ label ] = value;
-
-    def SetTemporal( self, label: str, delta: timedelta, data: dict = None ) -> None:
-
+    def SetTemporal( self, label: str, delta: timedelta, data: str = None ) -> None:
+    #
         '''
             Set a temporal variable to the cache
 
@@ -105,13 +64,13 @@ class CacheManager:
             data is for your own usage when accessing through GetTemporal
         '''
 
-        temp_vars: CacheLabel = g_Cache.Get( "temp" );
-
         time_diff: datetime = datetime.now() + delta;
 
-        temp_vars[ label ] = [ time_diff.strftime( "%Y-%m-%d %H:%M:%S" ), data ];
+        self[ "temp" ][ label ] = { "time": time_diff.strftime( "%Y-%m-%d %H:%M:%S" ), "data": data };
+    #
 
-    def GetTemporal( self, label: str ) -> tuple[ TemporalCache, datetime, dict ]:
+    def GetTemporal( self, label: str ) -> tuple[ TemporalCache, datetime, str ]:
+    #
         '''
             Get a temporal variable from the cache
 
@@ -120,22 +79,49 @@ class CacheManager:
             The third value may be None or not based on when the variable was stored.
         '''
 
-        temp: CacheLabel = self.Get( "temp" );
+        temp: Dictionary = self[ "temp" ];
 
         if label in temp:
         #
-            temp_variable: CacheLabel = temp[ label ];
+            temp_variable: Dictionary = temp[ label ];
 
-            time: datetime = datetime.strptime( temp_variable[0], "%Y-%m-%d %H:%M:%S" );
+            time: datetime = datetime.strptime( temp_variable[ "time" ], "%Y-%m-%d %H:%M:%S" );
 
             if datetime.now() > time:
             #
                 temp.pop( label );
-                return ( TemporalCache.Expired, time, temp_variable[1] );
+                return ( TemporalCache.Expired, time, temp_variable[ "data" ] );
             #
-            return ( TemporalCache.Exists, time, temp_variable[1] );
+            return ( TemporalCache.Exists, time, temp_variable[ "data" ] );
         #
         return ( TemporalCache.NoExists, None, None );
+    #
+
+def __GetCacheDir__() -> str:
+#
+    from utils.Path import Path;
+    return Path.enter( "config", "cache.json", CreateIfNoExists = True, SupressWarning = True )
+#
+
+def __UpdateCache__() -> None:
+#
+    try: # Store cache context
+    #
+        with open( __GetCacheDir__(), 'w' ) as f:
+        #
+            global g_Cache;
+            f.write( g_Cache.ToJson( indent=1 ) );
+        #
+    #
+    except Exception as e:
+    #
+        g_DiscordLogger.warn( "Failed to store the cache: <r>{}<>", e, flags=LoggerFlags.PrintTerminal );
+    #
+#
 
 global g_Cache;
-g_Cache: CacheManager = CacheManager();
+
+from utils.jsonc import jsonc;
+__data__: jsonc = jsonc( __GetCacheDir__(), exists_ok=True );
+
+g_Cache: CacheDictionary = CacheDictionary.FromDict( __data__, fnCallback=__UpdateCache__ );

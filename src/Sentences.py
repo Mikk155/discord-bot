@@ -22,7 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE
 '''
 
-from src.CacheManager import CacheLabel
 from utils.Path import Path;
 from utils.jsonc import jsonc;
 from discord import Guild;
@@ -80,9 +79,9 @@ class Sentences( dict ):
 
         Sentence: str = None;
 
-        from src.CacheManager import g_Cache;
+        from src.CacheManager import g_Cache, CacheDictionary;
 
-        cache: CacheLabel = g_Cache.Get( "language" );
+        cache: CacheDictionary = g_Cache[ "language" ];
 
         if Guild is not None:
         #
