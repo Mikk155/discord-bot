@@ -141,6 +141,11 @@ class PluginManager():
     #
         for p in self.Plugins:
         #
+            if not hasattr( p, fnName ):
+            #
+                continue;
+            #
+
             if p.disabled is True:
             #
                 continue;
