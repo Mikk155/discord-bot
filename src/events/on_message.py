@@ -44,7 +44,7 @@ async def on_message( message: discord.Message ):
                 command = arguments.pop(0);
 
                 await g_PluginManager.CallFunction( "OnCommand", message, command, arguments, Guild=message.guild );
-        
+
             except Exception as e:
 
                 await message.reply( embed=bot.HandleException( e ) );

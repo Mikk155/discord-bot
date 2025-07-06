@@ -82,7 +82,7 @@ class Bot( discord.Client ):
         traceback_list: StackSummary = extract_tb( exc_traceback );
 
         EmbedFields = [];
-        
+
         for frame in traceback_list:
         #
             if PythonLibraries is False and frame.filename.find( "Python" ) != -1:
@@ -115,7 +115,7 @@ class Bot( discord.Client ):
         from utils.Path import Path;
 
         EmbedFields = [];
-        
+
         for call in callbacks:
         #
             if PythonLibraries is False and call.filename.find( "Python" ) != -1:

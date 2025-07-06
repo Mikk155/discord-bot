@@ -1,3 +1,27 @@
+'''
+MIT License
+
+Copyright (c) 2025 Mikk
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE
+'''
+
 # Format all sources
 
 import sys
@@ -9,37 +33,44 @@ sys.path.append( MyWorkspace );
 from utils.fmt import fmt;
 from utils.Path import Path;
 
+Path.SetWorkspace( MyWorkspace );
+
 # Set licence headers
 LICENCE: str = Path.enter( "LICENCE.txt" );
-
-fmt.FormatSourcesWithLicence( LICENCE, sources_folder=Path.enter( "src" ) );
-fmt.FormatSourcesWithLicence( LICENCE, sources_folder=Path.enter( "utils" ) );
 
 from os import walk;
 from os.path import exists, join;
 
 for root, _, DirectoryFiles in walk( MyWorkspace ):
 
-    ValidFiles: list[str] = [ join( root, file ) for file in DirectoryFiles if file.endswith( ".py" ) ];
+    for file in DirectoryFiles:
 
-    files += ValidFiles;
+        if file.endswith( ".py" ):
 
-for file in files:
+            script: str = join( root, file );
 
-    if exists( file ):
+            if exists( script ):
 
-        fileIO: list[str] = open( file, 'r' ).readlines();
+                try:
 
-        HasAny = False;
+                    fmt.FormatSourcesWithLicence( LICENCE, files=[ script ] );
 
-        for i, l in range( fileIO.copy() ):
+                    fileIO: list[str] = open( script, 'r' ).readlines();
 
-            l = l.strip( " " );
+                    HasAny = False;
 
-            if len(l) == 0:
-                fileIO[i] = l;
-                HasAny = True;
+                    for i, l in enumerate( fileIO.copy() ):
 
-        if HasAny:
-            open( file, 'w' ).writelines( fileIO );
-            
+                        l = l.strip( " " );
+
+                        if l == '\n':
+                            fileIO[i] = l;
+                            HasAny = True;
+
+                    if HasAny:
+                        open( script, 'w' ).writelines( fileIO );
+
+                except Exception as e:
+
+                    print( f"Exception: {e} for {script}");
+
