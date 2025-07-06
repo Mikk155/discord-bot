@@ -69,9 +69,8 @@ async def on_message( message: discord.Message ):
 
                 await g_PluginManager.CallFunction( "OnLink", message, urls, Guild=message.guild );
 
-                from src.constants import RegexMessageReference;
 
-                for ReGuildID, ReChannelID, ReMessageID in RegexMessageReference().findall( message.content ):
+                for ReGuildID, ReChannelID, ReMessageID in re.compile( RegexPattern.DiscordMessageReference ).findall( message.content ):
 
                     await g_PluginManager.CallFunction( "OnMessageReference", message, ReGuildID,ReChannelID, ReMessageID,Guild=message.guild );
 
@@ -87,7 +86,7 @@ async def on_message( message: discord.Message ):
 
         Emojis += [ ( e, EmojiFlags.Unicode ) for e in EMOJI.EMOJI_DATA if e in message.content ];
 
-        for match in RegexCustomEmoji().finditer( message.content ):
+        for match in re.compile( RegexPattern.DiscordCustomEmoji ).finditer( message.content ):
 
             EmojiString = match.group(0);
             EmojiID = int( match.group(1) );
