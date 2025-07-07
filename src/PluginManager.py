@@ -195,6 +195,11 @@ class PluginManager():
                     #
                         RepeatPlugins.append( fn );
                     #
+                    case Hook.Destroy:
+                    #
+                        g_DiscordLogger.warn( "Plugin {} destroyed its own method {}", p.GetName, fnName, name=self.GetName );
+                        delattr( type(p), fnName );
+                    #
                 #
             #
             except Exception as e:
