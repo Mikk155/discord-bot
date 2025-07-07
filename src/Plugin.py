@@ -22,9 +22,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE
 '''
 
+from typing import Optional, Callable;
 from datetime import datetime;
-from discord import Member, GroupChannel, TextChannel, DMChannel, User, Message, Reaction, Attachment, audit_logs;
+from discord import Embed, Member, GroupChannel, TextChannel, DMChannel, User, Message, Reaction, Attachment, audit_logs, app_commands, Interaction;
 from src.constants import ReactionState, ServerBoostState, EmojiFlags;
+from functools import wraps
+import traceback
 
 class Plugin():
 
@@ -33,6 +36,58 @@ class Plugin():
 
         Every method should return a boolean, True for keep executing plugins in the list. False if the plugin manager should stop calling subsequent plugins.
     '''
+
+    @staticmethod
+    def HandleExceptions():
+    #
+        def decorator( func ):
+        #
+            @wraps( func )
+            async def wrapper( plugin: Plugin, interaction: Interaction, *args, **kwargs ):
+            #
+                try:
+                #
+                    await func( plugin, interaction, *args, **kwargs )
+                #
+                except Exception as e:
+                #
+                    ExceptionItems: list[tuple] = [];
+
+                    if interaction.guild:
+                    #
+                        ExceptionItems.append( ( "Guild", f'``{interaction.guild.name}``\nID: ``{interaction.guild.id}``' ) );
+                    #
+
+                    if interaction.channel:
+                    #
+                        ExceptionItems.append( ( "Channel", f'``{interaction.channel.name}``\nID: [{interaction.channel.id}]({interaction.channel.jump_url})' ) );
+                    #
+
+                    if interaction.user:
+                    #
+                        from utils.fmt import fmt;
+                        ExceptionItems.append( ( "Author", f'{interaction.user.name}\nID: {fmt.DiscordUserMention( interaction.user )}' ) );
+                    #
+
+                    ExceptionItems.append( ( f"Method {func.__name__}", f"Plugin {plugin.GetName}", False ) );
+
+                    from src.Bot import bot;
+                    embed: Embed = bot.HandleException( f'**{type(e).__name__}**: <r>{e}<>', SendToDevs=True, items=ExceptionItems, TraceUntil='Plugin.py' );
+                    
+                    if interaction.response.is_done():
+                    #
+                        await interaction.followup.send( embed=embed );
+                    #
+                    else:
+                    #
+                        await interaction.response.send_message( embed=embed );
+                    #
+                #
+            #
+            return wrapper
+        #
+        return decorator
+    #
 
     guilds: list[int] = [];
     '''Guilds list to only listen events (if empty == all)'''

@@ -101,8 +101,8 @@ async def plugin_list( interaction: discord.Interaction ):
 
         if interaction.response.is_done():
 
-            await interaction.followup.send( embeds=bot.HandleException(e) );
+            await interaction.followup.send( embed=bot.HandleException(e) );
 
         else:
 
-            await interaction.response.send_message( embeds=bot.HandleException(e) );
+            await interaction.response.send_message( embed=bot.HandleException(e) );

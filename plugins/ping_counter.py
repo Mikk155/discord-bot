@@ -155,23 +155,8 @@ class ping_counter( Plugin ):
     #
 
     @app_commands.describe( member='Member' )
+    @Plugin.HandleExceptions()
     async def command_pings( self, interaction: discord.Interaction, member: discord.Member ):
     #
-        try:
-        #
-            await self.GetPingCount( member, interaction.channel );
-        #
-        except Exception as e:
-        #
-            from src.Bot import bot;
-
-            if interaction.response.is_done():
-            #
-                await interaction.followup.send( embeds=bot.HandleException( e, SendToDevs=True ) );
-            #
-            else:
-            #
-                await interaction.response.send_message( embeds=bot.HandleException( e, SendToDevs=True ) );
-            #
-        #
+        await self.GetPingCount( member, interaction.channel );
     #

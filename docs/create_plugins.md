@@ -107,11 +107,11 @@ async def command_pings( self, interaction: discord.Interaction, member: discord
 
         if interaction.response.is_done():
 
-            await interaction.followup.send( embeds=bot.HandleException( e, "ping_counter::command_pings", SendToDevs=True ) );
+            await interaction.followup.send( embed=bot.HandleException( e, "ping_counter::command_pings", SendToDevs=True ) );
 
         else:
 
-            await interaction.response.send_message( embeds=bot.HandleException( e, "ping_counter::command_pings", SendToDevs=True ) );
+            await interaction.response.send_message( embed=bot.HandleException( e, "ping_counter::command_pings", SendToDevs=True ) );
 ```
 
 ### NOTE:
