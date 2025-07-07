@@ -4,6 +4,7 @@ config/token.txt
 # Config files
 config/bot.json
 config/Loggin.json
+config/plugins.json
 
 # Cache
 __pycache__
