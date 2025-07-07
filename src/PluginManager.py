@@ -181,7 +181,7 @@ class PluginManager():
             #
             except Exception as e:
             #
-                items.append( f"Method {fnName}", f"Plugin {LastPluginName}", False );
+                items.append( ( f"Method {fnName}", f"Plugin {LastPluginName}", False ) );
 
                 from src.Bot import bot;
                 bot.HandleException( f'**{type(e).__name__}**: <r>{e}<>', SendToDevs=True, items=items, TraceUntil='PluginManager.py' );
