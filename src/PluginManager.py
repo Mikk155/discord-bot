@@ -28,6 +28,7 @@ from inspect import FrameInfo
 from src.Plugin import Plugin;
 from src.Sentences import g_Sentences;
 from src.Logger import g_DiscordLogger;
+from src.constants import Hook;
 
 class PluginManager():
 
@@ -167,16 +168,27 @@ class PluginManager():
             #
                 fn: object = getattr( p, fnName );
 
+                HookReturnCode: Hook = Hook.Continue;
+
                 if len(args) > 0:
                 #
-                    if await fn(*args) is False:
+                    HookReturnCode = await fn(*args);
+                #
+                else:
+                #
+                    HookReturnCode = await fn();
+                #
+
+                match HookReturnCode:
+                #
+                    case Hook.Continue:
+                    #
+                        continue;
+                    #
+                    case Hook.Break:
                     #
                         break;
                     #
-                #
-                elif await fn() is False:
-                #
-                    break;
                 #
             #
             except Exception as e:

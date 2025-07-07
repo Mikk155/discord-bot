@@ -106,3 +106,9 @@ class LoggerFlags(IntEnum):
     Nothing: int = 0;
     PrintTerminal: int = ( 1 << 0 );
     PrintDiscord: int = ( 1 << 1 );
+
+class Hook(IntEnum):
+    Continue: int = 0;
+    '''Keep plugins hook execution'''
+    Break: int = 1;
+    '''Handles and break over the hook and stop executing other hooks that are next installed in the plugins config'''
