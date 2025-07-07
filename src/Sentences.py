@@ -81,10 +81,10 @@ class Sentences( dict ):
 
         from src.CacheManager import g_Cache, CacheDictionary;
 
-        cache: CacheDictionary = g_Cache[ "language" ];
-
         if Guild is not None:
         #
+            cache: CacheDictionary = g_Cache[ "language" ];
+
             GuildID = str( Guild if isinstance( Guild, int ) else Guild.id );
 
             if GuildID in cache:
