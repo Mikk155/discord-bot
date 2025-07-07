@@ -27,10 +27,29 @@ from project import *;
 @bot.event
 async def on_message_edit( before: discord.Message, after: discord.Message ):
 
-    try:
+    ExceptionItems: list[tuple] = [];
 
-        await g_PluginManager.CallFunction( "OnMessageEdited", before, after, Guild=after.guild );
+    if after.guild:
+    #
+        ExceptionItems.append( ( "Guild", f'``{after.guild.name}``\nID: ``{after.guild.id}``' ) );
+    #
 
-    except Exception as e:
+    if after.channel:
+    #
+        ExceptionItems.append( ( "Channel", f'``{after.channel.name}``\nID: [{after.channel.id}]({after.channel.jump_url})' ) );
+    #
 
-        bot.HandleException( e, SendToDevs=True, data={ "message": before } );
+    if after.author:
+    #
+        ExceptionItems.append( ( "Author", f'{after.author.name}\nID: {fmt.DiscordUserMention( after.author )}' ) );
+    #
+
+    ExceptionItems.append( ( "Message", f'{after.content}\nID: [{after.id}]({after.jump_url})' ) );
+
+    await g_PluginManager.CallFunction(
+        "OnMessageEdited",
+        before,
+        after,
+        Guild=after.guild,
+        items=ExceptionItems
+    );

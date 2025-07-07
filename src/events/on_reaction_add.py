@@ -22,15 +22,36 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE
 '''
 
+from discord.member import Member
+from discord.user import User
 from project import *;
 
 @bot.event
 async def on_reaction_add( reaction: discord.Reaction, user : discord.User ):
 
-    try:
+    ExceptionItems: list[tuple] = [];
 
-        await g_PluginManager.CallFunction( "OnReaction", reaction, ReactionState.Added, user, Guild=reaction.message.guild );
+    if reaction.message.guild:
+    #
+        ExceptionItems.append( ( "Guild", f'``{reaction.message.guild.name}``\nID: ``{reaction.message.guild.id}``' ) );
+    #
 
-    except Exception as e:
+    if reaction.message.channel:
+    #
+        ExceptionItems.append( ( "Channel", f'``{reaction.message.channel.name}``\nID: [{reaction.message.channel.id}]({reaction.message.channel.jump_url})' ) );
+    #
 
-        bot.HandleException( e, SendToDevs=True, data={ "message": reaction.message, "user": user } );
+    if user:
+    #
+        ExceptionItems.append( ( "Author", f'{user.name}\nID: {fmt.DiscordUserMention( user )}' ) );
+    #
+
+    ExceptionItems.append( ( "Reaction", f'{reaction.emoji.name}\nID: {reaction.emoji.id}' ) );
+
+    await g_PluginManager.CallFunction(
+        "OnReaction",
+        reaction,
+        ReactionState.Added,
+        Guild=reaction.message.guild,
+        items=ExceptionItems
+    );

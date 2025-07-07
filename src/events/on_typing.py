@@ -27,10 +27,28 @@ from project import *;
 @bot.event
 async def on_typing( channel: discord.TextChannel | discord.GroupChannel | discord.DMChannel, user: discord.Member | discord.User, when: datetime ):
 
-    try:
+    ExceptionItems: list[tuple] = [];
 
-        await g_PluginManager.CallFunction( "OnTyping", channel, user, when, Guild=channel.guild );
+    if channel.guild:
+    #
+        ExceptionItems.append( ( "Guild", f'``{channel.guild.name}``\nID: ``{channel.guild.id}``' ) );
+    #
 
-    except Exception as e:
+    if channel:
+    #
+        ExceptionItems.append( ( "Channel", f'``{channel.name}``\nID: [{channel.id}]({channel.jump_url})' ) );
+    #
 
-        bot.HandleException( e, SendToDevs=True, data={ "message": channel } );
+    if user:
+    #
+        ExceptionItems.append( ( "Author", f'{user.name}\nID: {fmt.DiscordUserMention( user )}' ) );
+    #
+
+    await g_PluginManager.CallFunction(
+        "OnTyping",
+        channel,
+        user,
+        when,
+        Guild=channel.guild,
+        items=ExceptionItems
+    );

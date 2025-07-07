@@ -27,108 +27,202 @@ from project import *;
 @bot.event
 async def on_message( message: discord.Message ):
 
-    try:
+    ExceptionItems: list[tuple] = [];
 
-        await g_PluginManager.CallFunction( "OnMessage", message, Guild=message.guild );
+    if message.guild:
+    #
+        ExceptionItems.append( ( "Guild", f'``{message.guild.name}``\nID: ``{message.guild.id}``' ) );
+    #
 
-        if g_ConfigContext.bot.Prefix is not None and message.content.startswith( g_ConfigContext.bot.Prefix ):
+    if message.channel:
+    #
+        ExceptionItems.append( ( "Channel", f'``{message.channel.name}``\nID: [{message.channel.id}]({message.channel.jump_url})' ) );
+    #
 
-            try:
+    if message.author:
+    #
+        ExceptionItems.append( ( "Author", f'{message.author.name}\nID: {fmt.DiscordUserMention( message.author )}' ) );
+    #
 
-                arguments_string = message.content[ len(g_ConfigContext.bot.Prefix) : ];
+    ExceptionItems.append( ( "Message", f'{message.content}\nID: [{message.id}]({message.jump_url})' ) );
 
-                from shlex import split as SplitArgs;
+    await g_PluginManager.CallFunction(
+        "OnMessage",
+        message,
+        Guild=message.guild,
+        items=ExceptionItems
+    );
 
-                arguments = SplitArgs( arguments_string );
+    if g_ConfigContext.bot.Prefix is not None and message.content.startswith( g_ConfigContext.bot.Prefix ):
+    #
+        try:
+        #
+            # Strip the prefix
+            arguments_string: str = message.content[ len( g_ConfigContext.bot.Prefix ) : ];
 
-                command = arguments.pop(0);
+            from shlex import split as SplitArgs;
 
-                await g_PluginManager.CallFunction( "OnCommand", message, command, arguments, Guild=message.guild );
+            arguments: list[str] = SplitArgs( arguments_string );
 
-            except Exception as e:
+            command: str = arguments.pop(0); # strip the command name
 
-                await message.reply( embed=bot.HandleException( e ) );
+            await g_PluginManager.CallFunction(
+                "OnCommand",
+                message,
+                command,
+                arguments,
+                Guild=message.guild,
+                items=ExceptionItems
+            );
+        #
+        except Exception as e: # Tell the user if shlex failed due to bad arguments
+        #
+            await message.reply( embed=bot.HandleException( e ) );
+        #
+    #
 
-        if message.mentions and len( message.mentions ) > 0:
+    if message.mentions and len( message.mentions ) > 0:
+    #
+        await g_PluginManager.CallFunction(
+            "OnMention",
+            message,
+            message.mentions,
+            Guild=message.guild,
+            items=ExceptionItems
+        );
+    #
 
-            await g_PluginManager.CallFunction( "OnMention", message, message.mentions, Guild=message.guild );
+    if message.reference and message.reference.message_id:
+    #
+        try: # Try getting the replied message
+        #
+            replied_message: discord.Message = await message.channel.fetch_message( message.reference.message_id );
 
-        if message.reference and message.reference.message_id:
+            await g_PluginManager.CallFunction(
+                "OnReply",
+                message,
+                replied_message,
+                Guild=message.guild,
+                items=ExceptionItems
+            );
+        #
+        except: pass;
+    #
 
-            try:
-                replied_message = await message.channel.fetch_message( message.reference.message_id );
-                await g_PluginManager.CallFunction( "OnReply", message, replied_message, Guild=message.guild );
-            except:
-                pass;
+    if 'https://' in message.content or 'www.' in message.content:
+    #
+        urls: tuple[str] = tuple( url for url in message.content.split() if url.startswith( 'https://' ) or url.startswith( 'www.' ) );
 
-        if 'https://' in message.content or 'www.' in message.content:
+        if len(urls) > 0:
+        #
+            await g_PluginManager.CallFunction(
+                "OnLink",
+                message,
+                urls,
+                Guild=message.guild,
+                items=ExceptionItems
+            );
 
-            urls: tuple[str] = tuple( url for url in message.content.split() if url.startswith( 'https://' ) or url.startswith( 'www.' ) );
+            # Is this a link to a discord's message?
+            for ReGuildID, ReChannelID, ReMessageID in re.compile( RegexPattern.DiscordMessageReference ).findall( message.content ):
+            #
+                await g_PluginManager.CallFunction(
+                    "OnMessageReference",
+                    message,
+                    ReGuildID,
+                    ReChannelID,
+                    ReMessageID,
+                    Guild=message.guild,
+                    items=ExceptionItems
+                );
+            #
 
-            if len(urls) > 0:
+            # Is this a gif from tenor?
+            if any( ( a.lower().endswith( '.gif' ) and 'cdn.discordapp.com' in a ) for a in urls ):
+            #
+                await g_PluginManager.CallFunction(
+                    "OnMessageGIF",
+                    message,
+                    Guild=message.guild,
+                    items=ExceptionItems
+                );
+            #
+        #
+    #
 
-                await g_PluginManager.CallFunction( "OnLink", message, urls, Guild=message.guild );
+    if message.attachments:
+    #
+        await g_PluginManager.CallFunction(
+            "OnAttachment",
+            message,
+            message.attachments,
+            Guild=message.guild,
+            items=ExceptionItems
+        );
+    #
 
+    # Find unicode emojis in the message
+    Emojis: list[ tuple[ str, EmojiFlags ] ] = [ ( e, EmojiFlags.Unicode ) for e in EMOJI.EMOJI_DATA if e in message.content ];
 
-                for ReGuildID, ReChannelID, ReMessageID in re.compile( RegexPattern.DiscordMessageReference ).findall( message.content ):
+    # Find server emojis in the message
+    for match in re.compile( RegexPattern.DiscordCustomEmoji ).finditer( message.content ):
+    #
+        EmojiString: str = match.group(0);
+        EmojiID = int( match.group(1) );
 
-                    await g_PluginManager.CallFunction( "OnMessageReference", message, ReGuildID,ReChannelID, ReMessageID,Guild=message.guild );
+        flags: EmojiFlags = EmojiFlags.ServerCustom
 
-                if any( ( a.lower().endswith( '.gif' ) and 'cdn.discordapp.com' in a ) for a in urls ):
+        if bot.CanBotUseEmoji( EmojiID ):
+        #
+            flags |= EmojiFlags.BotCanUse;
+        #
 
-                    await g_PluginManager.CallFunction( "OnMessageGIF", message, Guild=message.guild );
+        Emojis.append( ( EmojiString, flags ) );
+    #
 
-        if message.attachments:
+    if len( Emojis ) > 0:
+    #
+        await g_PluginManager.CallFunction(
+            "OnEmoji",
+            message,
+            Emojis,
+            Guild=message.guild,
+            items=ExceptionItems
+        );
+    #
 
-            await g_PluginManager.CallFunction( "OnAttachment", message, message.attachments, Guild=message.guild );
+    if message.type == discord.MessageType.pins_add:
+    #
+        PinnedMessages: list[discord.Message] = await message.channel.pins();
 
-        Emojis: list[ tuple[ str, EmojiFlags ] ] = [];
-
-        Emojis += [ ( e, EmojiFlags.Unicode ) for e in EMOJI.EMOJI_DATA if e in message.content ];
-
-        for match in re.compile( RegexPattern.DiscordCustomEmoji ).finditer( message.content ):
-
-            EmojiString = match.group(0);
-            EmojiID = int( match.group(1) );
-
-            flags = EmojiFlags.ServerCustom
-
-            # -TODO Could be any guild. should the bot store all emoji indexes in a tuple on startup?
-            CustomEmoji = discord.utils.get( message.guild.emojis, id=EmojiID );
-
-            if CustomEmoji and CustomEmoji.is_usable():
-
-                flags |= EmojiFlags.BotCanUse
-
-            Emojis.append( ( EmojiString, flags ) );
-
-        if len( Emojis ) > 0:
-
-            await g_PluginManager.CallFunction( "OnEmoji", message, Emojis, Guild=message.guild );
-
-        BoostServerMessages = (
+        if PinnedMessages:
+        #
+            await g_PluginManager.CallFunction(
+                "OnMessagePinned",
+                message,
+                PinnedMessages[0],
+                Guild=message.guild,
+                items=ExceptionItems
+            );
+        #
+    #
+    else:
+    #
+        BoostServerMessages: tuple[ discord.MessageType ] = (
             discord.MessageType.premium_guild_subscription,
             discord.MessageType.premium_guild_tier_1,
             discord.MessageType.premium_guild_tier_2,
             discord.MessageType.premium_guild_tier_3
         );
 
-        if message.type == discord.MessageType.pins_add:
-
-            PinnedMessages = await message.channel.pins()
-
-            if PinnedMessages:
-
-                await g_PluginManager.CallFunction("OnMessagePinned", message, PinnedMessages[0], Guild=message.guild );
-
-        # elif message.type == discord.MessageType.forwarded:
-
-        #     await g_PluginManager.CallFunction("OnMessageForwarded", message, Guild=message.guild );
-
-        elif message.type in BoostServerMessages:
-
-            await g_PluginManager.CallFunction("OnServerBoost", message, BoostServerMessages.index( message.type ), Guild=message.guild );
-
-    except Exception as e:
-
-        bot.HandleException( e, SendToDevs=True, data={ "message": message } );
+        if message.type in BoostServerMessages:
+        #
+            await g_PluginManager.CallFunction(
+                "OnServerBoost",
+                message,
+                BoostServerMessages.index( message.type ),
+                Guild=message.guild,
+                items=ExceptionItems
+            );
+        #
+    #

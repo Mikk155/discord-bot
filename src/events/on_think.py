@@ -28,20 +28,15 @@ from discord.ext.tasks import loop as Loop
 @Loop( seconds = 1.0, reconnect=True, name="on_think" )
 async def on_think():
 
-    try:
+    await bot.wait_until_ready()
 
-        await bot.wait_until_ready()
+    if g_ConfigContext.log.IsActive:
+    #
+        await g_DiscordLogger.SendAllMessages();
+    #
 
-        if g_ConfigContext.log.IsActive:
+    from datetime import datetime;
 
-            await g_DiscordLogger.SendAllMessages();
+    now: datetime = datetime.now();
 
-        from datetime import datetime;
-
-        now: datetime = datetime.now();
-
-        await g_PluginManager.CallFunction( "OnThink", now );
-
-    except Exception as e:
-
-        bot.HandleException( e, SendToDevs=True );
+    await g_PluginManager.CallFunction( "OnThink", now );

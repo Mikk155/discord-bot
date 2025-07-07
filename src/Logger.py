@@ -80,7 +80,7 @@ class DiscordLogger():
         level_name: str,
         level: LoggerLevel,
         name: str,
-        items: tuple[ str, str, bool ],
+        items: Union[ str, Optional[ tuple[ str, str, Optional[bool] ] ] ],
         flags: LoggerFlags = ( LoggerFlags.PrintTerminal | LoggerFlags.PrintDiscord ),
         colors: dict[ str, RGB ] = None,
         *args

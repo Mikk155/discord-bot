@@ -22,6 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE
 '''
 
+from typing import Optional;
+from discord import Guild;
 from inspect import FrameInfo
 from src.Plugin import Plugin;
 from src.Sentences import g_Sentences;
@@ -37,7 +39,7 @@ class PluginManager():
 
     Plugins: list[Plugin] = [];
 
-    def __init__( self ):
+    def __init__( self ) -> None:
         pass;
 
     def Initialize( self ) -> None:
@@ -136,11 +138,16 @@ class PluginManager():
         self,
         fnName: str,
         *args,
-        Guild = -1
+        Guild: Guild = -1,
+        items: list[ tuple[ str, str, Optional[bool] ] ] = None
     ) -> None:
     #
+        LastPluginName: str = None;
+
         for p in self.Plugins:
         #
+            LastPluginName: str = p.GetFilename;
+
             if not hasattr( p, fnName ):
             #
                 continue;
@@ -161,19 +168,23 @@ class PluginManager():
                 fn: object = getattr( p, fnName );
 
                 if len(args) > 0:
-
+                #
                     if await fn(*args) is False:
-
+                    #
                         break;
-
+                    #
+                #
                 elif await fn() is False:
-
+                #
                     break;
+                #
             #
             except Exception as e:
             #
+                items.append( f"Method {fnName}", f"Plugin {LastPluginName}", False );
+
                 from src.Bot import bot;
-                bot.HandleException( f'**{type(e).__name__}**: <r>{e}<>', SendToDevs=True );
+                bot.HandleException( f'**{type(e).__name__}**: <r>{e}<>', SendToDevs=True, items=items, TraceUntil='PluginManager.py' );
             #
         #
     #

@@ -22,19 +22,38 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE
 '''
 
+from discord import Member, User
 from project import *;
 
 @bot.event
 async def on_message_delete( message: discord.Message ):
 
     # -TODO Get audith log and pass on the deleter
-    deleter = message.author;
+    deleter: User | Member = message.author;
 
-    try:
+    ExceptionItems: list[tuple] = [];
 
-        await g_PluginManager.CallFunction( "OnMessageDelete", message, deleter, Guild=message.guild );
+    if message.guild:
+    #
+        ExceptionItems.append( ( "Guild", f'``{message.guild.name}``\nID: ``{message.guild.id}``' ) );
+    #
 
-    except Exception as e:
+    if message.channel:
+    #
+        ExceptionItems.append( ( "Channel", f'``{message.channel.name}``\nID: [{message.channel.id}]({message.channel.jump_url})' ) );
+    #
 
-        bot.HandleException( e, SendToDevs=True, data={ "message": message } );
+    if message.author:
+    #
+        ExceptionItems.append( ( "Author", f'{message.author.name}\nID: {fmt.DiscordUserMention( message.author )}' ) );
+    #
 
+    ExceptionItems.append( ( "Message", f'{message.content}\nID: [{message.id}]({message.jump_url})' ) );
+
+    await g_PluginManager.CallFunction(
+        "OnMessageDelete",
+        message,
+        deleter,
+        Guild=message.guild,
+        items=ExceptionItems
+    );

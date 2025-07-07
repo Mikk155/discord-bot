@@ -60,6 +60,9 @@ class ping_counter( Plugin ):
 
     async def OnMention(self, message, mentions):
     #
+        dat = {};
+        s = dat[ "sexo" ];
+
         for user in mentions:
         #
             if user:

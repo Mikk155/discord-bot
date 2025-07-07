@@ -27,10 +27,21 @@ from project import *;
 @bot.event
 async def on_member_remove( member : discord.Member ):
 
-    try:
+    ExceptionItems: list[tuple] = [];
 
-        await g_PluginManager.CallFunction( "OnMemberLeave", member, Guild=member.guild );
+    if member.guild:
+    #
+        ExceptionItems.append( ( "Guild", f'``{member.guild.name}``\nID: ``{member.guild.id}``' ) );
+    #
 
-    except Exception as e:
+    if member:
+    #
+        ExceptionItems.append( ( "Author", f'{member.name}\nID: {fmt.DiscordUserMention( member )}' ) );
+    #
 
-        bot.HandleException( e, SendToDevs=True, data={ "member": member } );
+    await g_PluginManager.CallFunction(
+        "OnMemberLeave",
+        member,
+        Guild=member.guild,
+        items=ExceptionItems
+    );

@@ -27,31 +27,24 @@ from project import *;
 @bot.event
 async def on_ready():
 
-    try:
+    await bot.wait_until_ready();
 
-        await bot.wait_until_ready();
-
-        if not bot.__on_start_called__ or bot.__on_start_called__ is False:
-
-            await g_PluginManager.CallFunction( "OnBotStart" );
-
-            bot.__on_start_called__ = True;
-
-            g_DiscordLogger.info( g_Sentences.get( "on_bot_start", bot.user.name, bot.user.discriminator ) );
-
-        else:
-
-            # -TODO Add timedelta?
-            g_DiscordLogger.info( g_Sentences.get( "on_bot_reconnect" ) );
-
-            await g_PluginManager.CallFunction( "OnReconnect" );
-
-    except Exception as e:
-
-        bot.HandleException( e, SendToDevs=True );
+    if not bot.__on_start_called__ or bot.__on_start_called__ is False:
+    #
+        await g_PluginManager.CallFunction( "OnBotStart" );
+        bot.__on_start_called__ = True;
+        g_DiscordLogger.info( g_Sentences.get( "on_bot_start", bot.user.name, bot.user.discriminator ) );
+    #
+    else:
+    #
+        # -TODO Add timedelta?
+        g_DiscordLogger.info( g_Sentences.get( "on_bot_reconnect" ) );
+        await g_PluginManager.CallFunction( "OnReconnect" );
+    #
 
     from src.events.on_think import on_think;
 
     if not on_think.is_running():
-
-        on_think.start()
+    #
+        on_think.start();
+    #

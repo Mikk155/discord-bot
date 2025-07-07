@@ -27,10 +27,21 @@ from project import *;
 @bot.event
 async def on_audit_log_entry_create( entry: discord.audit_logs.AuditLogEntry ):
 
-    try:
+    ExceptionItems: list[tuple] = [];
 
-        await g_PluginManager.CallFunction( "OnAuditLog", entry, Guild=entry.guild );
+    if entry.guild:
+    #
+        ExceptionItems.append( ( "Guild", f'``{entry.guild.name}``\nID: ``{entry.guild.id}``' ) );
+    #
 
-    except Exception as e:
+    if entry.user:
+    #
+        ExceptionItems.append( ( "Author", f'{entry.user.name}\nID: {fmt.DiscordUserMention( entry.user )}' ) );
+    #
 
-        bot.HandleException( e, SendToDevs=True );
+    await g_PluginManager.CallFunction(
+        "OnAuditLog",
+        entry,
+        Guild=entry.guild,
+        items=ExceptionItems
+    );
