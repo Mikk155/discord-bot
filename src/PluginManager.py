@@ -145,6 +145,8 @@ class PluginManager():
     #
         LastPluginName: str = None;
 
+        RepeatPlugins = [];
+
         for p in self.Plugins:
         #
             LastPluginName: str = p.GetFilename;
@@ -189,6 +191,32 @@ class PluginManager():
                     #
                         break;
                     #
+                    case Hook.Repeat:
+                    #
+                        RepeatPlugins.append( fn );
+                    #
+                #
+            #
+            except Exception as e:
+            #
+                items.append( ( f"Method {fnName}", f"Plugin {LastPluginName}", False ) );
+
+                from src.Bot import bot;
+                bot.HandleException( f'**{type(e).__name__}**: <r>{e}<>', SendToDevs=True, items=items, TraceUntil='PluginManager.py' );
+            #
+        #
+
+        for p in RepeatPlugins:
+
+            try:
+            #
+                if len(args) > 0:
+                #
+                    await p(*args);
+                #
+                else:
+                #
+                    await p();
                 #
             #
             except Exception as e:

@@ -112,3 +112,5 @@ class Hook(IntEnum):
     '''Keep plugins hook execution'''
     Break: int = 1;
     '''Handles and break over the hook and stop executing other hooks that are next installed in the plugins config'''
+    Repeat: int = 2;
+    '''The hook will be called again after all the plugins hooks have been called. Any Hook code is ignored for that repeat call'''
