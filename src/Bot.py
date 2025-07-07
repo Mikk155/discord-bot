@@ -75,7 +75,7 @@ class Bot( discord.Client ):
         self.tree.clear_commands( guild=None );
         await self.tree.sync();
 
-    def GetCallTraceEmbeds( self, embed: discord.Embed, PythonLibraries = False ) -> discord.Embed:
+    def GetCallTraceEmbeds( self, embed: discord.Embed, PythonLibraries = False, TraceUntil: str = None ) -> discord.Embed:
 
         from utils.Path import Path;
         from sys import exc_info;
@@ -84,6 +84,8 @@ class Bot( discord.Client ):
         exc_type, exc_value, exc_traceback = exc_info();
         traceback_list: StackSummary = extract_tb( exc_traceback );
 
+        traceback_list.reverse();
+
         EmbedFields = [];
 
         for frame in traceback_list:
@@ -91,14 +93,24 @@ class Bot( discord.Client ):
             if PythonLibraries is False and frame.filename.find( "Python" ) != -1:
                 continue;
 
+            FrameFilename: str = frame.filename[ frame.filename.rfind( "Python" )
+                if ( frame.filename.find( "Python" ) != -1 )
+                else len(Path.Workspace()) : ];
+
+            if TraceUntil is not None:
+            #
+                if FrameFilename.endswith( TraceUntil ):
+                #
+                    break;
+                #
+            #
+
             EmbedFields.append(
                 (
                     f'**{exc_type.__name__}** line: ``{frame.lineno}``',
-                    "```py\n{}``` `{}`".format(
+                    "```py\n{}``` ``{}``".format(
                         frame.line,
-                        frame.filename[ frame.filename.rfind( "Python" )
-                            if ( frame.filename.find( "Python" ) != -1 )
-                            else len(Path.Workspace()) : ]
+                        FrameFilename
                     ),
                     False
                 )
@@ -354,7 +366,7 @@ class Bot( discord.Client ):
             );
         #
 
-    def AddEmbedFields( self, embed: discord.Embed, items: tuple[ str, str, bool ] ) -> discord.Embed:
+    def AddEmbedFields( self, embed: discord.Embed, items: list[ tuple[ str, str, Optional[bool] ] ] ) -> discord.Embed:
 
         fields = 0;
 
@@ -368,23 +380,23 @@ class Bot( discord.Client ):
                 break;
             #
 
-            field_title = item[0];
+            field_title: str = item[0];
 
             if len( field_title ) > 256:
             #
                 field_title = field_title[ : 256 ];
             #
 
-            field_description = item[1];
+            field_description: str = item[1];
 
             if len( field_description ) > 1024:
             #
                 field_description = field_description[ : 1024 ];
             #
 
-            field_inline = item[2] if len(item) > 2 else True;
+            field_inline: bool | None = item[2] if len(item) > 2 else True;
 
-            embed.add_field( name=field_title, value=field_description, inline =field_inline );
+            embed.add_field( name=field_title, value=field_description, inline=field_inline );
         #
         return embed;
 
@@ -393,7 +405,7 @@ class Bot( discord.Client ):
         description: str = None,
         color: int =0xf000FF,
         time: datetime = None,
-        items: tuple[ str, str, bool ] = None
+        items: list[ tuple[ str, str, Optional[bool] ] ] = None
     ) -> discord.Embed:
 
         embed = discord.Embed( color = color, title=title, description=description, timestamp=time );
@@ -405,12 +417,32 @@ class Bot( discord.Client ):
 
         return embed;
 
+    def CanBotUseEmoji( self, EmojiID ) -> bool:
+    #
+        '''Return whatever the bot can use the given emoji'''
+
+        for Guild in bot.guilds:
+            
+            if Guild:
+            #
+                CustomEmoji: discord.Emoji | None = discord.utils.get( Guild.emojis, id=EmojiID );
+
+                if CustomEmoji and CustomEmoji.is_usable():
+                #
+                    return True;
+                #
+            #
+        #
+        return False;
+    #
+
     def HandleException( self,
         exception: Exception,
         message: str = None,
         *args,
         SendToDevs = False,
-        data: dict = None,
+        items: list[ tuple[ str, str, Optional[bool] ] ] = None,
+        TraceUntil: str = None
     ) -> discord.Embed:
         '''
             Build a exception message
@@ -428,55 +460,29 @@ class Bot( discord.Client ):
         #
             g_DiscordLogger.push_back( embed );
 
+            if items is not None:
+            #
+                g_DiscordLogger.push_back(
+                    self.CreateEmbed(
+                        "🐛",
+                        description=g_Sentences.get( "except_data" ),
+                        color=embed.color,
+                        items=items
+                    )
+                );
+            #
+
             g_DiscordLogger.push_back(
                 self.GetCallTraceEmbeds(
                     self.CreateEmbed(
-                        "Callback traces",
+                        "🐛",
                         description=g_Sentences.get( "except_callbacks" ),
                         color=embed.color
                     ),
-                    True
+                    PythonLibraries=True,
+                    TraceUntil=TraceUntil
                 )
             );
-
-            if data is not None and len(data) > 0:
-            #
-                from utils.fmt import fmt;
-
-                for k, v in data.copy().items():
-                #
-                    if isinstance( v, str ):
-                    #
-                        continue;
-                    #
-                    elif isinstance( v, ( float | int | bool ) ):
-                    #
-                        data[ k ] = str(v);
-                    #
-                    elif isinstance( v, ( discord.User | discord.Member ) ):
-                    #
-                        data[ k ] = f'User: {fmt.DiscordUserMention(v)}';
-                        data[ k ] = f'Guild: {v.guild} {v.guild.id if v.guild else ""}';
-                    #
-                    elif isinstance( v, discord.Message ):
-                    #
-                        data[ k ] = f'Message: {v.jump_url} {v.content}';
-                        data[ k ] = f'Guild: {v.channel.guild if v.channel else ""} {v.channel.guild.id if v.channel.guild else ""}';
-                        data[ k ] = f'User: {fmt.DiscordUserMention(v.author)}';
-                    #
-                    elif isinstance( v, discord.TextChannel ):
-                    #
-                        data[ k ] = f'Guild: {v.guild} {v.guild.id if v.guild else ""}';
-                    #
-                    elif isinstance( v, discord.Interaction ):
-                    #
-                        data[ k ] = f'Guild: {v.guild} {v.guild_id}';
-                        data[ k ] = f'User: {fmt.DiscordUserMention(v.user)}';
-                    #
-                #
-                from json import dumps;
-                g_DiscordLogger.push_back( g_Sentences.get( "except_data" ) + "\n```json\n{}\n```".format( dumps(data, indent=1) ) );
-            #
         #
         return embed;
 
