@@ -1,0 +1,480 @@
+{
+    "Plugin":
+    {
+        "scope": "python",
+        "prefix": "Plugin",
+        "description": "Create a plugin class",
+        "body":
+        [
+            "class ${1:filename}( Plugin ):",
+            "",
+            "\tdef __init__( self )",
+            "\t\t'''Constructor. This is called even before the bot is run'''",
+            "",
+            "\t@property",
+            "\tdef GetName( self ) -> str:",
+            "\t\treturn '${2:Name of your plugin}'",
+            "",
+            "\t@property",
+            "\tdef GetDescription( self ) -> str:",
+            "\t\treturn '${3:Description of what your plugin does}'",
+            "",
+            "\t@property",
+            "\tdef GetAuthorName( self ) -> str:",
+            "\t\treturn '${4:Your name}'",
+            "",
+            "\t@property",
+            "\tdef GetAuthorSite( self ) -> str:",
+            "\t\treturn '${5:Your contact url}'"
+        ]
+    },
+    "OnInitialize":
+    {
+        "scope": "python",
+        "description": "The python scripts has just been run. This is called before the bot is running and just after every plugin has been loaded",
+        "prefix": "OnInitialize",
+        "body":
+        [
+            "\tasync def OnInitialize( self ) -> Hook:",
+            "",
+            "\t\t${1:}",
+            "",
+            "\t\treturn Hook.Continue;"
+        ]
+    },
+    "OnPluginActivate":
+    {
+        "scope": "python",
+        "description": "The plugin has just been enabled",
+        "prefix": "OnPluginActivate",
+        "body":
+        [
+            "\tdef OnPluginActivate( self ) -> Hook:",
+            "",
+            "\t\t${1:}",
+            "",
+            "\t\treturn Hook.Continue;"
+        ]
+    },
+    "OnPluginDeactivate":
+    {
+        "scope": "python",
+        "description": "The plugin has just been disabled",
+        "prefix": "OnPluginDeactivate",
+        "body":
+        [
+            "\tdef OnPluginDeactivate( self ) -> Hook:",
+            "",
+            "\t\t${1:}",
+            "",
+            "\t\treturn Hook.Continue;"
+        ]
+    },
+    "OnBotStart":
+    {
+        "scope": "python",
+        "description": "Called once. when the bot first starts (on_ready).",
+        "prefix": "OnBotStart",
+        "body":
+        [
+            "\tasync def OnBotStart( self ) -> Hook:",
+            "",
+            "\t\t${1:}",
+            "",
+            "\t\treturn Hook.Continue;"
+        ]
+    },
+    "OnReconnect":
+    {
+        "scope": "python",
+        "description": "Called when the bot is back online after a connection lost",
+        "prefix": "OnReconnect",
+        "body":
+        [
+            "\tasync def OnReconnect( self ) -> Hook:",
+            "",
+            "\t\t${1:}",
+            "",
+            "\t\treturn Hook.Continue;"
+        ]
+    },
+    "OnThink":
+    {
+        "scope": "python",
+        "description": "Called every second. time is the current time when the plugin manager is just called. use this as a prediction.",
+        "prefix": "OnThink",
+        "body":
+        [
+            "\tasync def OnThink( self, time: datetime ) -> Hook:",
+            "",
+            "\t\t${1:}",
+            "",
+            "\t\treturn Hook.Continue;"
+        ]
+    },
+    "OnMemberLeave":
+    {
+        "scope": "python",
+        "description": "Called when a user leaves a guild",
+        "prefix": "OnMemberLeave",
+        "body":
+        [
+            "\tasync def OnMemberLeave( self, user: discord.Member ) -> Hook:",
+            "",
+            "\t\t${1:}",
+            "",
+            "\t\treturn Hook.Continue;"
+        ]
+    },
+    "OnMemberJoin":
+    {
+        "scope": "python",
+        "description": "Called when a user joins a guild",
+        "prefix": "OnMemberJoin",
+        "body":
+        [
+            "\tasync def OnMemberJoin( self, user: discord.Member ) -> Hook:",
+            "",
+            "\t\t${1:}",
+            "",
+            "\t\treturn Hook.Continue;"
+        ]
+    },
+    "OnTyping":
+    {
+        "scope": "python",
+        "description": "Called when a user starts typing",
+        "prefix": "OnTyping",
+        "body":
+        [
+            "\tasync def OnTyping( self, channel: Union[discord.TextChannel | discord.GroupChannel | discord.DMChannel], user: Union[discord.Member | discord.User], when: datetime ) -> Hook:",
+            "",
+            "\t\t${1:}",
+            "",
+            "\t\treturn Hook.Continue;"
+        ]
+    },
+    "OnMessage":
+    {
+        "scope": "python",
+        "description": "Called when a user sends a message",
+        "prefix": "OnMessage",
+        "body":
+        [
+            "\tasync def OnMessage( self, message: discord.Message ) -> Hook:",
+            "",
+            "\t\tif message.author.id == bot.user.id:",
+            "\t\t\treturn Hook.Continue;",
+            "",
+            "\t\tchannel: discord.TextChannel = message.channel;",
+            "",
+            "\t\tif isinstance( channel, discord.GroupChannel ) or isinstance( channel, discord.DMChannel ):",
+            "\t\t\treturn Hook.Continue;",
+            "",
+            "\t\t${1:}",
+            "",
+            "\t\treturn Hook.Continue;"
+        ]
+    },
+    "OnMention":
+    {
+        "scope": "python",
+        "description": "Called when a user sends a message containing mentions",
+        "prefix": "OnMention",
+        "body":
+        [
+            "\tasync def OnMention( self, message: discord.Message, mentions: tuple[ discord.User | discord.Member ] ) -> Hook:",
+            "",
+            "\t\tif message.author.id == bot.user.id:",
+            "\t\t\treturn Hook.Continue;",
+            "",
+            "\t\tchannel: discord.TextChannel = message.channel;",
+            "",
+            "\t\tif isinstance( channel, discord.GroupChannel ) or isinstance( channel, discord.DMChannel ):",
+            "\t\t\treturn Hook.Continue;",
+            "",
+            "\t\t${1:}",
+            "",
+            "\t\treturn Hook.Continue;"
+        ]
+    },
+    "OnMessageReply":
+    {
+        "scope": "python",
+        "description": "Called when a user sends a message replying to a message",
+        "prefix": "OnMessageReply",
+        "body":
+        [
+            "\tasync def OnMessageReply( self, message: discord.Message, replied: discord.Message ) -> Hook:",
+            "",
+            "\t\tif message.author.id == bot.user.id:",
+            "\t\t\treturn Hook.Continue;",
+            "",
+            "\t\tchannel: discord.TextChannel = message.channel;",
+            "",
+            "\t\tif isinstance( channel, discord.GroupChannel ) or isinstance( channel, discord.DMChannel ):",
+            "\t\t\treturn Hook.Continue;",
+            "",
+            "\t\t${1:}",
+            "",
+            "\t\treturn Hook.Continue;"
+        ]
+    },
+    "OnMessageURL":
+    {
+        "scope": "python",
+        "description": "Called when a user sends a message containing urls",
+        "prefix": "OnMessageURL",
+        "body":
+        [
+            "\tasync def OnMessageURL( self, message: discord.Message, urls: tuple[str] ) -> Hook:",
+            "",
+            "\t\tif message.author.id == bot.user.id:",
+            "\t\t\treturn Hook.Continue;",
+            "",
+            "\t\tchannel: discord.TextChannel = message.channel;",
+            "",
+            "\t\tif isinstance( channel, discord.GroupChannel ) or isinstance( channel, discord.DMChannel ):",
+            "\t\t\treturn Hook.Continue;",
+            "",
+            "\t\t${1:}",
+            "",
+            "\t\treturn Hook.Continue;"
+        ]
+    },
+    "OnMessageReference":
+    {
+        "scope": "python",
+        "description": "Called when a user sends a message containing a url to a discord message",
+        "prefix": "OnMessageReference",
+        "body":
+        [
+            "\tasync def OnMessageReference( self, message: discord.Message, guild_id: int, channel_id: int, message_id: int ) -> Hook:",
+            "",
+            "\t\tif message.author.id == bot.user.id:",
+            "\t\t\treturn Hook.Continue;",
+            "",
+            "\t\tchannel: discord.TextChannel = message.channel;",
+            "",
+            "\t\tif isinstance( channel, discord.GroupChannel ) or isinstance( channel, discord.DMChannel ):",
+            "\t\t\treturn Hook.Continue;",
+            "",
+            "\t\t${1:}",
+            "",
+            "\t\treturn Hook.Continue;"
+        ]
+    },
+    "OnAttachment":
+    {
+        "scope": "python",
+        "description": "Called when a user sends a message containing attachments",
+        "prefix": "OnAttachment",
+        "body":
+        [
+            "\tasync def OnAttachment( self, message: discord.Message, attachments: list[discord.Attachment] ) -> Hook:",
+            "",
+            "\t\tif message.author.id == bot.user.id:",
+            "\t\t\treturn Hook.Continue;",
+            "",
+            "\t\tchannel: discord.TextChannel = message.channel;",
+            "",
+            "\t\tif isinstance( channel, discord.GroupChannel ) or isinstance( channel, discord.DMChannel ):",
+            "\t\t\treturn Hook.Continue;",
+            "",
+            "\t\t${1:}",
+            "",
+            "\t\treturn Hook.Continue;"
+        ]
+    },
+
+    "OnMessageGIF":
+    {
+        "scope": "python",
+        "description": "Called when a user sends a message containing a GIF",
+        "prefix": "OnMessageGIF",
+        "body":
+        [
+            "\tasync def OnMessageGIF( self, message: discord.Message ) -> Hook:",
+            "",
+            "\t\tif message.author.id == bot.user.id:",
+            "\t\t\treturn Hook.Continue;",
+            "",
+            "\t\tchannel: discord.TextChannel = message.channel;",
+            "",
+            "\t\tif isinstance( channel, discord.GroupChannel ) or isinstance( channel, discord.DMChannel ):",
+            "\t\t\treturn Hook.Continue;",
+            "",
+            "\t\t${1:}",
+            "",
+            "\t\treturn Hook.Continue;"
+        ]
+    },
+
+    "OnMessagePinned":
+    {
+        "scope": "python",
+        "description": "Called when a message is pinned",
+        "prefix": "OnMessagePinned",
+        "body":
+        [
+            "\tasync def OnMessagePinned( self, message: discord.Message, pinned: discord.Message ) -> Hook:",
+            "",
+            "\t\tif message.author.id == bot.user.id:",
+            "\t\t\treturn Hook.Continue;",
+            "",
+            "\t\tchannel: discord.TextChannel = message.channel;",
+            "",
+            "\t\tif isinstance( channel, discord.GroupChannel ) or isinstance( channel, discord.DMChannel ):",
+            "\t\t\treturn Hook.Continue;",
+            "",
+            "\t\t${1:}",
+            "",
+            "\t\treturn Hook.Continue;"
+        ]
+    },
+
+    "OnServerBoost":
+    {
+        "scope": "python",
+        "description": "Called when a the server is boosted",
+        "prefix": "OnServerBoost",
+        "body":
+        [
+            "\tasync def OnServerBoost( self, message: discord.Message, boost: ServerBoostState ) -> Hook:",
+            "",
+            "\t\t${1:}",
+            "",
+            "\t\treturn Hook.Continue;"
+        ]
+    },
+
+    "OnMessageDelete":
+    {
+        "scope": "python",
+        "description": "Called when a message is deleted",
+        "prefix": "OnMessageDelete",
+        "body":
+        [
+            "\tasync def OnMessageDelete( self, message: discord.Message, deleter: Union[discord.User | discord.Member] ) -> Hook:",
+            "",
+            "\t\tif message.author.id == bot.user.id:",
+            "\t\t\treturn Hook.Continue;",
+            "",
+            "\t\tchannel: discord.TextChannel = message.channel;",
+            "",
+            "\t\tif isinstance( channel, discord.GroupChannel ) or isinstance( channel, discord.DMChannel ):",
+            "\t\t\treturn Hook.Continue;",
+            "",
+            "\t\t${1:}",
+            "",
+            "\t\treturn Hook.Continue;"
+        ]
+    },
+
+    "OnMessageEdited":
+    {
+        "scope": "python",
+        "description": "Called when a message is edited",
+        "prefix": "OnMessageEdited",
+        "body":
+        [
+            "\tasync def OnMessageEdited( self, before: discord.Message, after: discord.Message ) -> Hook:",
+            "",
+            "\t\tif after.author.id == bot.user.id:",
+            "\t\t\treturn Hook.Continue;",
+            "",
+            "\t\tchannel: discord.TextChannel = after.channel;",
+            "",
+            "\t\tif isinstance( channel, discord.GroupChannel ) or isinstance( channel, discord.DMChannel ):",
+            "\t\t\treturn Hook.Continue;",
+            "",
+            "\t\t${1:}",
+            "",
+            "\t\treturn Hook.Continue;"
+        ]
+    },
+
+    "OnReaction":
+    {
+        "scope": "python",
+        "description": "Called when a message's reaction has changed",
+        "prefix": "OnReaction",
+        "body":
+        [
+            "\tasync def OnReaction( self, reaction: discord.Reaction, state: ReactionState, user: Union[discord.User | discord.Member] ) -> Hook:",
+            "",
+            "\t\tif user.id == bot.user.id:",
+            "\t\t\treturn Hook.Continue;",
+            "",
+            "\t\tchannel: discord.TextChannel = reaction.message.channel;",
+            "",
+            "\t\tif isinstance( channel, discord.GroupChannel ) or isinstance( channel, discord.DMChannel ):",
+            "\t\t\treturn Hook.Continue;",
+            "",
+            "\t\t${1:}",
+            "",
+            "\t\treturn Hook.Continue;"
+        ]
+    },
+
+    "OnCommand":
+    {
+        "scope": "python",
+        "description": "Called when a message contains a command prefix",
+        "prefix": "OnCommand",
+        "body":
+        [
+            "\tasync def OnCommand( self, message: discord.Message, command: str, args: list[str] ) -> Hook:",
+            "",
+            "\t\tif message.author.id == bot.user.id:",
+            "\t\t\treturn Hook.Continue;",
+            "",
+            "\t\tchannel: discord.TextChannel = message.channel;",
+            "",
+            "\t\tif isinstance( channel, discord.GroupChannel ) or isinstance( channel, discord.DMChannel ):",
+            "\t\t\treturn Hook.Continue;",
+            "",
+            "\t\t${1:}",
+            "",
+            "\t\treturn Hook.Continue;"
+        ]
+    },
+
+    "OnAuditLog":
+    {
+        "scope": "python",
+        "description": "Called when a new entry to the audit log is made",
+        "prefix": "OnAuditLog",
+        "body":
+        [
+            "\tasync def OnAuditLog( self, entry: discord.audit_logs.AuditLogEntry  ) -> Hook:",
+            "",
+            "\t\t${1:}",
+            "",
+            "\t\treturn Hook.Continue;"
+        ]
+    },
+
+    "OnEmoji":
+    {
+        "scope": "python",
+        "description": "Called when a message contains emojis",
+        "prefix": "OnEmoji",
+        "body":
+        [
+            "\tasync def OnEmoji( self, message: discord.Message, emojis: list[ tuple[str, EmojiFlags] ] ):",
+            "",
+            "\t\tif message.author.id == bot.user.id:",
+            "\t\t\treturn Hook.Continue;",
+            "",
+            "\t\tchannel: discord.TextChannel = message.channel;",
+            "",
+            "\t\tif isinstance( channel, discord.GroupChannel ) or isinstance( channel, discord.DMChannel ) -> Hook:",
+            "\t\t\treturn Hook.Continue;",
+            "",
+            "\t\t${1:}",
+            "",
+            "\t\treturn Hook.Continue;"
+        ]
+    }
+}

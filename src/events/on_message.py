@@ -99,7 +99,7 @@ async def on_message( message: discord.Message ):
             replied_message: discord.Message = await message.channel.fetch_message( message.reference.message_id );
 
             await g_PluginManager.CallFunction(
-                "OnReply",
+                "OnMessageReply",
                 message,
                 replied_message,
                 Guild=message.guild,
@@ -116,7 +116,7 @@ async def on_message( message: discord.Message ):
         if len(urls) > 0:
         #
             await g_PluginManager.CallFunction(
-                "OnLink",
+                "OnMessageURL",
                 message,
                 urls,
                 Guild=message.guild,
