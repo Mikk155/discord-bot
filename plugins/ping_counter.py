@@ -26,7 +26,7 @@ from project import *
 
 class ping_counter( Plugin ):
 
-    def OnPluginActivate(self):
+    def OnPluginActivate( self ) -> Hook:
     #
         command = app_commands.Command(
             name="pings",
@@ -39,11 +39,14 @@ class ping_counter( Plugin ):
         bot.tree.add_command( command );
 
         g_Sentences.push_back( "ping_counter" );
+
+        return Hook.Continue;
     #
 
-    def OnPluginDeactivate(self):
+    def OnPluginDeactivate( self ) -> Hook:
     #
         bot.tree.remove_command( "pings" );
+        return Hook.Continue;
     #
 
     @property
@@ -58,8 +61,13 @@ class ping_counter( Plugin ):
         return "Keep track of users mentioning";
     #
 
-    async def OnMention(self, message, mentions):
+    async def OnMention( self, message: discord.Message, mentions: tuple[ discord.User | discord.Member ] ) -> Hook:
     #
+        channel: discord.TextChannel = message.channel;
+
+        if isinstance( channel, discord.GroupChannel ) or isinstance( channel, discord.DMChannel ):
+            return Hook.Continue;
+
         for user in mentions:
         #
             if user:
@@ -74,15 +82,21 @@ class ping_counter( Plugin ):
                 UserCache[ "pings" ] += 1;
             #
         #
-        return True;
+        return Hook.Continue;
     #
 
-    async def OnCommand(self, message, command, args):
-    #
+    async def OnCommand( self, message: discord.Message, command: str, args: list[str] ) -> Hook:
+
         if command != 'pings':
-        #
-            return True;
-        #
+            return Hook.Continue;
+
+        if message.author.id == bot.user.id:
+            return Hook.Continue;
+
+        channel: discord.TextChannel = message.channel;
+
+        if isinstance( channel, discord.GroupChannel ) or isinstance( channel, discord.DMChannel ):
+            return Hook.Continue;
 
         await message.channel.typing();
 
@@ -111,15 +125,15 @@ class ping_counter( Plugin ):
                 allowed_mentions=False
             );
 
-            return False;
+            return Hook.Break;
         #
 
         await self.GetPingCount( target, message.channel );
 
-        return False;
+        return Hook.Break;
     #
 
-    async def GetPingCount( self, target: discord.Member, channel: discord.TextChannel ):
+    async def GetPingCount( self, target: discord.Member, channel: discord.TextChannel ) -> None:
     #
         UserCache: Dictionary = g_Cache.Plugin[ target.id ];
 
@@ -154,8 +168,8 @@ class ping_counter( Plugin ):
         #
     #
 
-    @app_commands.describe( member='Member' )
     @Plugin.HandleExceptions()
+    @app_commands.describe( member='Member' )
     async def command_pings( self, interaction: discord.Interaction, member: discord.Member ):
     #
         await self.GetPingCount( member, interaction.channel );
