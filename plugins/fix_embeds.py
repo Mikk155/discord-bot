@@ -29,44 +29,39 @@ import asyncio;
 class fix_embeds( Plugin ):
 
     def OnPluginActivate(self):
-
+    #
         g_Sentences.push_back( "fix_embeds" );
+    #
 
     @property
     def GetName(self):
+    #
         return "Fix embeds";
+    #
 
     @property
     def GetDescription(self):
-        return "Create a fixed embed when a link to X or instagram is sent";
+    #
+        return "Create a fixed embed when a link to X, youtube, instagram or tiktok is sent";
+    #
 
-    SupportedEmbeds = (
+    SupportedEmbeds: tuple[ tuple[str, str] ] = \
+    (
         # https://github.com/Wikidepia/InstaFix
         ( "www.instagram.com", "www.ddinstagram.com" ),
+
         # https://github.com/FixTweet/FxTwitter
-        ( "https://x.com/", "https://fxtwitter.com/" )
+        ( "https://x.com/", "https://fxtwitter.com/" ),
+
+        # https://github.com/Britmoji/tiktxk
+        ( "https://www.tiktok.com/", "https://tiktxk.com/" ),
+
+        # Youtube shorts
+        ( "youtube.com/shorts/", "youtube.com/watch?v=" )
     );
 
-    async def OnMessageURL( self, message: discord.Message, urls: tuple[str] ) -> Hook:
-
-        if message.author.id == bot.user.id:
-            return Hook.Continue;
-
-        channel: discord.TextChannel = message.channel;
-
-        if isinstance( channel, discord.GroupChannel ) or isinstance( channel, discord.DMChannel ):
-            return Hook.Continue;
-
-        Links: list[tuple[str, str]] = [ l for l in self.SupportedEmbeds if any( a for a in urls if l[0] in a ) ];
-
-        if len(Links) == 0:
-            return Hook.Continue;
-
-        formatted: str = message.content;
-
-        for Link in Links:
-            formatted = formatted.replace( Link[0], Link[1] );
-
+    async def FixEmbeds( self, message: discord.Message, formatted: str ) -> None:
+    #
         webhook: discord.Webhook = await bot.webhook( message.channel );
 
         msg: discord.WebhookMessage = await webhook.send( content=formatted, username=message.author.display_name, \
@@ -85,31 +80,83 @@ class fix_embeds( Plugin ):
         await reply.add_reaction( '✅' );
 
         async with message.channel.typing():
+        #
             await asyncio.sleep( 10 );
+        #
 
         try: # return None: NO. WE HAVE TO RAISE EXCEPTION :sob:
+        #
             reply = await message.channel.fetch_message( reply.id );
-        except: reply = None;
+        #
+        except:
+        #
+            reply = None;
+        #
 
         if reply is not None:
-
+        #
             if await bot.UserReacted( message.author, reply, emoji='✅' ):
-
+            #
                 try: # return None: NO. WE HAVE TO RAISE EXCEPTION :sob:
+                #
                     message = await message.channel.fetch_message( message.id );
                     await message.delete();
-                except: pass; # i assuem the ID is fine in this context after asyncio sleep
-
+                #
+                except:
+                #
+                    pass; # i assuem the ID is fine in this context after asyncio sleep
+                #
+            #
             else:
-
+            #
                 try: # return None: NO. WE HAVE TO RAISE EXCEPTION :sob:
+                #
                     msg = await message.channel.fetch_message( msg.id );
-                except: msg = None;
+                #
+                except:
+                #
+                    msg = None;
+                #
 
                 if msg is not None:
-
+                #
                     await msg.delete();
-
+                #
+            #
             await reply.delete();
+        #
+    #
+
+    async def OnMessageURL( self, message: discord.Message, urls: tuple[str] ) -> Hook:
+    #
+        if message.author.id == bot.user.id or not isinstance( message.author, discord.Member ): # Ignore the webhook we just sent
+        #
+            return Hook.Continue;
+        #
+
+        channel: discord.TextChannel = message.channel;
+
+        if isinstance( channel, discord.GroupChannel ) or isinstance( channel, discord.DMChannel ):
+        #
+            return Hook.Continue;
+        #
+
+        Links: list[tuple[str, str]] = [ l for l in self.SupportedEmbeds if any( a for a in urls if l[0] in a ) ];
+
+        if not Links or len(Links) == 0:
+        #
+            return Hook.Continue;
+        #
+
+        formatted: str = message.content;
+
+        for Link in Links:
+        #
+            formatted = formatted.replace( Link[0], Link[1] );
+        #
+
+        # Don't queue the plugins iteration
+        task: asyncio.Task = asyncio.create_task( self.FixEmbeds(message, formatted) );
 
         return Hook.Continue;
+    #
