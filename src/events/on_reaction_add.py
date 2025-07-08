@@ -36,7 +36,7 @@ async def on_reaction_add( reaction: discord.Reaction, user : discord.User ):
         ExceptionItems.append( ( "Guild", f'``{reaction.message.guild.name}``\nID: ``{reaction.message.guild.id}``' ) );
     #
 
-    if reaction.message.channel:
+    if reaction.message.channel and not isinstance( reaction.message.channel, discord.DMChannel | discord.GroupChannel ):
     #
         ExceptionItems.append( ( "Channel", f'``{reaction.message.channel.name}``\nID: [{reaction.message.channel.id}]({reaction.message.channel.jump_url})' ) );
     #

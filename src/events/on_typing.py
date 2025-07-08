@@ -34,7 +34,7 @@ async def on_typing( channel: discord.TextChannel | discord.GroupChannel | disco
         ExceptionItems.append( ( "Guild", f'``{channel.guild.name}``\nID: ``{channel.guild.id}``' ) );
     #
 
-    if channel:
+    if channel and not isinstance( channel, discord.DMChannel | discord.GroupChannel ):
     #
         ExceptionItems.append( ( "Channel", f'``{channel.name}``\nID: [{channel.id}]({channel.jump_url})' ) );
     #

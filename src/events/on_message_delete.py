@@ -38,7 +38,7 @@ async def on_message_delete( message: discord.Message ):
         ExceptionItems.append( ( "Guild", f'``{message.guild.name}``\nID: ``{message.guild.id}``' ) );
     #
 
-    if message.channel:
+    if message.channel and not isinstance( message.channel, discord.DMChannel | discord.GroupChannel ):
     #
         ExceptionItems.append( ( "Channel", f'``{message.channel.name}``\nID: [{message.channel.id}]({message.channel.jump_url})' ) );
     #

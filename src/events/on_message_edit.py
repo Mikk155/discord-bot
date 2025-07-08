@@ -34,7 +34,7 @@ async def on_message_edit( before: discord.Message, after: discord.Message ):
         ExceptionItems.append( ( "Guild", f'``{after.guild.name}``\nID: ``{after.guild.id}``' ) );
     #
 
-    if after.channel:
+    if after.channel and not isinstance( after.channel, discord.DMChannel | discord.GroupChannel ):
     #
         ExceptionItems.append( ( "Channel", f'``{after.channel.name}``\nID: [{after.channel.id}]({after.channel.jump_url})' ) );
     #
