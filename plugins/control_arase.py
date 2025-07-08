@@ -22,88 +22,107 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE
 '''
 
-from discord import User, Webhook
 from project import *
-from utils.Dictionary import Dictionary
 
 class control_arase( Plugin ):
 
     @property
     def GetDescription(self):
-        return "Control arase";
+        return "Control arase @kern @kez";
 
-    control_yourself = (
-        'mommy',
-        'mama',
-        'sex',
-        'gf',
-        'feet',
-        'armpit',
-    );
-
-    mimir_texts = (
-        "What the fuck arase go to sleep",
-        "Go to fucking sleep arase",
-        "Ok but go to sleep",
-        "when sleeping",
-        "Mimir time mf",
-        "You ain't going to find a girlfriend at this time,"
-        "Reminder para arase to fucking sleep early"
-    );
-
-    async def OnMessage(self, message):
+    async def OnMessage( self, message: discord.Message ) -> Hook:
 
         if message.author.id == bot.user.id:
-            return True;
+            return Hook.Continue;
 
-        if message.author.id in [ 768337526888726548, 1312014737449549826 ]:
+        if not message.author.id in [ 768337526888726548, 1312014737449549826 ]:
+            return Hook.Continue;
 
-            if g_Cache.GetTemporal( "control_arase_mimido" )[0] != TemporalCache.Exists:
+        channel: discord.TextChannel = message.channel;
 
-                hour: int = datetime.now( pytz.timezone( "Asia/Kuala_Lumpur" ) ).hour;
+        if isinstance( channel, discord.GroupChannel ) or isinstance( channel, discord.DMChannel ):
+            return Hook.Continue;
 
-                if hour <= 5:
+        cache: Dictionary = g_Cache.Plugin;
 
-                    if random.randint( 0, 1 ) == 1:
+        if cache.IsEmpty:
+        #
+            cache[ "sleep_chance" ] = 5;
+            cache[ "horny_times" ] = 0;
+            cache[ "sleep_responses" ] = [
+                "What the fuck arase go to sleep",
+                "Go to fucking sleep arase",
+                "Ok but go to sleep",
+                "when sleeping",
+                "Mimir time mf",
+                "You ain't going to find a girlfriend at this time,"
+                "Reminder para arase to fucking sleep early"
+            ];
+            cache[ "horny_responses" ] = [
+                'mommy',
+                'mama',
+                'sex',
+                'gf',
+                'feet',
+                'armpit'
+            ];
+        #
 
-                        g_Cache.SetTemporal( "control_arase_mimido", timedelta( hours = ( 6 - hour ) ) );
+        if g_Cache.GetTemporal( "control_arase_mimido" )[0] != TemporalCache.Exists:
+        #
+            ChinchangTime: datetime = datetime.now( pytz.timezone( "Asia/Kuala_Lumpur" ) );
+            hour: int = ChinchangTime.hour;
 
-                        user = await bot.fetch_user( 438449162527440896 ); # Kez
+            if hour <= 5:
+            #
+                cache[ "sleep_chance" ] = cache[ "sleep_chance" ] - 1 if cache[ "sleep_chance" ] > 0 else 5;
 
-                        webhook = await bot.webhook( message.channel );
+                # Get a incremental chance
+                if random.randint( 0, cache[ "sleep_chance" ] ) == 0:
+                #
+                    g_Cache.SetTemporal( "control_arase_mimido", timedelta( hours = ( 6 - hour ) ) );
 
-                        if hour == 0:
-                            hour = f' It\'s 12 PM.';
-                        else:
-                            hour = f' It\'s {hour} AM.';
+                    user: discord.User = await bot.fetch_user( 438449162527440896 ); # Kez
 
-                        mimir_text: str = self.mimir_texts[ random.randint( 0, len(self.mimir_texts) - 1 ) ] + hour;
+                    webhook: discord.Webhook = await bot.webhook( message.channel );
 
-                        await webhook.send( content=f'{mimir_text} [a mimir](https://cdn.discordapp.com/attachments/847485688282480640/1376229990378508398/a_mimir.mp4?ex=6834918e&is=6833400e&hm=ea97d291d22f7a0dbc723032baee9ce6d4e195e112913df24b786cfb9e697e2a&)', username='KEZÆIV', avatar_url=user.avatar.url if user.avatar else None );
-
-            if g_Cache.GetTemporal( "control_arase_horny" )[0] != TemporalCache.Exists:
-
-                content: str = message.content.lower();
-
-                if any( word for word in self.control_yourself if word in content ):
-
-                    cache: Dictionary = g_Cache.Plugin;
-
-                    if cache.IsEmpty:
-                        cache[ "times" ] = 0;
-
-                    cache[ "times" ] += 1;
-
-                    user: User = await bot.fetch_user( 121735805369581570 ); # Kern
-
-                    webhook: Webhook = await bot.webhook( message.channel );
+                    MimirTexts: list[str] = cache[ "sleep_responses" ];
 
                     await webhook.send(
-                        content='Control yourself. This is the {}th time.'.format( cache[ "times" ] ),
-                        username='KernCore',
-                        avatar_url=user.avatar.url if user.avatar else None
+                        content='[a mimir](https://cdn.discordapp.com/attachments/847485688282480640/1376229990378508398/a_mimir.mp4?ex=6834918e&is=6833400e&hm=ea97d291d22f7a0dbc723032baee9ce6d4e195e112913df24b786cfb9e697e2a&)',
+                        embed=discord.Embed(
+                            color=RGB(90,30,10).hex,
+                            title="A R A S E",
+                            description=MimirTexts[ random.randint( 0, len(MimirTexts) - 1 ) ],
+                            timestamp=ChinchangTime
+                        ),
+                        username='KEZÆIV',
+                        avatar_url=user.avatar.url
+                            if user.avatar
+                            else None
                     );
+                #
+            #
+        #
 
-                    g_Cache.SetTemporal( "control_arase_horny", timedelta( hours = 1 ) );
+        if g_Cache.GetTemporal( "control_arase_horny" )[0] != TemporalCache.Exists:
 
-        return True;
+            content: str = message.content.lower();
+
+            if any( word for word in cache[ "horny_responses" ] if word in content ):
+
+                cache[ "horny_times" ] += 1;
+
+                user: discord.User = await bot.fetch_user( 121735805369581570 ); # Kern
+
+                webhook: discord.Webhook = await bot.webhook( message.channel );
+
+                await webhook.send(
+                    content='Control yourself. This is the {}th time.'.format( cache[ "horny_times" ] ),
+                    username='KernCore',
+                    avatar_url=user.avatar.url if user.avatar else None
+                );
+
+                g_Cache.SetTemporal( "control_arase_horny", timedelta( hours = 1 ) );
+
+        return Hook.Continue;
