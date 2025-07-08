@@ -47,17 +47,22 @@ class fix_embeds( Plugin ):
         ( "https://x.com/", "https://fxtwitter.com/" )
     );
 
-    async def OnLink( self, message, urls ):
+    async def OnMessageURL( self, message: discord.Message, urls: tuple[str] ) -> Hook:
 
         if message.author.id == bot.user.id:
-            return True;
+            return Hook.Continue;
 
-        Links = [ l for l in self.SupportedEmbeds if any( a for a in urls if l[0] in a ) ];
+        channel: discord.TextChannel = message.channel;
+
+        if isinstance( channel, discord.GroupChannel ) or isinstance( channel, discord.DMChannel ):
+            return Hook.Continue;
+
+        Links: list[tuple[str, str]] = [ l for l in self.SupportedEmbeds if any( a for a in urls if l[0] in a ) ];
 
         if len(Links) == 0:
-            return True;
+            return Hook.Continue;
 
-        formatted = message.content;
+        formatted: str = message.content;
 
         for Link in Links:
             formatted = formatted.replace( Link[0], Link[1] );
@@ -67,7 +72,7 @@ class fix_embeds( Plugin ):
         msg: discord.WebhookMessage = await webhook.send( content=formatted, username=message.author.display_name, \
             avatar_url=message.author.avatar.url if message.author.avatar else None, wait=True );
 
-        reply = await message.reply(
+        reply: discord.Message = await message.reply(
             embed=discord.Embed(
                 color = HexColor.LIGHT_BLUE,
                 description = g_Sentences.get( "fix_embeds_react_to_keep", message.guild )
@@ -79,12 +84,12 @@ class fix_embeds( Plugin ):
 
         await reply.add_reaction( '✅' );
 
-        await asyncio.sleep(10);
+        async with message.channel.typing():
+            await asyncio.sleep( 10 );
 
-        reply = None;
         try: # return None: NO. WE HAVE TO RAISE EXCEPTION :sob:
             reply = await message.channel.fetch_message( reply.id );
-        except: pass;
+        except: reply = None;
 
         if reply is not None:
 
@@ -97,10 +102,9 @@ class fix_embeds( Plugin ):
 
             else:
 
-                msg = None;
                 try: # return None: NO. WE HAVE TO RAISE EXCEPTION :sob:
                     msg = await message.channel.fetch_message( msg.id );
-                except: pass;
+                except: msg = None;
 
                 if msg is not None:
 
@@ -108,4 +112,4 @@ class fix_embeds( Plugin ):
 
             await reply.delete();
 
-        return True;
+        return Hook.Continue;
