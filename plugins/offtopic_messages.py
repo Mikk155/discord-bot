@@ -30,10 +30,15 @@ class offtopic_messages( Plugin ):
     def GetDescription(self):
         return "Remove off-topic messages on specific channels";
 
-    async def OnMessage(self, message):
+    async def OnMessage( self, message: discord.Message ) -> Hook:
 
         if message.author.id == bot.user.id:
-            return True;
+            return Hook.Continue;
+
+        channel: discord.TextChannel = message.channel;
+
+        if isinstance( channel, discord.GroupChannel ) or isinstance( channel, discord.DMChannel ):
+            return Hook.Continue;
 
         # LP Memes
         if message.channel.id == 1343244435583926323:
@@ -42,18 +47,18 @@ class offtopic_messages( Plugin ):
 
             if Elements == 0 and not message.author.guild_permissions.administrator:
 
-                response = await message.reply( f"This channel is for memes only. Please forward your target message and reply somewhere else",\
+                response: discord.Message = await message.reply( f"This channel is for memes only. Please forward your target message and reply somewhere else",\
                                         silent=True, delete_after=10 );
 
                 await message.delete(); # -TODO Does the bot really not log deleted messages?
                 # May need an utility to call OnMessageDelete passing the bot as the deleter.
 
-                return False;
+                return Hook.Break;
 
-        elif message.channel.id == 1118352656096829530:
+        elif message.channel.id == 1118352656096829530: # Welcome
 
             await message.delete(); #-TODO Ditto
 
-            return False;
+            return Hook.Break;
 
-        return True;
+        return Hook.Continue;
