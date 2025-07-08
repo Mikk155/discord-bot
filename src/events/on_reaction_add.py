@@ -46,7 +46,14 @@ async def on_reaction_add( reaction: discord.Reaction, user : discord.User ):
         ExceptionItems.append( ( "Author", f'{user.name}\nID: {fmt.DiscordUserMention( user )}' ) );
     #
 
-    ExceptionItems.append( ( "Reaction", f'{reaction.emoji.name}\nID: {reaction.emoji.id}' ) );
+    if isinstance( reaction.emoji, str ): # Is a unicode emoji
+    #
+        ExceptionItems.append( ( "Reaction", f'{reaction}\n' ) );
+    #
+    else:
+    #
+        ExceptionItems.append( ( "Reaction", f'{reaction.emoji.name}\nID: {reaction.emoji.id}' ) );
+    #
 
     await g_PluginManager.CallFunction(
         "OnReaction",
