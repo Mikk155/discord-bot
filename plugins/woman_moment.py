@@ -24,8 +24,6 @@ SOFTWARE
 
 from project import *
 
-import re;
-
 class woman_moment( Plugin ):
 
     @property
@@ -36,25 +34,35 @@ class woman_moment( Plugin ):
     def GetDescription(self):
         return "Keep track of how many times bunnt was foolish";
 
-    async def OnCommand(self, message, command, args):
+    async def OnCommand( self, message: discord.Message, command: str, args: list[str] ) -> Hook:
 
-        if command != 'womanmoment' and command != 'wm':
-            return True;
+        if message.author.id == bot.user.id or not command in ( 'womanmoment', 'wm' ):
+            return Hook.Continue;
+
+        channel: discord.TextChannel = message.channel;
+
+        if isinstance( channel, discord.GroupChannel ) or isinstance( channel, discord.DMChannel ):
+            return Hook.Continue;
 
         await self.WomanMoment( message.guild );
 
-        return False;
+        return Hook.Continue;
 
-    async def OnMessage( self, message ):
+    async def OnMessage( self, message: discord.Message ) -> Hook:
 
         if message.author.id == bot.user.id:
-            return True;
+            return Hook.Continue;
+
+        channel: discord.TextChannel = message.channel;
+
+        if isinstance( channel, discord.GroupChannel ) or isinstance( channel, discord.DMChannel ):
+            return Hook.Continue;
 
         if 'woman moment' in message.content.lower():
 
             await self.WomanMoment( message.guild );
 
-        return True;
+        return Hook.Continue;
 
     async def WomanMoment( self, guild: discord.Guild ) -> None:
 
@@ -62,20 +70,21 @@ class woman_moment( Plugin ):
 
         if bunnt:
 
-            cache = g_Cache.Get();
+            cache: Dictionary = g_Cache.Plugin;
 
-            number = cache.get( "moment", 0 );
+            if cache.IsEmpty:
+                cache[ "moment" ] = 0;
 
-            number = ( number + 1 );
+            cache[ "moment" ] += 1;
 
-            nombre_actual = bunnt.display_name;
+            number: int = cache[ "moment" ];
 
-            moment = re.sub( r'\d+', str(number), nombre_actual )
+            nombre_actual: str = bunnt.display_name;
+
+            moment: str = re.sub( r'\d+', str(number), nombre_actual );
 
             if not str(number) in moment:
 
                 moment = '{} {}'.format( moment, number );
 
-            await bunnt.edit( nick=moment )
-
-            cache[ "moment" ] = number;
+            await bunnt.edit( nick=moment );
