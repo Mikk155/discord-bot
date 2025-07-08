@@ -22,12 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE
 '''
 
+from re import Pattern
 from project import *
+from utils.Dictionary import Dictionary
 
 class message_reactions( Plugin ):
 
     def OnPluginActivate(self):
-
+    #
         command = app_commands.Command(
             name="cfg_message_reactions",
             description="Configure message reactions",
@@ -37,60 +39,126 @@ class message_reactions( Plugin ):
         command.guild_only = True;
 
         bot.tree.add_command( command );
+    #
 
     def OnPluginDeactivate(self):
-
+    #
         bot.tree.remove_command( "cfg_message_reactions" );
+    #
 
     @property
     def GetDescription(self):
+    #
         return "React with emojis to specific words";
+    #
 
-    async def OnMessage( self, message ):
+    async def OnMessage( self, message: discord.Message ) -> Hook:
+    #
+        if message.author.id == bot.user.id:
+            return Hook.Continue;
 
-        cache = g_Cache.Get();
+        channel: discord.TextChannel = message.channel;
 
-        if not message.guild or not str( message.guild.id ) in cache:
-            return True;
+        if isinstance( channel, discord.GroupChannel ) or isinstance( channel, discord.DMChannel ):
+            return Hook.Continue;
 
-        GuildCache: dict = cache[ str( message.guild.id ) ];
+        cache: Dictionary = g_Cache.Plugin;
 
-        matches = [ v for k, v in GuildCache.items() if k in message.content ];
+        if not message.guild or not message.guild.id in cache:
+            return Hook.Continue;
+
+        GuildCache: Dictionary = cache[ str( message.guild.id ) ];
+
+        matches: list[str] = [ v for k, v in GuildCache.items() if k in message.content ];
+
+        InvalidEmojis: list[str] = [];
 
         for emojis in matches:
+        #
             for emoji in emojis:
+            #
                 try:
+                #
                     await message.add_reaction( emoji );
-                except: break;
+                #
+                except discord.NotFound:
+                #
+                    InvalidEmojis.append( emoji );
+                #
+                except TypeError:
+                #
+                    InvalidEmojis.append( emoji );
+                #
+                except:
+                #
+                    break;
+                #
+            #
+        #
 
-        return True;
+        CacheCopy: dict[str, list[str]] = GuildCache.ToDict;
 
+        # Remove invalid emojis
+        for word, emojis in CacheCopy.items():
+        #
+            for InvalidEmoji in InvalidEmojis:
+            #
+                if InvalidEmoji in emojis:
+                #
+                    emojis.pop( InvalidEmoji )
+                #
+            #
+            GuildCache[ word ] = emojis;
+        #
+        return Hook.Continue;
+    #
+
+    @Plugin.HandleExceptions()
     @app_commands.guild_only()
     @app_commands.default_permissions( administrator=True )
     @app_commands.describe( trigger='word trigger', emoji='emoji/emojis' )
-    async def command_cfg_message_reactions( self, interaction: discord.Interaction, trigger: str, emoji: str ):
+    async def command_cfg_message_reactions( self, interaction: discord.Interaction, trigger: Optional[str] = None, emoji: Optional[str] = None ):
+    #
+        cache: Dictionary = g_Cache.Plugin[ interaction.guild_id ];
 
-        try:
+        if trigger is None:
+        #
+            if cache.IsEmpty:
+            #
+                await interaction.response.send_message( content=g_Sentences.get( "not_configured", Guild=interaction.guild_id ) );
+            #
+            else:
+            #
+                await interaction.followup.send( "cache", file=discord.File( cache.Serialize, "reactions.json" ) );
+            #
+        #
+        elif emoji is None:
+        #
+            cache.pop( trigger );
 
+            await interaction.response.send_message(
+                content=g_Sentences.get(
+                    "message_reactions_removed",
+                    trigger,
+                    Guild=interaction.guild_id
+                )
+            );
+        #
+        else:
+        #
             Emojis: list[str] = [ e for e in EMOJI.EMOJI_DATA if e in emoji ];
 
-            for match in RegexCustomEmoji().finditer( emoji ):
+            CustomEmojiRegex: Pattern[str] = re.compile( RegexPattern.DiscordCustomEmoji );
 
-                EmojiString = match.group(0);
-
+            for match in CustomEmojiRegex.finditer( emoji ):
+            #
+                EmojiString: str = match.group(0);
                 Emojis.append( EmojiString );
-
+            #
             if len(Emojis) > 0:
-
-                cache = g_Cache.Get();
-
-                GuildCache: dict = cache.get( str( interaction.guild_id ), {} );
-
-                GuildCache[ trigger ] = Emojis;
-
-                cache[ str( interaction.guild_id ) ] = GuildCache;
-
-            from json import dumps;
+            #
+                cache[ trigger ] = Emojis;
+            #
 
             embed = discord.Embed(
                 color = RGB(255,255,0).hex,
@@ -99,15 +167,5 @@ class message_reactions( Plugin ):
             );
 
             await interaction.response.send_message( embed=embed );
-
-        except Exception as e:
-
-            from src.Bot import bot;
-
-            if interaction.response.is_done():
-
-                await interaction.followup.send( embeds=bot.HandleException( e, SendToDevs=True ) );
-
-            else:
-
-                await interaction.response.send_message( embeds=bot.HandleException( e, SendToDevs=True ) );
+        #
+    #
