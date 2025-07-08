@@ -39,6 +39,7 @@ class message_reactions( Plugin ):
         command.guild_only = True;
 
         bot.tree.add_command( command );
+        g_Sentences.push_back( "message_reactions" );
     #
 
     def OnPluginDeactivate(self):
