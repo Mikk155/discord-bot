@@ -113,7 +113,10 @@ class PluginManager():
             #
             else:
             #
-                plugin.OnPluginActivate();
+                if hasattr( plugin, "OnPluginActivate" ):
+                #
+                    plugin.OnPluginActivate();
+                #
             #
 
             self.Plugins.append( plugin );
@@ -161,7 +164,7 @@ class PluginManager():
                 continue;
             #
 
-            if len( p.guilds ) > 0 and Guild != -1 and ( Guild is None or Guild.id in p.guilds ):
+            if len( p.guilds ) > 0 and Guild != -1 and ( Guild is None or not Guild.id in p.guilds ):
             #
                 continue; # This plugin doesn't want to work on this guild.
             #
