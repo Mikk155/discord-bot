@@ -1,5 +1,5 @@
 {
-    "server_logs_cfg_OnMessageDelete":
+    "server_logs_cfg_MessageDeleted":
     {
         "english": "Message deleted"
     },
@@ -23,27 +23,27 @@
     {
         "english": "Select a channel for each log type"
     },
-    "server_logs_cfg_OnMessageEdited":
+    "server_logs_cfg_MessageEdited":
     {
         "english": "Message edited"
     },
-    "server_logs_cfg_OnMessageEdited_info":
+    "server_logs_cfg_MessageEdited_info":
     {
         "english": "Message sent by {} edited in {}"
     },
-    "server_logs_cfg_OnMessageEdited_BeforePart":
+    "server_logs_cfg_MessageEdited_BeforePart":
     {
         "english": "Before part {}"
     },
-    "server_logs_cfg_OnMessageEdited_Before":
+    "server_logs_cfg_MessageEdited_Before":
     {
         "english": "Before"
     },
-    "server_logs_cfg_OnMessageEdited_NewPart":
+    "server_logs_cfg_MessageEdited_NewPart":
     {
         "english": "New part {}"
     },
-    "server_logs_cfg_OnMessageEdited_New":
+    "server_logs_cfg_MessageEdited_New":
     {
         "english": "New"
     }
