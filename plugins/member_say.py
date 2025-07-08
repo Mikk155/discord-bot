@@ -52,62 +52,48 @@ class member_say( Plugin ):
     def GetDescription(self):
         return "Makes the bot say something";
 
-    async def OnCommand(self, message, command, args):
+    async def OnCommand( self, message: discord.Message, command: str, args: list[str] ) -> Hook:
 
-        if command != 'say':
-            return True;
+        if message.author.id == bot.user.id or command != 'say':
+            return Hook.Continue;
+
+        channel: discord.TextChannel = message.channel;
+
+        if isinstance( channel, discord.GroupChannel ) or isinstance( channel, discord.DMChannel ):
+            return Hook.Continue;
 
         if len(args) > 0:
 
-            await message.delete();
+            await message.delete(); #-TODO Log it if needed
 
             await self.MakeUserSay( bot.user, args[0], message.channel );
 
         else:
 
-            embed = g_DiscordLogger.error( g_Sentences.get( "member_say_no_quotation", Guild=message.guild ), flags=LoggerFlags.Nothing );
+            embed: discord.Embed = g_DiscordLogger.error(
+                g_Sentences.get(
+                    "member_say_no_quotation",
+                    Guild=message.guild
+                ),
+                flags=LoggerFlags.Nothing
+            );
 
             await message.reply( embed=embed, mention_author=False, silent=True, allowed_mentions=False );
 
-        return False;
+        return Hook.Break;
 
-    async def MakeUserSay( self, target: discord.Member, message: str, channel: discord.TextChannel ):
+    async def MakeUserSay( self, target: discord.Member, message: str, channel: discord.TextChannel ) -> None:
 
-        avatar = target.avatar.url if target.avatar else None;
-        username = target.display_name;
+        avatar: str | None = target.avatar.url if target.avatar else None;
+        username: str = target.display_name;
 
-        webhook = await channel.create_webhook( name='say_cmd' );
+        webhook = bot.webhook( channel );
 
-        if webhook:
+        said: discord.WebhookMessage = await webhook.send( content=message, username=username, avatar_url=avatar );
 
-            said = await webhook.send( content=message, username=username, avatar_url=avatar );
+        # -TODO Log to the server's loggin system
 
-            await webhook.delete()
-
-            if said:
-
-                ''''''
-                # -TODO Log to the server's loggin system
-
+    @Plugin.HandleExceptions()
     @app_commands.describe( message='Message', member='Member' )
     async def command_say( self, interaction: discord.Interaction, message: str, member: Optional[discord.Member] = None ):
-
-        if not member:
-
-            member = bot.user;
-
-        try:
-
-            await self.MakeUserSay( member, message, interaction.channel );
-
-        except Exception as e:
-
-            from src.Bot import bot;
-
-            if interaction.response.is_done():
-
-                await interaction.followup.send( embeds=bot.HandleException( e, SendToDevs=True ) );
-
-            else:
-
-                await interaction.response.send_message( embeds=bot.HandleException( e, SendToDevs=True ) );
+        await self.MakeUserSay( member if member is not None else bot.user, message, interaction.channel );
