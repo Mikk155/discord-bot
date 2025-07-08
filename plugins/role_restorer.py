@@ -34,51 +34,42 @@ class role_restorer( Plugin ):
     def GetDescription(self):
         return "Keep track of user roles when they leave a server to add them back when the user rejoin";
 
-    async def OnMemberLeave( self, user ):
+    async def OnMemberLeave( self, user: discord.Member ) -> Hook:
+    #
+        if user.guild:
+        #
+            g_Cache.Plugin[ user.guild.id ][ user.id ] = [ Role.id for Role in user.roles if Role ];
+        #
+        return Hook.Continue;
+    #
 
-        if not user.guild:
-            return True;
+    async def OnMemberJoin( self, user: discord.Member ) -> Hook:
+    #
+        if user.guild:
+        #
+            GuildCache: Dictionary = g_Cache.Plugin[ user.guild.id ]
+            UserCache: Dictionary = GuildCache[ user.id ];
 
-        GuildID = str( user.guild.id );
+            Roles: list[discord.Role] = [];
 
-        cache = g_Cache.Get();
+            if not UserCache.IsEmpty:
+            #
+                RolesID: list[int] = UserCache.pop( user.id );
+                Roles = [ Role for Role in user.guild.roles if Role.id in RolesID ];
+            #
+            elif user.guild.id == 744769532513615922:
+            #
+                Roles.append( user.guild.get_role( 1316214066384994324 ) );
+            #
 
-        GuildCache = cache.get( GuildID, {} );
-
-        Roles = [ Role.id for Role in user.roles if Role ];
-
-        GuildCache[ str( user.id ) ] = Roles;
-
-        cache[ GuildID ] = GuildCache;
-
-        return True;
-
-    async def OnMemberJoin( self, user ):
-
-        if not user.guild:
-            return True;
-
-        GuildID = str( user.guild.id );
-
-        cache = g_Cache.Get();
-
-        GuildCache = cache.get( GuildID, {} );
-
-        RolesID = GuildCache.pop( str( user.id ), {} );
-
-        cache[ GuildID ] = GuildCache;
-
-        Roles = [ Role for Role in user.guild.roles if Role.id in RolesID ];
-
-        if len( Roles ) == 0: # No roles? Then is a new member.
-            Roles.append( user.guild.get_role( 1316214066384994324 ) );
-
-        for Role in Roles:
-
-            try: # One by one iteration due in case of one failing mid-way
-
-                await user.add_roles( Role );
-
-            except: pass;
-
-        return True;
+            for Role in Roles:
+            #
+                try: # One by one iteration due in case of one failing mid-way
+                #
+                    await user.add_roles( Role );
+                #
+                except: pass;
+            #
+        #
+        return Hook.Continue;
+    #
