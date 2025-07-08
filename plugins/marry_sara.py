@@ -28,31 +28,28 @@ class marry_sara( Plugin ):
 
     @property
     def GetDescription(self):
-        return "Count how many times mikk confessed his love to the goddess sara";
+        return "Count how many times mikk confessed his love to the his goddess sara";
 
-    async def OnMessage(self, message):
+    async def OnMessage( self, message: discord.Message ) -> Hook:
 
-        if message.author.id == bot.user.id:
-            return True;
+        if message.author.id != 744768007892500481:
+            return Hook.Continue;
 
-        if message.author.id == 744768007892500481:
+        content: str = message.content.lower();
 
-            content = message.content.lower();
+        if 'neko marry' in content:
 
-            if 'neko marry' in content:
+            sare: discord.User = bot.get_guild( 744769532513615922 ).get_member( 746914044828450856 );
 
-                sare: discord.User = bot.get_guild( 744769532513615922 ).get_member( 746914044828450856 );
+            if sare and sare in message.mentions:
 
-                if sare and sare in message.mentions:
+                cache: Dictionary = g_Cache.Plugin;
 
-                    cache = g_Cache.Get();
+                if cache.IsEmpty:
+                    cache[ "times" ] = 95;
 
-                    number = cache.get( "times", 52 );
+                cache[ "times" ] += 1;
 
-                    number += 1;
+                await bot.get_channel( message.channel.id ).send( "Mikk has confesed his love to Sare {} times.".format( cache[ "times" ] ), mention_author=False );
 
-                    await bot.get_channel( message.channel.id ).send( f"Mikk has confesed his love to Sare {number} times.", mention_author=False );
-
-                    cache[ "times" ] = number;
-
-        return True;
+        return Hook.Continue;
