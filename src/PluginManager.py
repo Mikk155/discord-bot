@@ -113,10 +113,7 @@ class PluginManager():
             #
             else:
             #
-                if hasattr( plugin, "OnPluginActivate" ):
-                #
-                    plugin.OnPluginActivate();
-                #
+                plugin.OnPluginActivate();
             #
 
             self.Plugins.append( plugin );

@@ -40,7 +40,7 @@ class member_say( Plugin ):
 
         g_Sentences.push_back( "member_say" );
 
-    def OnPluginDeactivate(self):
+    def OnPluginDeactivate(self) -> None:
 
         bot.tree.remove_command( "say" );
 

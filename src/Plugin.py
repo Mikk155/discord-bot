@@ -110,3 +110,9 @@ class Plugin():
     @property
     def GetAuthorSite( self ) -> str:
         return "https://github.com/Mikk155/discord-bot";
+
+    def OnPluginDeactivate( self ) -> None:
+        '''The plugin has just been disabled'''
+
+    def OnPluginActivate( self ) -> None:
+        '''The plugin has just been enabled'''

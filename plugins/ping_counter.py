@@ -26,7 +26,7 @@ from project import *
 
 class ping_counter( Plugin ):
 
-    def OnPluginActivate( self ) -> Hook:
+    def OnPluginActivate( self ) -> None:
     #
         command = app_commands.Command(
             name="pings",
@@ -39,14 +39,11 @@ class ping_counter( Plugin ):
         bot.tree.add_command( command );
 
         g_Sentences.push_back( "ping_counter" );
-
-        return Hook.Continue;
     #
 
-    def OnPluginDeactivate( self ) -> Hook:
+    def OnPluginDeactivate( self ) -> None:
     #
         bot.tree.remove_command( "pings" );
-        return Hook.Continue;
     #
 
     @property

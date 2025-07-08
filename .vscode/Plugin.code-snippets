@@ -42,34 +42,6 @@
             "\t\treturn Hook.Continue;"
         ]
     },
-    "OnPluginActivate":
-    {
-        "scope": "python",
-        "description": "The plugin has just been enabled",
-        "prefix": "OnPluginActivate",
-        "body":
-        [
-            "\tdef OnPluginActivate( self ) -> Hook:",
-            "",
-            "\t\t${1:}",
-            "",
-            "\t\treturn Hook.Continue;"
-        ]
-    },
-    "OnPluginDeactivate":
-    {
-        "scope": "python",
-        "description": "The plugin has just been disabled",
-        "prefix": "OnPluginDeactivate",
-        "body":
-        [
-            "\tdef OnPluginDeactivate( self ) -> Hook:",
-            "",
-            "\t\t${1:}",
-            "",
-            "\t\treturn Hook.Continue;"
-        ]
-    },
     "OnBotStart":
     {
         "scope": "python",
