@@ -24,8 +24,6 @@ SOFTWARE
 
 from project import *
 
-import asyncio;
-
 class fix_embeds( Plugin ):
 
     def OnPluginActivate(self):

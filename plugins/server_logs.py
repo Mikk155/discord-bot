@@ -22,16 +22,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE
 '''
 
-from discord import Embed
-from discord import Embed
-from discord.components import SelectOption
-from discord.guild import Guild
 from project import *
 
 import difflib
-
-from utils.Dictionary import Dictionary;
-
 
 class LogType(IntEnum):
     MessageDeleted: int = 0;
@@ -52,7 +45,7 @@ class ChannelSelect( discord.ui.Select ):
         self.ItemName: str = ItemName;
         self.Guild: discord.Guild = Guild;
 
-        options: list[SelectOption] = [
+        options: list[discord.components.SelectOption] = [
             discord.SelectOption( label = channel.name, value = str( channel.id ) )
             for channel in Guild.text_channels
         ];
@@ -261,12 +254,12 @@ class server_logs( Plugin ):
 
                 return _newEmbed;
             #
-            embed: Embed = TuncateEmbeds(
+            embed: discord.Embed = TuncateEmbeds(
                 embed, old,
                 "server_logs_cfg_MessageEdited_Before",
                 "server_logs_cfg_MessageEdited_BeforePart"
             );
-            embed: Embed = TuncateEmbeds(
+            embed: discord.Embed = TuncateEmbeds(
                 embed, new,
                 "server_logs_cfg_MessageEdited_New",
                 "server_logs_cfg_MessageEdited_NewPart"
