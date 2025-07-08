@@ -86,7 +86,7 @@ class ServerBoostState(IntEnum):
 
 class TemporalCache(IntEnum):
     NoExists: int = 0;
-    '''Temporal variable exists: ( NoExists, None, None )'''
+    '''Temporal variable doesn't exists: ( NoExists, None, None )'''
     Expired: int = 1;
     '''Temporal variable exists but it has expired and has just been removed from the cache: ( Expired, datetime, data? )'''
     Exists: int = 2;
