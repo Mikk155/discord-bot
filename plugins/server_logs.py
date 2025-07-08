@@ -351,7 +351,7 @@ class server_logs( Plugin ):
 
         embed = discord.Embed(
             color = RGB(255,0,0).hex,
-            title=g_Sentences.get( "server_logs_cfg_MessageDelete", Guild=message.guild ),
+            title=g_Sentences.get( "server_logs_cfg_MessageDeleted", Guild=message.guild ),
             description=g_Sentences.get( "server_logs_message_deleted_info", AuthorMSG, message.channel.jump_url, Guild=message.guild )
         );
 
