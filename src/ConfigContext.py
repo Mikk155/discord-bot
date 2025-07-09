@@ -184,17 +184,17 @@ class ConfigContext():
 
         try:
         #
-            LogginData = jsonc( Path.enter( "config", "Loggin.json" ), schema_validation=Path.enter( "schemas", "Loggin.json" ), sensitive=True );
+            LogginData = jsonc( Path.enter( "config", "Loggin.json" ), schema_validation=Path.enter( "schemas", "Loggin.json" ), sensitive=True, fnoutput=print );
             self.log = ContextBotLoggin( LogginData );
             del LogginData;
 
-            BotData = jsonc( Path.enter( "config", "bot.json" ), schema_validation=Path.enter( "schemas", "bot.json" ), sensitive=True );
+            BotData = jsonc( Path.enter( "config", "bot.json" ), schema_validation=Path.enter( "schemas", "bot.json" ), sensitive=True, fnoutput=print );
             self.bot = ContextBot( BotData );
             del BotData;
         #
         except Exception as e:
         #
-            print( f"Critical json validation: {e}" );
+            print( f"Critical json validation: {type(e).__name__}: {e}" );
             exit(1);
         #
 

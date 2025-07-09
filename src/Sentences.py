@@ -32,8 +32,12 @@ class Sentences( dict ):
     def GetName( self ) -> str:
         return "Sentences";
 
+    def __infolog__( self, string: str ) -> None:
+        from src.Logger import g_DiscordLogger;
+        g_DiscordLogger.trace( string, name=self.GetName );
+
     def __init__( self ) -> None:
-        super().__init__( jsonc( Path.enter( "sentences", "bot.json" ), exists_ok=True ) );
+        super().__init__( jsonc( Path.enter( "sentences", "bot.json" ), exists_ok=True, fnoutput=self.__infolog__ ) );
 
     def push_back( self, filename: str ) -> None:
 

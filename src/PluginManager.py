@@ -43,6 +43,10 @@ class PluginManager():
     def __init__( self ) -> None:
         pass;
 
+    def __infolog__( self, string: str ) -> None:
+        from src.Logger import g_DiscordLogger;
+        g_DiscordLogger.trace( string, name=self.GetName );
+
     def Initialize( self ) -> None:
     #
         from sys import executable;
@@ -56,7 +60,7 @@ class PluginManager():
         from importlib.machinery import ModuleSpec;
         from types import ModuleType;
 
-        PluginsContext: list[dict] = jsonc( Path.enter( "config", "plugins.json" ), schema_validation=Path.enter( "schemas", "plugins.json" ) );
+        PluginsContext: list[dict] = jsonc( Path.enter( "config", "plugins.json" ), schema_validation=Path.enter( "schemas", "plugins.json" ), fnoutput=self.__infolog__ );
 
         for PluginName, PluginData in PluginsContext.items():
         #
