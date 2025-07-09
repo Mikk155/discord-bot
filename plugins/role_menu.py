@@ -22,7 +22,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE
 '''
 
+from datetime import datetime
 from project import *
+from utils.Dictionary import Dictionary
 
 class role_menu( Plugin ):
 
@@ -33,7 +35,7 @@ class role_menu( Plugin ):
     ConfiguringMessages: list[ tuple[ int, int, int, datetime ] ] = [];
     '''Contains message ID, channel ID and guild ID of a message that is currently being configured'''
 
-    def OnPluginActivate(self):
+    def OnPluginActivate(self) -> None:
     #
         command = app_commands.Command(
             name="cfg_role_menu",
@@ -48,7 +50,7 @@ class role_menu( Plugin ):
         g_Sentences.push_back( "role_menu" );
     #
 
-    def OnPluginDeactivate(self):
+    def OnPluginDeactivate(self) -> None:
     #
         bot.tree.remove_command( "cfg_role_menu" );
     #
@@ -67,7 +69,7 @@ class role_menu( Plugin ):
 
     async def OnThink( self, time: datetime ) -> Hook:
     #
-        now = datetime.now() - timedelta( seconds=self.TimeoutConfiguration ) ;
+        now: datetime = datetime.now() - timedelta( seconds=self.TimeoutConfiguration ) ;
 
         cache = g_Cache.Plugin;
 
@@ -89,7 +91,7 @@ class role_menu( Plugin ):
 
                     try:
                     #
-                        msg = await bot.get_channel( C[1] ).fetch_message( C[0] );
+                        msg: discord.Message = await bot.get_channel( C[1] ).fetch_message( C[0] );
                         await msg.delete();
                     #
                     except: pass;
@@ -119,11 +121,11 @@ class role_menu( Plugin ):
             self.add_item( Selection );
         #
 
-        async def SelectRole( self, interaction: discord.Interaction ):
+        async def SelectRole( self, interaction: discord.Interaction ) -> None:
         #
             try:
             #
-                role = interaction.guild.get_role( int( interaction.data[ "values" ][0] ) )
+                role: discord.Role = interaction.guild.get_role( int( interaction.data[ "values" ][0] ) )
 
                 if role in interaction.user.roles:
                 #
@@ -165,11 +167,11 @@ class role_menu( Plugin ):
         #
     #
 
-    async def UpdateMenu( self, _c: dict, _m: discord.Message ):
+    async def UpdateMenu( self, _c: dict, _m: discord.Message ) -> None:
     #
         Roles: dict[ str, str ] = _c.get( "roles", {} );
 
-        view = self.CRoleSelectionView( Roles, _c.get( "button", "Select a role" ) ) if len( Roles ) > 0 else None;
+        view: CRoleSelectionView = self.CRoleSelectionView( Roles, _c.get( "button", "Select a role" ) ) if len( Roles ) > 0 else None;
 
         embed = discord.Embed(
             color=RGB(0,100,0).hex,
@@ -182,11 +184,11 @@ class role_menu( Plugin ):
 
     async def TrackMessages( self, Guild: discord.Guild, target: Optional[ Union[ int, discord.Message ] ] = 0 ):
     #
-        cache = g_Cache.Plugin;
+        cache: Dictionary = g_Cache.Plugin;
 
         GuildID: int = Guild.id if isinstance( Guild, discord.Guild ) else Guild;
 
-        GuildCache = cache[ GuildID ];
+        GuildCache: Dictionary = cache[ GuildID ];
 
         if target == 0:
         #
@@ -199,9 +201,9 @@ class role_menu( Plugin ):
                 #
                 try:
                 #
-                    channel = bot.get_channel( v[ "channel" ] );
+                    channel: discord.TextChannel = bot.get_channel( v[ "channel" ] );
 
-                    message = await channel.fetch_message( int(k) );
+                    message: discord.Message = await channel.fetch_message( int(k) );
 
                     await self.UpdateMenu( v, message );
                 #
@@ -214,11 +216,11 @@ class role_menu( Plugin ):
         #
         else:
         #
-            k = GuildCache[ str( target ) ];
+            k: Dictionary = GuildCache[ str( target ) ];
 
             channel = bot.get_channel( k[ "channel" ] );
 
-            message = await channel.fetch_message( str( target ) );
+            message: discord.Message = await channel.fetch_message( str( target ) );
 
             await self.UpdateMenu( k, message );
         #
@@ -244,7 +246,7 @@ class role_menu( Plugin ):
 
     class ConfigModal( discord.ui.Modal, title="" ):
     #
-        def __init__( self, interaction: discord.Interaction, menu: discord.Message, owner: Plugin ):
+        def __init__( self, interaction: discord.Interaction, menu: discord.Message, owner: Plugin ) -> None:
         #
             super().__init__( timeout=owner.TimeoutConfiguration );
 
@@ -281,7 +283,7 @@ class role_menu( Plugin ):
 
         async def on_submit( self, interaction: discord.Interaction ):
         #
-            cache = g_Cache.Plugin[ self.interaction.guild_id ][ self.menu.id ];
+            cache: Dictionary = g_Cache.Plugin[ self.interaction.guild_id ][ self.menu.id ];
 
             cache[ "name" ] = self.ItemName.value;
             cache[ "description" ] = self.ItemDescription.value;
@@ -345,7 +347,7 @@ class role_menu( Plugin ):
 
             if role is None:
             #
-                cacheGuild = g_Cache.Plugin[ self.interaction.guild_id ];
+                cacheGuild: Dictionary = g_Cache.Plugin[ self.interaction.guild_id ];
 
                 if str( UserRoleMenu.id ) in cacheGuild:
                 #
@@ -373,7 +375,7 @@ class role_menu( Plugin ):
             #
             else:
             #
-                cache = g_Cache.Plugin[ self.interaction.guild_id ][ menu ];
+                cache: Dictionary = g_Cache.Plugin[ self.interaction.guild_id ][ menu ];
 
                 if str( role.id ) in cache[ "roles" ]:
                 #
@@ -428,7 +430,7 @@ class role_menu( Plugin ):
                     validation = None;
 
                     try:
-                        validation = await bot.get_channel( roleinfo[ "channel" ] ).fetch_message( channel_ID );
+                        validation: discord.Message = await bot.get_channel( roleinfo[ "channel" ] ).fetch_message( channel_ID );
                     except: pass;
 
                     embeds.append(
