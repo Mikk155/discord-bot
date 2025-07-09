@@ -13,3 +13,6 @@ config/cache.json
 
 # Work in progress
 wip/*
+
+# Testing individual scripts
+test.*

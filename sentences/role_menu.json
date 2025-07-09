@@ -1,11 +1,11 @@
 {
     "role_menu_removed_role":
     {
-        "english": "Removed role {}"
+        "english": "Removed role {} to {}"
     },
     "role_menu_added_role":
     {
-        "english": "Added role {}"
+        "english": "Added role {} to {}"
     },
     "role_menu_embed_title":
     {
