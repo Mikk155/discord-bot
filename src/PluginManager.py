@@ -208,6 +208,9 @@ class PluginManager():
             #
             except Exception as e:
             #
+                if items is None:
+                    items = [];
+
                 items.append( ( f"Method {fnName}", f"Plugin {LastPluginName}", False ) );
 
                 from src.Bot import bot;
