@@ -69,20 +69,23 @@ class role_menu( Plugin ):
     #
         now = datetime.now() - timedelta( seconds=self.TimeoutConfiguration ) ;
 
-        cache = g_Cache.Get();
+        cache = g_Cache.Plugin;
 
-        for C in self.ConfiguringMessages:
+        i = -1;
+
+        for C in self.ConfiguringMessages.copy():
         #
+            i += 1;
+
             if C[3] is None or now > C[3]:
             #
-                cacheGuild: dict = cache.get( str( C[2] ), {} );
-
-                cacheMessage: dict = cacheGuild.get( str( C[0] ), {} );
+                cacheMessage: dict = cache[ C[2] ][ C[0] ];
 
                 if not "roles" in cacheMessage or len( cacheMessage[ "roles" ] ) == 0:
                 #
-                    cacheGuild.pop( str( C[0] ), {} );
-                    cache[  str( C[2] ) ] = cacheGuild;
+                    cache[ C[2] ].pop( C[0] );
+                    self.ConfiguringMessages.pop(i);
+                    i -= 1;
 
                     try:
                     #
@@ -178,9 +181,11 @@ class role_menu( Plugin ):
 
     async def TrackMessages( self, Guild: discord.Guild, target: Optional[ Union[ int, discord.Message ] ] = 0 ):
     #
-        cache = g_Cache.Get();
+        cache = g_Cache.Plugin;
 
-        GuildCache: dict = cache.get( str( Guild.id if isinstance( Guild, discord.Guild ) else Guild ), {} );
+        GuildID: int = Guild.id if isinstance( Guild, discord.Guild ) else Guild;
+
+        GuildCache = cache[ GuildID ];
 
         if target == 0:
         #
@@ -188,7 +193,7 @@ class role_menu( Plugin ):
             #
                 if not "roles" in v or len( v[ "roles" ] ) == 0:
                 #
-                    self.ConfiguringMessages.append( ( int(k), v[ "channel" ], int(GuildCache), None ) );
+                    self.ConfiguringMessages.append( ( int(k), v[ "channel" ], GuildID, None ) );
                     continue;
                 #
                 try:
@@ -275,17 +280,14 @@ class role_menu( Plugin ):
 
         async def on_submit( self, interaction: discord.Interaction ):
         #
-            cache = g_Cache.Get(); #-TODO i should reaaaally see into cache managment class. this get/set is annoying.
-            cacheGuild = cache.get( str( self.interaction.guild_id ), {} );
-            cacheMessage = cacheGuild.get( str( self.menu.id ), {} );
-            cacheMessage[ "name" ] = self.ItemName.value;
-            cacheMessage[ "description" ] = self.ItemDescription.value;
-            cacheMessage[ "button" ] = self.ItemButton.value;
-            cacheMessage[ "channel" ] = self.interaction.channel_id;
-            cacheGuild[ str( self.menu.id ) ] = cacheMessage;
-            cache[ str( self.interaction.guild_id ) ] = cacheGuild;
+            cache = g_Cache.Plugin[ self.interaction.guild_id ][ self.menu.id ];
 
-            await self.owner.UpdateMenu( cacheMessage, self.menu );
+            cache[ "name" ] = self.ItemName.value;
+            cache[ "description" ] = self.ItemDescription.value;
+            cache[ "button" ] = self.ItemButton.value;
+            cache[ "channel" ] = self.interaction.channel_id;
+
+            await self.owner.UpdateMenu( cache.ToDict, self.menu );
 
             await interaction.response.send_message(
                     g_Sentences.get( "role_menu_starting",
@@ -342,13 +344,11 @@ class role_menu( Plugin ):
 
             if role is None:
             #
-                cache = g_Cache.Get();
-                cacheGuild = cache.get( str( interaction.guild_id ), {} );
+                cacheGuild = g_Cache.Plugin[ self.interaction.guild_id ];
 
                 if str( UserRoleMenu.id ) in cacheGuild:
                 #
-                    cacheGuild.pop( str( UserRoleMenu.id ), {} );
-                    cache[ str( interaction.guild_id ) ] = cacheGuild;
+                    cacheGuild.pop( str( UserRoleMenu.id ) );
 
                     await UserRoleMenu.delete();
 
@@ -372,14 +372,11 @@ class role_menu( Plugin ):
             #
             else:
             #
-                cache = g_Cache.Get();
-                cacheGuild = cache.get( str( interaction.guild_id ), {} );
-                cacheMessage = cacheGuild.get( menu, {} );
-                cacheRoles = cacheMessage.get( "roles", {} );
+                cache = g_Cache.Plugin[ self.interaction.guild_id ][ menu ];
 
-                if str( role.id ) in cacheRoles:
+                if str( role.id ) in cache[ "roles" ]:
                 #
-                    cacheRoles.pop( str( role.id ), None );
+                    cache[ "roles" ].pop( str( role.id ) );
                     await interaction.response.send_message(
                         g_Sentences.get( "role_menu_removed_role",
                             role.mention,
@@ -411,19 +408,15 @@ class role_menu( Plugin ):
                         allowed_mentions=False
                     );
                 #
-                cacheMessage[ "roles" ] = cacheRoles;
-                cacheGuild[ str( UserRoleMenu.id ) ] = cacheMessage;
-                cache[ str( interaction.guild_id ) ] = cacheGuild;
 
-                await self.UpdateMenu( cacheMessage, UserRoleMenu );
+                await self.UpdateMenu( cache.ToDict, UserRoleMenu );
             #
         #
         else:
         #
-            cache = g_Cache.Get();
-            cacheGuild = cache.get( str( interaction.guild_id ), {} );
+            cacheGuild = g_Cache.Plugin[ self.interaction.guild_id ][ menu ];
 
-            if len(cacheGuild) > 0:
+            if not cacheGuild.IsEmpty:
             #
                 embeds: list[ discord.Embed ] = [];
 
