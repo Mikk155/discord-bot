@@ -65,7 +65,7 @@ class role_menu( Plugin ):
         return "Create a menu on wich users can choose roles";
     #
 
-    async def OnThink( self, time ):
+    async def OnThink( self, time: datetime ) -> Hook:
     #
         now = datetime.now() - timedelta( seconds=self.TimeoutConfiguration ) ;
 
@@ -96,6 +96,7 @@ class role_menu( Plugin ):
                 #
             #
         #
+        return Hook.Continue;
     #
 
     class CRoleSelectionView( discord.ui.View ):
@@ -223,22 +224,22 @@ class role_menu( Plugin ):
         #
     #
 
-    async def OnBotStart(self):
+    async def OnBotStart( self ) -> Hook:
     #
         for Guild in bot.guilds:
         #
             await self.TrackMessages(Guild);
         #
-        return True;
+        return Hook.Continue;
     #
 
-    async def OnReconnect(self):
+    async def OnReconnect( self ) -> Hook:
     #
         for Guild in bot.guilds:
         #
             await self.TrackMessages(Guild);
         #
-        return True;
+        return Hook.Continue;
     #
 
     class ConfigModal( discord.ui.Modal, title="" ):
@@ -400,7 +401,7 @@ class role_menu( Plugin ):
                 #
                 else:
                 #
-                    cacheRoles[ str( role.id ) ] = [ role.name, description ];
+                    cache[ str( role.id ) ] = [ role.name, description ];
 
                     await interaction.response.send_message(
                         g_Sentences.get( "role_menu_added_role", role.mention, Guild=interaction.guild_id ),
