@@ -72,7 +72,6 @@ class Bot( discord.Client ):
             return;
         #
 
-        self.tree.clear_commands( guild=None );
         await self.tree.sync();
 
     def GetCallTraceEmbeds( self, embed: discord.Embed, PythonLibraries = False, TraceUntil: str = None ) -> discord.Embed:

@@ -87,13 +87,15 @@ class member_say( Plugin ):
         avatar: str | None = target.avatar.url if target.avatar else None;
         username: str = target.display_name;
 
-        webhook = bot.webhook( channel );
+        webhook: discord.Webhook = await bot.webhook( channel );
 
-        said: discord.WebhookMessage = await webhook.send( content=message, username=username, avatar_url=avatar );
+        said: discord.WebhookMessage = await webhook.send( message, username=username, avatar_url=avatar, allowed_mentions=False, silent=True );
 
         # -TODO Log to the server's loggin system
 
     @Plugin.HandleExceptions()
     @app_commands.describe( message='Message', member='Member' )
     async def command_say( self, interaction: discord.Interaction, message: str, member: Optional[discord.Member] = None ):
-        await self.MakeUserSay( member if member is not None else bot.user, message, interaction.channel );
+        if member is None:
+            member = bot.user;
+        await self.MakeUserSay( member, message, interaction.channel );
